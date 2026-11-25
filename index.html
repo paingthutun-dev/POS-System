@@ -524,6 +524,13 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
         <span class="muted" id="signedInAs">—</span>
         <button class="btn" type="button" id="signOutBtn">🚪 <span data-t="login.signOut">Sign out</span></button>
       </div>
+      <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
+        <h3 style="margin:0 0 12px;font-size:14px" data-t="login.changePassword">Change password</h3>
+        <div class="field"><span data-t="login.newPassword">New password</span><input type="password" id="newPassword" autocomplete="new-password"></div>
+        <div class="field"><span data-t="login.confirmPassword">Confirm new password</span><input type="password" id="confirmPassword" autocomplete="new-password"></div>
+        <p class="login-error hidden" id="pwMsg"></p>
+        <button class="btn" type="button" id="changePwBtn" data-t="login.changePwBtn">Save new password</button>
+      </div>
     </div>
     <div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" id="saveSettingsBtn" style="min-width:170px" data-t="settings.save">Save settings</button></div>
   </section>
@@ -574,7 +581,7 @@ en: {
   "expenses.eyebrow":"Operating costs","expenses.title":"Expenses","expenses.detail":"{amount} recorded in the current period.","expenses.add":"Add expense","expenses.recorded":"Expense recorded","expenses.name":"Expense name","expenses.save":"Save expense","expenses.deleted":"Expense deleted",
   "expenseCategory.Rent":"Rent","expenseCategory.Electricity":"Electricity","expenseCategory.Water":"Water","expenseCategory.Salary":"Salary","expenseCategory.Transportation":"Transportation","expenseCategory.Supplies":"Supplies","expenseCategory.Marketing":"Marketing","expenseCategory.Other":"Other",
   "staff.title":"Staff & permissions","staff.detail":"Role-based access for register and back-office work.","staff.add":"Add staff","staff.admin":"Admin","staff.manager":"Manager","staff.cashier":"Cashier","staff.role":"Role","staff.saved":"Staff saved","staff.deleted":"Staff deleted",
-  "settings.eyebrow":"Store configuration","settings.title":"Settings","settings.detail":"Receipt, tax, language, currency, and appearance.","settings.storeProfile":"Store profile","settings.storeName":"Store name","settings.currency":"Currency","settings.taxRate":"Tax rate (%)","settings.receiptFormat":"Receipt format","settings.languageAppearance":"Language & appearance","settings.languageHelp":"Changes immediately and is saved on this device.","settings.save":"Save settings","settings.saved":"Settings saved","settings.thb":"THB — Thai Baht","settings.mmk":"MMK — Myanmar Kyat","settings.usd":"USD — US Dollar","settings.sgd":"SGD — Singapore Dollar","settings.data":"Data","settings.dataDetail":"Everything is saved on this device.","settings.exportBackup":"Download backup (JSON)","settings.resetDemo":"Restore demo data","settings.resetDone":"Demo data restored","settings.resetConfirm":"Restore the demo data? Current data will be replaced.","settings.sync":"Cloud sync","sync.syncing":"Syncing…","sync.synced":"Synced • {time}","sync.offline":"Offline — changes saved on this device","sync.failed":"Sync failed — will retry on next change","login.subtitle":"Sign in to open the register.","login.email":"Email","login.password":"Password","login.button":"Log in","login.signingIn":"Signing in…","login.signOut":"Sign out","login.signedInAs":"Signed in as {email}","login.invalid":"Email or password is incorrect. Please try again.","login.failed":"Could not sign in. Check your connection and try again."
+  "settings.eyebrow":"Store configuration","settings.title":"Settings","settings.detail":"Receipt, tax, language, currency, and appearance.","settings.storeProfile":"Store profile","settings.storeName":"Store name","settings.currency":"Currency","settings.taxRate":"Tax rate (%)","settings.receiptFormat":"Receipt format","settings.languageAppearance":"Language & appearance","settings.languageHelp":"Changes immediately and is saved on this device.","settings.save":"Save settings","settings.saved":"Settings saved","settings.thb":"THB — Thai Baht","settings.mmk":"MMK — Myanmar Kyat","settings.usd":"USD — US Dollar","settings.sgd":"SGD — Singapore Dollar","settings.data":"Data","settings.dataDetail":"Everything is saved on this device.","settings.exportBackup":"Download backup (JSON)","settings.resetDemo":"Restore demo data","settings.resetDone":"Demo data restored","settings.resetConfirm":"Restore the demo data? Current data will be replaced.","settings.sync":"Cloud sync","sync.syncing":"Syncing…","sync.synced":"Synced • {time}","sync.offline":"Offline — changes saved on this device","sync.failed":"Sync failed — will retry on next change","login.subtitle":"Sign in to open the register.","login.email":"Email","login.password":"Password","login.button":"Log in","login.signingIn":"Signing in…","login.signOut":"Sign out","login.signedInAs":"Signed in as {email}","login.invalid":"Email or password is incorrect. Please try again.","login.failed":"Could not sign in. Check your connection and try again.","login.changePassword":"Change password","login.newPassword":"New password","login.confirmPassword":"Confirm new password","login.changePwBtn":"Save new password","login.changingPw":"Saving…","login.pwTooShort":"Password must be at least 6 characters.","login.pwMismatch":"The two passwords do not match.","login.pwChanged":"Password changed.","login.pwChangeFailed":"Could not change the password. Check your connection and try again.","login.pwSessionExpired":"Your session has expired. Please sign in again."
 },
 my: {
   "nav.dashboard":"ဒက်ရှ်ဘုတ်","nav.pos":"အရောင်းအသစ်","nav.products":"ကုန်ပစ္စည်းများ","nav.inventory":"စတော့စာရင်း","nav.orders":"အရောင်းစာရင်း","nav.customers":"ဖောက်သည်များ","nav.expenses":"အသုံးစရိတ်များ","nav.settings":"ဆက်တင်များ","nav.more":"နောက်ထပ်",
@@ -593,7 +600,7 @@ my: {
   "expenses.eyebrow":"လုပ်ငန်းကုန်ကျစရိတ်","expenses.title":"အသုံးစရိတ်များ","expenses.detail":"ယခုကာလတွင် {amount} မှတ်တမ်းတင်ထားသည်။","expenses.add":"အသုံးစရိတ်ထည့်ရန်","expenses.recorded":"အသုံးစရိတ် မှတ်တမ်းတင်ပြီးပါပြီ","expenses.name":"အသုံးစရိတ်အမည်","expenses.save":"အသုံးစရိတ်သိမ်းရန်","expenses.deleted":"အသုံးစရိတ် ဖျက်ပြီးပါပြီ",
   "expenseCategory.Rent":"အိမ်ငှားခ","expenseCategory.Electricity":"မီတာခ","expenseCategory.Water":"ရေဖိုး","expenseCategory.Salary":"လစာ","expenseCategory.Transportation":"သယ်ယူပို့ဆောင်ခ","expenseCategory.Supplies":"အသုံးအဆောင်","expenseCategory.Marketing":"ကြော်ငြာစရိတ်","expenseCategory.Other":"အခြား",
   "staff.title":"ဝန်ထမ်းနှင့် လုပ်ပိုင်ခွင့်များ","staff.detail":"ကောင်တာနှင့် စီမံခန့်ခွဲမှုအလုပ်များအတွက် ရာထူးအလိုက် အသုံးပြုခွင့်။","staff.add":"ဝန်ထမ်းထည့်ရန်","staff.admin":"စီမံခန့်ခွဲသူ","staff.manager":"မန်နေဂျာ","staff.cashier":"ငွေကိုင်","staff.role":"ရာထူး","staff.saved":"ဝန်ထမ်းအသုံးပြုခွင့် သိမ်းပြီးပါပြီ","staff.deleted":"ဝန်ထမ်း ဖျက်ပြီးပါပြီ",
-  "settings.eyebrow":"ဆိုင်ဆက်တင်","settings.title":"ဆက်တင်များ","settings.detail":"ပြေစာ၊ အခွန်၊ ဘာသာစကား၊ ငွေကြေးနှင့် မျက်နှာပြင်ပုံစံ။","settings.storeProfile":"ဆိုင်အချက်အလက်","settings.storeName":"ဆိုင်အမည်","settings.currency":"ငွေကြေး","settings.taxRate":"အခွန်နှုန်း (%)","settings.receiptFormat":"ပြေစာပုံစံ","settings.languageAppearance":"ဘာသာစကားနှင့် မျက်နှာပြင်","settings.languageHelp":"ချက်ချင်းပြောင်းလဲပြီး ဤစက်တွင် မှတ်ထားမည်။","settings.save":"ဆက်တင်သိမ်းရန်","settings.saved":"ဆက်တင်များ သိမ်းပြီးပါပြီ","settings.thb":"THB — ထိုင်းဘတ်","settings.mmk":"MMK — မြန်မာကျပ်","settings.usd":"USD — အမေရိကန်ဒေါ်လာ","settings.sgd":"SGD — စင်ကာပူဒေါ်လာ","settings.data":"ဒေတာ","settings.dataDetail":"အချက်အလက်အားလုံးကို ဤစက်တွင် သိမ်းထားသည်။","settings.exportBackup":"အရန်သိမ်းဆည်းဖိုင် ဒေါင်းလုဒ်လုပ်ရန် (JSON)","settings.resetDemo":"Demo ဒေတာ ပြန်ထည့်ရန်","settings.resetDone":"Demo ဒေတာ ပြန်ထည့်ပြီးပါပြီ","settings.resetConfirm":"Demo ဒေတာ ပြန်ထည့်မည်လား? လက်ရှိဒေတာ အစားထိုးသွားမည်။","settings.sync":"Cloud ချိတ်ဆက်မှု","sync.syncing":"စင့်ခ်လုပ်နေသည်…","sync.synced":"စင့်ခ်ပြီးပြီ • {time}","sync.offline":"အင်တာနက်မရှိ — ဒီစက်မှာပဲ သိမ်းထားသည်","sync.failed":"စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်","login.subtitle":"ကောင်တာဖွင့်ရန် ဝင်ရောက်ပါ။","login.email":"အီးမေးလ်","login.password":"စကားဝှက်","login.button":"ဝင်ရောက်ရန်","login.signingIn":"ဝင်ရောက်နေသည်…","login.signOut":"ထွက်ရန်","login.signedInAs":"ဝင်ရောက်ထားသည်: {email}","login.invalid":"အီးမေးလ် သို့မဟုတ် စကားဝှက်မှားနေပါသည်။ ထပ်ကြိုးစားပါ။","login.failed":"ဝင်ရောက်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။"
+  "settings.eyebrow":"ဆိုင်ဆက်တင်","settings.title":"ဆက်တင်များ","settings.detail":"ပြေစာ၊ အခွန်၊ ဘာသာစကား၊ ငွေကြေးနှင့် မျက်နှာပြင်ပုံစံ။","settings.storeProfile":"ဆိုင်အချက်အလက်","settings.storeName":"ဆိုင်အမည်","settings.currency":"ငွေကြေး","settings.taxRate":"အခွန်နှုန်း (%)","settings.receiptFormat":"ပြေစာပုံစံ","settings.languageAppearance":"ဘာသာစကားနှင့် မျက်နှာပြင်","settings.languageHelp":"ချက်ချင်းပြောင်းလဲပြီး ဤစက်တွင် မှတ်ထားမည်။","settings.save":"ဆက်တင်သိမ်းရန်","settings.saved":"ဆက်တင်များ သိမ်းပြီးပါပြီ","settings.thb":"THB — ထိုင်းဘတ်","settings.mmk":"MMK — မြန်မာကျပ်","settings.usd":"USD — အမေရိကန်ဒေါ်လာ","settings.sgd":"SGD — စင်ကာပူဒေါ်လာ","settings.data":"ဒေတာ","settings.dataDetail":"အချက်အလက်အားလုံးကို ဤစက်တွင် သိမ်းထားသည်။","settings.exportBackup":"အရန်သိမ်းဆည်းဖိုင် ဒေါင်းလုဒ်လုပ်ရန် (JSON)","settings.resetDemo":"Demo ဒေတာ ပြန်ထည့်ရန်","settings.resetDone":"Demo ဒေတာ ပြန်ထည့်ပြီးပါပြီ","settings.resetConfirm":"Demo ဒေတာ ပြန်ထည့်မည်လား? လက်ရှိဒေတာ အစားထိုးသွားမည်။","settings.sync":"Cloud ချိတ်ဆက်မှု","sync.syncing":"စင့်ခ်လုပ်နေသည်…","sync.synced":"စင့်ခ်ပြီးပြီ • {time}","sync.offline":"အင်တာနက်မရှိ — ဒီစက်မှာပဲ သိမ်းထားသည်","sync.failed":"စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်","login.subtitle":"ကောင်တာဖွင့်ရန် ဝင်ရောက်ပါ။","login.email":"အီးမေးလ်","login.password":"စကားဝှက်","login.button":"ဝင်ရောက်ရန်","login.signingIn":"ဝင်ရောက်နေသည်…","login.signOut":"ထွက်ရန်","login.signedInAs":"ဝင်ရောက်ထားသည်: {email}","login.invalid":"အီးမေးလ် သို့မဟုတ် စကားဝှက်မှားနေပါသည်။ ထပ်ကြိုးစားပါ။","login.failed":"ဝင်ရောက်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.changePassword":"စကားဝှက် ပြောင်းရန်","login.newPassword":"စကားဝှက် အသစ်","login.confirmPassword":"စကားဝှက် အသစ် အတည်ပြုရန်","login.changePwBtn":"စကားဝှက် အသစ် သိမ်းရန်","login.changingPw":"သိမ်းနေသည်…","login.pwTooShort":"စကားဝှက်သည် အနည်းဆုံး ၆ လုံးရှိရမည်။","login.pwMismatch":"စကားဝှက် နှစ်ခု မတူညီပါ။","login.pwChanged":"စကားဝှက် ပြောင်းပြီးပါပြီ။","login.pwChangeFailed":"စကားဝှက် ပြောင်း၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.pwSessionExpired":"အချိန်ကုန်သွားပါပြီ။ ပြန်ဝင်ရောက်ပါ။"
 }};
 function t(k, vars){
   let s = (I18N[DB.settings.lang] && I18N[DB.settings.lang][k]) || I18N.en[k] || k;
@@ -802,6 +809,12 @@ function signOut(){
   pendingWipe = false;
   const pw = document.getElementById('loginPassword');
   if(pw) pw.value = '';
+  const np = document.getElementById('newPassword');
+  if(np) np.value = '';
+  const cp = document.getElementById('confirmPassword');
+  if(cp) cp.value = '';
+  const pm = document.getElementById('pwMsg');
+  if(pm) pm.classList.add('hidden');
   showLoginScreen();
 }
 function doLogin(){
@@ -824,12 +837,54 @@ function doLogin(){
     btn.textContent = t('login.button');
   });
 }
+function authChangePassword(newPw){
+  if(!authSession || !authSession.access_token){ const e = new Error('no session'); e.status = 401; return Promise.reject(e); }
+  return fetch(SB_URL + '/auth/v1/user', {
+    method: 'PUT',
+    headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authSession.access_token },
+    body: JSON.stringify({ password: newPw })
+  }).then(function(r){
+    return r.json().then(function(j){
+      if(!r.ok){ const e = new Error((j && (j.error_description || j.msg || j.error)) || 'change password failed'); e.status = r.status; throw e; }
+      return j;
+    });
+  });
+}
+function doChangePassword(){
+  const np = document.getElementById('newPassword');
+  const cp = document.getElementById('confirmPassword');
+  const msg = document.getElementById('pwMsg');
+  const btn = document.getElementById('changePwBtn');
+  const newPw = np.value;
+  const conf = cp.value;
+  msg.classList.remove('hidden');
+  if(newPw.length < 6){ msg.style.color = 'var(--danger)'; msg.textContent = t('login.pwTooShort'); return; }
+  if(newPw !== conf){ msg.style.color = 'var(--danger)'; msg.textContent = t('login.pwMismatch'); return; }
+  btn.disabled = true;
+  btn.textContent = t('login.changingPw');
+  let ready;
+  if(!authSession) ready = Promise.reject({ status: 401 });
+  else if(authValid(authSession)) ready = Promise.resolve();
+  else ready = authRefresh().then(function(s){ if(!s) throw { status: 401 }; });
+  ready.then(function(){ return authChangePassword(newPw); }).then(function(){
+    np.value = ''; cp.value = '';
+    msg.style.color = 'var(--accent-strong)';
+    msg.textContent = t('login.pwChanged');
+  }).catch(function(e){
+    msg.style.color = 'var(--danger)';
+    msg.textContent = (e && (e.status === 401 || e.status === 403)) ? t('login.pwSessionExpired') : t('login.pwChangeFailed');
+  }).then(function(){
+    btn.disabled = false;
+    btn.textContent = t('login.changePwBtn');
+  });
+}
 function bindAuthUI(){
   document.getElementById('loginBtn').addEventListener('click', doLogin);
   document.getElementById('loginPassword').addEventListener('keydown', function(e){ if(e.key === 'Enter') doLogin(); });
   document.getElementById('loginEmail').addEventListener('keydown', function(e){ if(e.key === 'Enter') doLogin(); });
   document.getElementById('signOutBtn').addEventListener('click', signOut);
   document.getElementById('posSignOutBtn').addEventListener('click', signOut);
+  document.getElementById('changePwBtn').addEventListener('click', doChangePassword);
 }
 
 function sbHeaders(json){
