@@ -131,6 +131,7 @@ small{color:var(--dim)}
 .metric>strong{display:block;font-size:22px;letter-spacing:-.04em;margin:7px 0}
 .metric>small{font-size:11px}
 .dash-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(270px,.7fr);gap:18px}
+.dash-grid.inv-grid{grid-template-columns:minmax(320px,.8fr) minmax(420px,1.2fr)}
 .top-list{display:grid;gap:10px}
 .top-list>div{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);font-size:13px}
 .top-list>div:last-child{border-bottom:0}
@@ -248,13 +249,22 @@ body.logged-out .scan-wrap{display:none!important}
   .side-nav{width:72px;padding-left:9px;padding-right:9px}
   .side-nav .brand>div:last-child,.side-nav nav span,.side-foot small{display:none}
   .side-nav .brand{justify-content:center}
-  .side-nav nav button{justify-content:center;padding:0}
+  .side-nav nav button{justify-content:center;padding:0;min-height:44px}
   .side-foot{display:none}
-  .pos-page{grid-template-columns:minmax(0,1fr) 350px}
+  .pos-page{grid-template-columns:minmax(0,1fr) 320px}
+  .catalog-pane{padding:22px 20px 40px}
+  .product-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .cart-panel{padding:20px 18px}
   .page{padding:30px 28px}
   .metric-strip{grid-template-columns:repeat(2,1fr)}
   .dash-grid{grid-template-columns:1fr}
+  .dash-grid.inv-grid{grid-template-columns:1fr}
   .category-row{flex-wrap:nowrap;overflow-x:auto}
+  /* Tablet touch targets: toggles and cart stepper reach 44px */
+  .lang-toggle button,.theme-toggle button{min-height:44px}
+  .stepper button{width:44px;height:44px;min-height:44px}
+  .stepper input{width:44px;height:44px;min-height:44px}
+  .menu-pop>button{padding:12px 8px}
 }
 @media(max-width:767px){
   .side-nav{display:none}
@@ -459,7 +469,7 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
       <div class="metric"><span data-t="inventory.stockValue">Stock value</span><strong id="invValue">—</strong><small data-t="inventory.atCost">At cost</small></div>
       <div class="metric"><span data-t="inventory.needsAttention">Needs attention</span><strong id="invLow">—</strong></div>
     </div>
-    <div class="dash-grid" style="grid-template-columns:minmax(320px,.8fr) minmax(420px,1.2fr)">
+    <div class="dash-grid inv-grid">
       <div class="panel">
         <div class="panel-head"><div><h2 data-t="inventory.levels">Stock levels</h2><p data-t="inventory.tap">Tap an item to record movement</p></div></div>
         <div id="stockList"></div>
