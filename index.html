@@ -525,9 +525,12 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
     <div class="panel">
       <div class="panel-head"><div><h2 data-t="settings.data">Data</h2><p data-t="settings.dataDetail">Everything is saved on this device.</p></div></div>
       <div class="row wrap">
-        <button class="btn" type="button" id="exportDataBtn">⬇ <span data-t="settings.exportBackup">Download backup (JSON)</span></button>
+        <button class="btn" type="button" id="exportDataBtn">⬇ <span data-t="settings.exportBackup">Backup</span></button>
+        <button class="btn" type="button" id="restoreDataBtn">↩ <span data-t="backup.restoreBtn">Restore</span></button>
         <button class="btn" type="button" id="resetDemoBtn">↺ <span data-t="settings.resetDemo">Restore demo data</span></button>
       </div>
+      <p class="muted hidden" id="backupMsg" style="margin-top:10px"></p>
+      <input type="file" id="restoreFileInput" accept=".json,application/json" class="hidden">
     </div>
     <div class="panel">
       <div class="panel-head"><div><h2 data-t="settings.sync">Cloud sync</h2></div></div>
@@ -612,7 +615,7 @@ en: {
   "expenses.eyebrow":"Operating costs","expenses.title":"Expenses","expenses.detail":"{amount} recorded in the current period.","expenses.add":"Add expense","expenses.recorded":"Expense recorded","expenses.name":"Expense name","expenses.save":"Save expense","expenses.deleted":"Expense deleted",
   "expenseCategory.Rent":"Rent","expenseCategory.Electricity":"Electricity","expenseCategory.Water":"Water","expenseCategory.Salary":"Salary","expenseCategory.Transportation":"Transportation","expenseCategory.Supplies":"Supplies","expenseCategory.Marketing":"Marketing","expenseCategory.Other":"Other",
   "staff.title":"Staff & permissions","staff.detail":"Role-based access for register and back-office work.","staff.add":"Add staff","staff.admin":"Admin","staff.manager":"Manager","staff.cashier":"Cashier","staff.role":"Role","staff.saved":"Staff saved","staff.deleted":"Staff deleted",
-  "settings.eyebrow":"Store configuration","settings.title":"Settings","settings.detail":"Receipt, tax, language, currency, and appearance.","settings.storeProfile":"Store profile","settings.storeName":"Store name","settings.currency":"Currency","settings.taxRate":"Tax rate (%)","settings.receiptFormat":"Receipt format","settings.languageAppearance":"Language & appearance","settings.languageHelp":"Changes immediately and is saved on this device.","settings.save":"Save settings","settings.saved":"Settings saved","settings.thb":"THB — Thai Baht","settings.mmk":"MMK — Myanmar Kyat","settings.usd":"USD — US Dollar","settings.sgd":"SGD — Singapore Dollar","settings.data":"Data","settings.dataDetail":"Everything is saved on this device.","settings.exportBackup":"Download backup (JSON)","settings.resetDemo":"Restore demo data","settings.resetDone":"Demo data restored","settings.resetConfirm":"Restore the demo data? Current data will be replaced.","settings.sync":"Cloud sync","sync.syncing":"Syncing…","sync.synced":"Synced • {time}","sync.offline":"Offline — changes saved on this device","sync.failed":"Sync failed — will retry on next change","login.subtitle":"Sign in to open the register.","login.email":"Email","login.password":"Password","login.button":"Log in","login.signingIn":"Signing in…","login.signOut":"Sign out","login.signedInAs":"Signed in as {email}","login.invalid":"Email or password is incorrect. Please try again.","login.failed":"Could not sign in. Check your connection and try again.","login.changePassword":"Change password","login.newPassword":"New password","login.confirmPassword":"Confirm new password","login.changePwBtn":"Save new password","login.changingPw":"Saving…","login.pwTooShort":"Password must be at least 6 characters.","login.pwMismatch":"The two passwords do not match.","login.pwChanged":"Password changed.","login.pwChangeFailed":"Could not change the password. Check your connection and try again.","login.pwSessionExpired":"Your session has expired. Please sign in again.","scan.button":"Scan","scan.title":"Scan barcode","scan.hint":"Point the camera at a barcode","scan.added":"{name} added to cart","scan.notFound":"No product with this barcode","scan.keepScanning":"Keep scanning","scan.cameraDenied":"Camera access was denied. Allow the camera and try again.","scan.unsupported":"Barcode scan is not supported on this device or browser. Open the live POS link in Chrome.","scan.needHttps":"Camera scan needs the live link (HTTPS). Open the POS link in Chrome.","scan.barcodeFilled":"Barcode filled: {code}","products.barcode":"Barcode"
+  "settings.eyebrow":"Store configuration","settings.title":"Settings","settings.detail":"Receipt, tax, language, currency, and appearance.","settings.storeProfile":"Store profile","settings.storeName":"Store name","settings.currency":"Currency","settings.taxRate":"Tax rate (%)","settings.receiptFormat":"Receipt format","settings.languageAppearance":"Language & appearance","settings.languageHelp":"Changes immediately and is saved on this device.","settings.save":"Save settings","settings.saved":"Settings saved","settings.thb":"THB — Thai Baht","settings.mmk":"MMK — Myanmar Kyat","settings.usd":"USD — US Dollar","settings.sgd":"SGD — Singapore Dollar","settings.data":"Data","settings.dataDetail":"Everything is saved on this device.","settings.exportBackup":"Backup","settings.resetDemo":"Restore demo data","settings.resetDone":"Demo data restored","settings.resetConfirm":"Restore the demo data? Current data will be replaced.","backup.restoreBtn":"Restore","backup.invalid":"This is not a valid POS backup file. Nothing was changed.","backup.summaryTitle":"Restore this backup?","backup.exportedAt":"Backed up on {date}","backup.exportedUnknown":"Backup date unknown","backup.replaceWarning":"Current data on this device will be replaced.","backup.safetyNote":"A safety copy of your current data will be downloaded first.","backup.confirm":"Restore","backup.restored":"Backup restored.","backup.restoredSyncFailed":"Restored on this device, but cloud sync failed — it will retry on the next change.","backup.settingsIncluded":"Store settings included","backup.count.products":"Products","backup.count.customers":"Customers","backup.count.staff":"Staff","backup.count.orders":"Orders","backup.count.expenses":"Expenses","backup.count.movements":"Stock movements","settings.sync":"Cloud sync","sync.syncing":"Syncing…","sync.synced":"Synced • {time}","sync.offline":"Offline — changes saved on this device","sync.failed":"Sync failed — will retry on next change","login.subtitle":"Sign in to open the register.","login.email":"Email","login.password":"Password","login.button":"Log in","login.signingIn":"Signing in…","login.signOut":"Sign out","login.signedInAs":"Signed in as {email}","login.invalid":"Email or password is incorrect. Please try again.","login.failed":"Could not sign in. Check your connection and try again.","login.changePassword":"Change password","login.newPassword":"New password","login.confirmPassword":"Confirm new password","login.changePwBtn":"Save new password","login.changingPw":"Saving…","login.pwTooShort":"Password must be at least 6 characters.","login.pwMismatch":"The two passwords do not match.","login.pwChanged":"Password changed.","login.pwChangeFailed":"Could not change the password. Check your connection and try again.","login.pwSessionExpired":"Your session has expired. Please sign in again.","scan.button":"Scan","scan.title":"Scan barcode","scan.hint":"Point the camera at a barcode","scan.added":"{name} added to cart","scan.notFound":"No product with this barcode","scan.keepScanning":"Keep scanning","scan.cameraDenied":"Camera access was denied. Allow the camera and try again.","scan.unsupported":"Barcode scan is not supported on this device or browser. Open the live POS link in Chrome.","scan.needHttps":"Camera scan needs the live link (HTTPS). Open the POS link in Chrome.","scan.barcodeFilled":"Barcode filled: {code}","products.barcode":"Barcode"
 },
 my: {
   "nav.dashboard":"ဒက်ရှ်ဘုတ်","nav.pos":"အရောင်းအသစ်","nav.products":"ကုန်ပစ္စည်းများ","nav.inventory":"စတော့စာရင်း","nav.orders":"အရောင်းစာရင်း","nav.customers":"ဖောက်သည်များ","nav.expenses":"အသုံးစရိတ်များ","nav.settings":"ဆက်တင်များ","nav.more":"နောက်ထပ်",
@@ -631,7 +634,7 @@ my: {
   "expenses.eyebrow":"လုပ်ငန်းကုန်ကျစရိတ်","expenses.title":"အသုံးစရိတ်များ","expenses.detail":"ယခုကာလတွင် {amount} မှတ်တမ်းတင်ထားသည်။","expenses.add":"အသုံးစရိတ်ထည့်ရန်","expenses.recorded":"အသုံးစရိတ် မှတ်တမ်းတင်ပြီးပါပြီ","expenses.name":"အသုံးစရိတ်အမည်","expenses.save":"အသုံးစရိတ်သိမ်းရန်","expenses.deleted":"အသုံးစရိတ် ဖျက်ပြီးပါပြီ",
   "expenseCategory.Rent":"အိမ်ငှားခ","expenseCategory.Electricity":"မီတာခ","expenseCategory.Water":"ရေဖိုး","expenseCategory.Salary":"လစာ","expenseCategory.Transportation":"သယ်ယူပို့ဆောင်ခ","expenseCategory.Supplies":"အသုံးအဆောင်","expenseCategory.Marketing":"ကြော်ငြာစရိတ်","expenseCategory.Other":"အခြား",
   "staff.title":"ဝန်ထမ်းနှင့် လုပ်ပိုင်ခွင့်များ","staff.detail":"ကောင်တာနှင့် စီမံခန့်ခွဲမှုအလုပ်များအတွက် ရာထူးအလိုက် အသုံးပြုခွင့်။","staff.add":"ဝန်ထမ်းထည့်ရန်","staff.admin":"စီမံခန့်ခွဲသူ","staff.manager":"မန်နေဂျာ","staff.cashier":"ငွေကိုင်","staff.role":"ရာထူး","staff.saved":"ဝန်ထမ်းအသုံးပြုခွင့် သိမ်းပြီးပါပြီ","staff.deleted":"ဝန်ထမ်း ဖျက်ပြီးပါပြီ",
-  "settings.eyebrow":"ဆိုင်ဆက်တင်","settings.title":"ဆက်တင်များ","settings.detail":"ပြေစာ၊ အခွန်၊ ဘာသာစကား၊ ငွေကြေးနှင့် မျက်နှာပြင်ပုံစံ။","settings.storeProfile":"ဆိုင်အချက်အလက်","settings.storeName":"ဆိုင်အမည်","settings.currency":"ငွေကြေး","settings.taxRate":"အခွန်နှုန်း (%)","settings.receiptFormat":"ပြေစာပုံစံ","settings.languageAppearance":"ဘာသာစကားနှင့် မျက်နှာပြင်","settings.languageHelp":"ချက်ချင်းပြောင်းလဲပြီး ဤစက်တွင် မှတ်ထားမည်။","settings.save":"ဆက်တင်သိမ်းရန်","settings.saved":"ဆက်တင်များ သိမ်းပြီးပါပြီ","settings.thb":"THB — ထိုင်းဘတ်","settings.mmk":"MMK — မြန်မာကျပ်","settings.usd":"USD — အမေရိကန်ဒေါ်လာ","settings.sgd":"SGD — စင်ကာပူဒေါ်လာ","settings.data":"ဒေတာ","settings.dataDetail":"အချက်အလက်အားလုံးကို ဤစက်တွင် သိမ်းထားသည်။","settings.exportBackup":"အရန်သိမ်းဆည်းဖိုင် ဒေါင်းလုဒ်လုပ်ရန် (JSON)","settings.resetDemo":"Demo ဒေတာ ပြန်ထည့်ရန်","settings.resetDone":"Demo ဒေတာ ပြန်ထည့်ပြီးပါပြီ","settings.resetConfirm":"Demo ဒေတာ ပြန်ထည့်မည်လား? လက်ရှိဒေတာ အစားထိုးသွားမည်။","settings.sync":"Cloud ချိတ်ဆက်မှု","sync.syncing":"စင့်ခ်လုပ်နေသည်…","sync.synced":"စင့်ခ်ပြီးပြီ • {time}","sync.offline":"အင်တာနက်မရှိ — ဒီစက်မှာပဲ သိမ်းထားသည်","sync.failed":"စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်","login.subtitle":"ကောင်တာဖွင့်ရန် ဝင်ရောက်ပါ။","login.email":"အီးမေးလ်","login.password":"စကားဝှက်","login.button":"ဝင်ရောက်ရန်","login.signingIn":"ဝင်ရောက်နေသည်…","login.signOut":"ထွက်ရန်","login.signedInAs":"ဝင်ရောက်ထားသည်: {email}","login.invalid":"အီးမေးလ် သို့မဟုတ် စကားဝှက်မှားနေပါသည်။ ထပ်ကြိုးစားပါ။","login.failed":"ဝင်ရောက်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.changePassword":"စကားဝှက် ပြောင်းရန်","login.newPassword":"စကားဝှက် အသစ်","login.confirmPassword":"စကားဝှက် အသစ် အတည်ပြုရန်","login.changePwBtn":"စကားဝှက် အသစ် သိမ်းရန်","login.changingPw":"သိမ်းနေသည်…","login.pwTooShort":"စကားဝှက်သည် အနည်းဆုံး ၆ လုံးရှိရမည်။","login.pwMismatch":"စကားဝှက် နှစ်ခု မတူညီပါ။","login.pwChanged":"စကားဝှက် ပြောင်းပြီးပါပြီ။","login.pwChangeFailed":"စကားဝှက် ပြောင်း၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.pwSessionExpired":"အချိန်ကုန်သွားပါပြီ။ ပြန်ဝင်ရောက်ပါ။","scan.button":"စကင်","scan.title":"ဘားကုဒ် စကင်ဖတ်ရန်","scan.hint":"ကင်မရာကို ဘားကုဒ်ဘက်သို့ ချိန်ပါ","scan.added":"{name} ကို စျေးခြင်းထဲ ထည့်ပြီးပါပြီ","scan.notFound":"ဤဘားကုဒ်နှင့် ကုန်ပစ္စည်း မရှိပါ","scan.keepScanning":"ဆက်စကင်ဖတ်ရန်","scan.cameraDenied":"ကင်မရာ ခွင့်ပြုချက် မရပါ။ ကင်မရာကို ခွင့်ပြုပြီး ထပ်ကြိုးစားပါ။","scan.unsupported":"ဤစက် သို့မဟုတ် ဘရောက်ဆာတွင် ဘားကုဒ်စကင် မရပါ။ Live POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.needHttps":"ကင်မရာစကင်အတွက် live link (HTTPS) လိုပါသည်။ POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.barcodeFilled":"ဘားကုဒ် ထည့်ပြီးပါပြီ: {code}","products.barcode":"ဘားကုဒ်"
+  "settings.eyebrow":"ဆိုင်ဆက်တင်","settings.title":"ဆက်တင်များ","settings.detail":"ပြေစာ၊ အခွန်၊ ဘာသာစကား၊ ငွေကြေးနှင့် မျက်နှာပြင်ပုံစံ။","settings.storeProfile":"ဆိုင်အချက်အလက်","settings.storeName":"ဆိုင်အမည်","settings.currency":"ငွေကြေး","settings.taxRate":"အခွန်နှုန်း (%)","settings.receiptFormat":"ပြေစာပုံစံ","settings.languageAppearance":"ဘာသာစကားနှင့် မျက်နှာပြင်","settings.languageHelp":"ချက်ချင်းပြောင်းလဲပြီး ဤစက်တွင် မှတ်ထားမည်။","settings.save":"ဆက်တင်သိမ်းရန်","settings.saved":"ဆက်တင်များ သိမ်းပြီးပါပြီ","settings.thb":"THB — ထိုင်းဘတ်","settings.mmk":"MMK — မြန်မာကျပ်","settings.usd":"USD — အမေရိကန်ဒေါ်လာ","settings.sgd":"SGD — စင်ကာပူဒေါ်လာ","settings.data":"ဒေတာ","settings.dataDetail":"အချက်အလက်အားလုံးကို ဤစက်တွင် သိမ်းထားသည်။","settings.exportBackup":"အရန်သိမ်းမယ်","settings.resetDemo":"Demo ဒေတာ ပြန်ထည့်ရန်","settings.resetDone":"Demo ဒေတာ ပြန်ထည့်ပြီးပါပြီ","settings.resetConfirm":"Demo ဒေတာ ပြန်ထည့်မည်လား? လက်ရှိဒေတာ အစားထိုးသွားမည်။","backup.restoreBtn":"ပြန်ယူမယ်","backup.invalid":"ဤဖိုင်သည် POS အရန်သိမ်းဆည်းဖိုင် အမှန်မဟုတ်ပါ။ ဘာမှမပြောင်းလဲပါ။","backup.summaryTitle":"ဤအရန်ဖိုင်ကို ပြန်ယူမည်လား?","backup.exportedAt":"အရန်သိမ်းသည့်ရက် {date}","backup.exportedUnknown":"အရန်သိမ်းသည့်ရက် မသိပါ","backup.replaceWarning":"ဤစက်ပေါ်ရှိ လက်ရှိဒေတာ အစားထိုးသွားမည်။","backup.safetyNote":"လက်ရှိဒေတာကို အရင် အရန်အဖြစ် ဒေါင်းလုဒ်လုပ်ပေးမည်။","backup.confirm":"ပြန်ယူမည်","backup.restored":"အရန်ဖိုင်ကို ပြန်ယူပြီးပါပြီ။","backup.restoredSyncFailed":"ဤစက်တွင် ပြန်ယူပြီးပါပြီ၊ သို့သော် cloud စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်။","backup.settingsIncluded":"ဆိုင်ဆက်တင် ပါဝင်သည်","backup.count.products":"ကုန်ပစ္စည်းများ","backup.count.customers":"ဖောက်သည်များ","backup.count.staff":"ဝန်ထမ်းများ","backup.count.orders":"အော်ဒါများ","backup.count.expenses":"အသုံးစရိတ်များ","backup.count.movements":"စတော့ အပြောင်းအလဲများ","settings.sync":"Cloud ချိတ်ဆက်မှု","sync.syncing":"စင့်ခ်လုပ်နေသည်…","sync.synced":"စင့်ခ်ပြီးပြီ • {time}","sync.offline":"အင်တာနက်မရှိ — ဒီစက်မှာပဲ သိမ်းထားသည်","sync.failed":"စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်","login.subtitle":"ကောင်တာဖွင့်ရန် ဝင်ရောက်ပါ။","login.email":"အီးမေးလ်","login.password":"စကားဝှက်","login.button":"ဝင်ရောက်ရန်","login.signingIn":"ဝင်ရောက်နေသည်…","login.signOut":"ထွက်ရန်","login.signedInAs":"ဝင်ရောက်ထားသည်: {email}","login.invalid":"အီးမေးလ် သို့မဟုတ် စကားဝှက်မှားနေပါသည်။ ထပ်ကြိုးစားပါ။","login.failed":"ဝင်ရောက်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.changePassword":"စကားဝှက် ပြောင်းရန်","login.newPassword":"စကားဝှက် အသစ်","login.confirmPassword":"စကားဝှက် အသစ် အတည်ပြုရန်","login.changePwBtn":"စကားဝှက် အသစ် သိမ်းရန်","login.changingPw":"သိမ်းနေသည်…","login.pwTooShort":"စကားဝှက်သည် အနည်းဆုံး ၆ လုံးရှိရမည်။","login.pwMismatch":"စကားဝှက် နှစ်ခု မတူညီပါ။","login.pwChanged":"စကားဝှက် ပြောင်းပြီးပါပြီ။","login.pwChangeFailed":"စကားဝှက် ပြောင်း၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.pwSessionExpired":"အချိန်ကုန်သွားပါပြီ။ ပြန်ဝင်ရောက်ပါ။","scan.button":"စကင်","scan.title":"ဘားကုဒ် စကင်ဖတ်ရန်","scan.hint":"ကင်မရာကို ဘားကုဒ်ဘက်သို့ ချိန်ပါ","scan.added":"{name} ကို စျေးခြင်းထဲ ထည့်ပြီးပါပြီ","scan.notFound":"ဤဘားကုဒ်နှင့် ကုန်ပစ္စည်း မရှိပါ","scan.keepScanning":"ဆက်စကင်ဖတ်ရန်","scan.cameraDenied":"ကင်မရာ ခွင့်ပြုချက် မရပါ။ ကင်မရာကို ခွင့်ပြုပြီး ထပ်ကြိုးစားပါ။","scan.unsupported":"ဤစက် သို့မဟုတ် ဘရောက်ဆာတွင် ဘားကုဒ်စကင် မရပါ။ Live POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.needHttps":"ကင်မရာစကင်အတွက် live link (HTTPS) လိုပါသည်။ POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.barcodeFilled":"ဘားကုဒ် ထည့်ပြီးပါပြီ: {code}","products.barcode":"ဘားကုဒ်"
 }};
 function t(k, vars){
   let s = (I18N[DB.settings.lang] && I18N[DB.settings.lang][k]) || I18N.en[k] || k;
@@ -747,8 +750,11 @@ function seedData(){
     nextOrderSeq: 5
   };
 }
-function save(){
+function persistLocal(){
   try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){}
+}
+function save(){
+  persistLocal();
   schedulePush();
 }
 function load(){
@@ -1046,25 +1052,126 @@ function initialSync(){
     setSyncStatus('offline');
   });
 }
-/* Wipe the cloud tables (used by Restore demo data) so stale rows cannot come back on the next load. */
+/* Wipe the cloud tables (used by Restore demo data) so stale rows cannot come back on the next load.
+   Every table is attempted even if one fails; the failure is reported only at the end,
+   so a single bad table cannot silently stop the rest of the wipe. */
 function wipeCloud(){
   if(!authSession) return Promise.resolve();
+  let failed = false;
   let chain = Promise.resolve();
   SB_TABLES.forEach(function(tb){
     chain = chain.then(function(){
       return fetch(SB_URL + '/rest/v1/' + tb + '?id=neq.__none__', {
         method: 'DELETE',
         headers: Object.assign(sbHeaders(false), { 'Prefer': 'return=minimal' })
-      }).then(function(r){ if(!r.ok) throw new Error('sb ' + r.status); });
+      }).then(function(r){ if(!r.ok) failed = true; }).catch(function(){ failed = true; });
     });
   });
-  return chain;
+  return chain.then(function(){ if(failed) throw new Error('wipe failed'); });
 }
 function toast(msg){
   const el = document.getElementById('toast');
   el.textContent = msg; el.classList.remove('hidden');
   clearTimeout(toast._t);
   toast._t = setTimeout(function(){ el.classList.add('hidden'); }, 2600);
+}
+
+/* ================= backup & restore (JSON file) ================= */
+/* Backup envelope: {app:'pos-html', version:1, exportedAt:<ISO>, data:{...DB}}.
+   The old Backup button exported the raw DB object; restore still accepts
+   that legacy shape so earlier backup files keep working. */
+const BACKUP_ARRAYS = ['products','customers','staff','orders','expenses','movements'];
+function backupFilename(prefix){
+  const d = new Date();
+  const pad = function(n){ return String(n).padStart(2,'0'); };
+  return prefix + '-' + d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + '.json';
+}
+function backupEnvelope(){
+  return { app:'pos-html', version:1, exportedAt:new Date().toISOString(),
+    data:{ settings:DB.settings, products:DB.products, customers:DB.customers, staff:DB.staff, orders:DB.orders, expenses:DB.expenses, movements:DB.movements, nextOrderSeq:DB.nextOrderSeq } };
+}
+function downloadJson(filename, obj){
+  const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+}
+function showBackupMsg(msg){
+  const el = document.getElementById('backupMsg');
+  if(!el) return;
+  el.textContent = msg || '';
+  el.classList.toggle('hidden', !msg);
+}
+function validateBackup(parsed){
+  if(!parsed || typeof parsed !== 'object') return null;
+  let data = null, exportedAt = null;
+  if(parsed.app === 'pos-html' && parsed.data && typeof parsed.data === 'object'){
+    data = parsed.data; exportedAt = parsed.exportedAt || null;
+  } else if(parsed.settings && typeof parsed.settings === 'object' && Array.isArray(parsed.products)){
+    data = parsed; exportedAt = null; /* legacy raw-DB export */
+  } else return null;
+  if(!data.settings || typeof data.settings !== 'object') return null;
+  for(let i = 0; i < BACKUP_ARRAYS.length; i++){
+    if(!Array.isArray(data[BACKUP_ARRAYS[i]])) return null;
+  }
+  if(data.nextOrderSeq != null && typeof data.nextOrderSeq !== 'number') return null;
+  return { data: data, exportedAt: exportedAt };
+}
+function showRestoreSummary(v){
+  const d = v.data;
+  const rows = BACKUP_ARRAYS.map(function(k){
+    return '<div class="row between" style="margin:5px 0"><span>' + esc(t('backup.count.' + k)) + '</span><strong>' + d[k].length + '</strong></div>';
+  }).join('');
+  const dateLine = v.exportedAt
+    ? esc(t('backup.exportedAt', {date: fmtDate(new Date(v.exportedAt).getTime())}))
+    : esc(t('backup.exportedUnknown'));
+  openModal(
+    '<header><h2>' + esc(t('backup.summaryTitle')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    '<p class="muted">' + dateLine + '</p>' +
+    rows +
+    '<p class="muted">' + esc(t('backup.settingsIncluded')) + '</p>' +
+    '<p style="color:var(--danger);font-weight:650">' + esc(t('backup.replaceWarning')) + '</p>' +
+    '<p class="muted">' + esc(t('backup.safetyNote')) + '</p>' +
+    '<div class="form-actions"><button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
+    '<button class="btn primary" type="button" id="confirmRestoreBtn">' + esc(t('backup.confirm')) + '</button></div>'
+  );
+  document.getElementById('confirmRestoreBtn').addEventListener('click', function(){ closeModal(); doRestore(v.data); });
+}
+function doRestore(data){
+  /* Safety copy of the CURRENT data first, then replace. */
+  downloadJson(backupFilename('pos-backup-before-restore'), backupEnvelope());
+  const restored = JSON.parse(JSON.stringify(data));
+  if(typeof restored.nextOrderSeq !== 'number') restored.nextOrderSeq = 5;
+  DB = restored;
+  cart = [];
+  persistLocal(); /* no schedulePush here: pushCloud below handles the wipe+push */
+  applyLang();
+  showView('dashboard');
+  toast(t('backup.restored'));
+  /* Full replace in the cloud too: wipe stale rows first, then push all rows. */
+  pendingWipe = true;
+  pushCloud().then(function(ok){
+    if(ok){ showBackupMsg(''); }
+    else { showBackupMsg(t('backup.restoredSyncFailed')); toast(t('backup.restoredSyncFailed')); }
+  });
+}
+function onRestoreFilePicked(e){
+  const file = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(){
+    let parsed = null;
+    try{ parsed = JSON.parse(reader.result); }catch(err){ parsed = null; }
+    const v = parsed ? validateBackup(parsed) : null;
+    if(!v){ showBackupMsg(t('backup.invalid')); return; }
+    showBackupMsg('');
+    showRestoreSummary(v);
+  };
+  reader.onerror = function(){ showBackupMsg(t('backup.invalid')); };
+  reader.readAsText(file);
 }
 
 /* ================= navigation & language ================= */
@@ -1952,13 +2059,13 @@ function init(){
   });
   document.getElementById('modalBackdrop').addEventListener('click', closeModal);
   document.getElementById('exportDataBtn').addEventListener('click', function(){
-    const blob = new Blob([JSON.stringify(DB, null, 2)], {type: 'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'pos-backup-' + fmtDay(Date.now()) + '.json';
-    a.click();
-    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    downloadJson(backupFilename('pos-backup'), backupEnvelope());
   });
+  document.getElementById('restoreDataBtn').addEventListener('click', function(){
+    showBackupMsg('');
+    document.getElementById('restoreFileInput').click();
+  });
+  document.getElementById('restoreFileInput').addEventListener('change', onRestoreFilePicked);
   document.getElementById('resetDemoBtn').addEventListener('click', function(){
     if(!confirm(t('settings.resetConfirm'))) return;
     DB = seedData(); save(); cart = []; applyLang(); showView('dashboard');
