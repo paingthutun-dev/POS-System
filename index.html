@@ -169,6 +169,18 @@ small{color:var(--dim)}
 .modal{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:14px;width:min(540px,100%);max-height:min(90vh,900px);overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.25);padding:20px}
 .modal>header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .modal>header h2{font-size:18px}
+
+/* ---------- barcode scanner ---------- */
+.scan-wrap{position:fixed;z-index:90;inset:0;background:#000;overflow:hidden}
+.scan-wrap video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.scan-frame{position:absolute;left:50%;top:40%;width:min(78vw,340px);height:150px;transform:translate(-50%,-50%);border:3px solid var(--accent);border-radius:14px;box-shadow:0 0 0 4000px rgba(0,0,0,.5);pointer-events:none}
+.scan-top{position:absolute;top:calc(14px + env(safe-area-inset-top));left:0;right:0;text-align:center;color:#fff;font-size:15px;font-weight:750;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.scan-bottom{position:absolute;left:0;right:0;bottom:0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
+.scan-status{color:#fff;text-align:center;font-size:13px;font-weight:700;min-height:20px;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.scan-notfound{background:var(--surface);border-radius:12px;padding:14px;text-align:center}
+.scan-code{font-size:19px;font-weight:800;letter-spacing:.05em}
+.scan-notfound p{margin:6px 0 12px;color:var(--dim);font-size:12px}
+body.logged-out .scan-wrap{display:none!important}
 .payment-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:17px}
 .payment-methods button{min-height:48px;padding:4px;font-size:12px;font-weight:700}
 .payment-methods button.active{background:var(--text);color:var(--bg);border-color:var(--text)}
@@ -357,7 +369,7 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
           </div>
         </div>
       </div>
-      <div class="searchbar"><span aria-hidden="true">🔍</span><input type="search" id="posSearch" data-tp="pos.search" placeholder="Search products, SKU, barcode, or category" autocomplete="off"></div>
+      <div class="searchbar"><span aria-hidden="true">🔍</span><input type="search" id="posSearch" data-tp="pos.search" placeholder="Search products, SKU, barcode, or category" autocomplete="off"><button class="btn" type="button" id="posScanBtn" style="flex:none">📷 <span data-t="scan.button">Scan</span></button></div>
       <div class="category-row" id="posCategories"></div>
       <div class="product-grid" id="productGrid"></div>
       <div class="empty hidden" id="posEmpty"><h3 data-t="pos.noProduct">No product found</h3><p data-t="pos.noProductDetail">Try a product name, SKU, barcode, or another category.</p></div>
@@ -557,6 +569,25 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
   <div class="modal" id="modalBox" role="dialog" aria-modal="true"></div>
 </div>
 
+<!-- ======== barcode scanner ======== -->
+<div class="scan-wrap hidden" id="scanWrap" role="dialog" aria-modal="true">
+  <video id="scanVideo" playsinline muted autoplay></video>
+  <div class="scan-frame" id="scanFrame"></div>
+  <div class="scan-top"><strong data-t="scan.title">Scan barcode</strong></div>
+  <div class="scan-bottom">
+    <div class="scan-status" id="scanStatus"></div>
+    <div class="scan-notfound hidden" id="scanNotFound">
+      <div class="scan-code" id="scanNotFoundCode"></div>
+      <p id="scanNotFoundText"></p>
+      <div class="row" style="justify-content:center">
+        <button class="btn primary" type="button" id="scanAddProductBtn" data-t="products.add">Add product</button>
+        <button class="btn" type="button" id="scanKeepBtn" data-t="scan.keepScanning">Keep scanning</button>
+      </div>
+    </div>
+    <button class="btn block big" type="button" id="scanCancelBtn" data-t="common.cancel">Cancel</button>
+  </div>
+</div>
+
 <div class="toast hidden" id="toast"></div>
 <div id="printArea"></div>
 
@@ -581,7 +612,7 @@ en: {
   "expenses.eyebrow":"Operating costs","expenses.title":"Expenses","expenses.detail":"{amount} recorded in the current period.","expenses.add":"Add expense","expenses.recorded":"Expense recorded","expenses.name":"Expense name","expenses.save":"Save expense","expenses.deleted":"Expense deleted",
   "expenseCategory.Rent":"Rent","expenseCategory.Electricity":"Electricity","expenseCategory.Water":"Water","expenseCategory.Salary":"Salary","expenseCategory.Transportation":"Transportation","expenseCategory.Supplies":"Supplies","expenseCategory.Marketing":"Marketing","expenseCategory.Other":"Other",
   "staff.title":"Staff & permissions","staff.detail":"Role-based access for register and back-office work.","staff.add":"Add staff","staff.admin":"Admin","staff.manager":"Manager","staff.cashier":"Cashier","staff.role":"Role","staff.saved":"Staff saved","staff.deleted":"Staff deleted",
-  "settings.eyebrow":"Store configuration","settings.title":"Settings","settings.detail":"Receipt, tax, language, currency, and appearance.","settings.storeProfile":"Store profile","settings.storeName":"Store name","settings.currency":"Currency","settings.taxRate":"Tax rate (%)","settings.receiptFormat":"Receipt format","settings.languageAppearance":"Language & appearance","settings.languageHelp":"Changes immediately and is saved on this device.","settings.save":"Save settings","settings.saved":"Settings saved","settings.thb":"THB — Thai Baht","settings.mmk":"MMK — Myanmar Kyat","settings.usd":"USD — US Dollar","settings.sgd":"SGD — Singapore Dollar","settings.data":"Data","settings.dataDetail":"Everything is saved on this device.","settings.exportBackup":"Download backup (JSON)","settings.resetDemo":"Restore demo data","settings.resetDone":"Demo data restored","settings.resetConfirm":"Restore the demo data? Current data will be replaced.","settings.sync":"Cloud sync","sync.syncing":"Syncing…","sync.synced":"Synced • {time}","sync.offline":"Offline — changes saved on this device","sync.failed":"Sync failed — will retry on next change","login.subtitle":"Sign in to open the register.","login.email":"Email","login.password":"Password","login.button":"Log in","login.signingIn":"Signing in…","login.signOut":"Sign out","login.signedInAs":"Signed in as {email}","login.invalid":"Email or password is incorrect. Please try again.","login.failed":"Could not sign in. Check your connection and try again.","login.changePassword":"Change password","login.newPassword":"New password","login.confirmPassword":"Confirm new password","login.changePwBtn":"Save new password","login.changingPw":"Saving…","login.pwTooShort":"Password must be at least 6 characters.","login.pwMismatch":"The two passwords do not match.","login.pwChanged":"Password changed.","login.pwChangeFailed":"Could not change the password. Check your connection and try again.","login.pwSessionExpired":"Your session has expired. Please sign in again."
+  "settings.eyebrow":"Store configuration","settings.title":"Settings","settings.detail":"Receipt, tax, language, currency, and appearance.","settings.storeProfile":"Store profile","settings.storeName":"Store name","settings.currency":"Currency","settings.taxRate":"Tax rate (%)","settings.receiptFormat":"Receipt format","settings.languageAppearance":"Language & appearance","settings.languageHelp":"Changes immediately and is saved on this device.","settings.save":"Save settings","settings.saved":"Settings saved","settings.thb":"THB — Thai Baht","settings.mmk":"MMK — Myanmar Kyat","settings.usd":"USD — US Dollar","settings.sgd":"SGD — Singapore Dollar","settings.data":"Data","settings.dataDetail":"Everything is saved on this device.","settings.exportBackup":"Download backup (JSON)","settings.resetDemo":"Restore demo data","settings.resetDone":"Demo data restored","settings.resetConfirm":"Restore the demo data? Current data will be replaced.","settings.sync":"Cloud sync","sync.syncing":"Syncing…","sync.synced":"Synced • {time}","sync.offline":"Offline — changes saved on this device","sync.failed":"Sync failed — will retry on next change","login.subtitle":"Sign in to open the register.","login.email":"Email","login.password":"Password","login.button":"Log in","login.signingIn":"Signing in…","login.signOut":"Sign out","login.signedInAs":"Signed in as {email}","login.invalid":"Email or password is incorrect. Please try again.","login.failed":"Could not sign in. Check your connection and try again.","login.changePassword":"Change password","login.newPassword":"New password","login.confirmPassword":"Confirm new password","login.changePwBtn":"Save new password","login.changingPw":"Saving…","login.pwTooShort":"Password must be at least 6 characters.","login.pwMismatch":"The two passwords do not match.","login.pwChanged":"Password changed.","login.pwChangeFailed":"Could not change the password. Check your connection and try again.","login.pwSessionExpired":"Your session has expired. Please sign in again.","scan.button":"Scan","scan.title":"Scan barcode","scan.hint":"Point the camera at a barcode","scan.added":"{name} added to cart","scan.notFound":"No product with this barcode","scan.keepScanning":"Keep scanning","scan.cameraDenied":"Camera access was denied. Allow the camera and try again.","scan.unsupported":"Barcode scan is not supported on this device or browser. Open the live POS link in Chrome.","scan.needHttps":"Camera scan needs the live link (HTTPS). Open the POS link in Chrome.","scan.barcodeFilled":"Barcode filled: {code}","products.barcode":"Barcode"
 },
 my: {
   "nav.dashboard":"ဒက်ရှ်ဘုတ်","nav.pos":"အရောင်းအသစ်","nav.products":"ကုန်ပစ္စည်းများ","nav.inventory":"စတော့စာရင်း","nav.orders":"အရောင်းစာရင်း","nav.customers":"ဖောက်သည်များ","nav.expenses":"အသုံးစရိတ်များ","nav.settings":"ဆက်တင်များ","nav.more":"နောက်ထပ်",
@@ -600,7 +631,7 @@ my: {
   "expenses.eyebrow":"လုပ်ငန်းကုန်ကျစရိတ်","expenses.title":"အသုံးစရိတ်များ","expenses.detail":"ယခုကာလတွင် {amount} မှတ်တမ်းတင်ထားသည်။","expenses.add":"အသုံးစရိတ်ထည့်ရန်","expenses.recorded":"အသုံးစရိတ် မှတ်တမ်းတင်ပြီးပါပြီ","expenses.name":"အသုံးစရိတ်အမည်","expenses.save":"အသုံးစရိတ်သိမ်းရန်","expenses.deleted":"အသုံးစရိတ် ဖျက်ပြီးပါပြီ",
   "expenseCategory.Rent":"အိမ်ငှားခ","expenseCategory.Electricity":"မီတာခ","expenseCategory.Water":"ရေဖိုး","expenseCategory.Salary":"လစာ","expenseCategory.Transportation":"သယ်ယူပို့ဆောင်ခ","expenseCategory.Supplies":"အသုံးအဆောင်","expenseCategory.Marketing":"ကြော်ငြာစရိတ်","expenseCategory.Other":"အခြား",
   "staff.title":"ဝန်ထမ်းနှင့် လုပ်ပိုင်ခွင့်များ","staff.detail":"ကောင်တာနှင့် စီမံခန့်ခွဲမှုအလုပ်များအတွက် ရာထူးအလိုက် အသုံးပြုခွင့်။","staff.add":"ဝန်ထမ်းထည့်ရန်","staff.admin":"စီမံခန့်ခွဲသူ","staff.manager":"မန်နေဂျာ","staff.cashier":"ငွေကိုင်","staff.role":"ရာထူး","staff.saved":"ဝန်ထမ်းအသုံးပြုခွင့် သိမ်းပြီးပါပြီ","staff.deleted":"ဝန်ထမ်း ဖျက်ပြီးပါပြီ",
-  "settings.eyebrow":"ဆိုင်ဆက်တင်","settings.title":"ဆက်တင်များ","settings.detail":"ပြေစာ၊ အခွန်၊ ဘာသာစကား၊ ငွေကြေးနှင့် မျက်နှာပြင်ပုံစံ။","settings.storeProfile":"ဆိုင်အချက်အလက်","settings.storeName":"ဆိုင်အမည်","settings.currency":"ငွေကြေး","settings.taxRate":"အခွန်နှုန်း (%)","settings.receiptFormat":"ပြေစာပုံစံ","settings.languageAppearance":"ဘာသာစကားနှင့် မျက်နှာပြင်","settings.languageHelp":"ချက်ချင်းပြောင်းလဲပြီး ဤစက်တွင် မှတ်ထားမည်။","settings.save":"ဆက်တင်သိမ်းရန်","settings.saved":"ဆက်တင်များ သိမ်းပြီးပါပြီ","settings.thb":"THB — ထိုင်းဘတ်","settings.mmk":"MMK — မြန်မာကျပ်","settings.usd":"USD — အမေရိကန်ဒေါ်လာ","settings.sgd":"SGD — စင်ကာပူဒေါ်လာ","settings.data":"ဒေတာ","settings.dataDetail":"အချက်အလက်အားလုံးကို ဤစက်တွင် သိမ်းထားသည်။","settings.exportBackup":"အရန်သိမ်းဆည်းဖိုင် ဒေါင်းလုဒ်လုပ်ရန် (JSON)","settings.resetDemo":"Demo ဒေတာ ပြန်ထည့်ရန်","settings.resetDone":"Demo ဒေတာ ပြန်ထည့်ပြီးပါပြီ","settings.resetConfirm":"Demo ဒေတာ ပြန်ထည့်မည်လား? လက်ရှိဒေတာ အစားထိုးသွားမည်။","settings.sync":"Cloud ချိတ်ဆက်မှု","sync.syncing":"စင့်ခ်လုပ်နေသည်…","sync.synced":"စင့်ခ်ပြီးပြီ • {time}","sync.offline":"အင်တာနက်မရှိ — ဒီစက်မှာပဲ သိမ်းထားသည်","sync.failed":"စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်","login.subtitle":"ကောင်တာဖွင့်ရန် ဝင်ရောက်ပါ။","login.email":"အီးမေးလ်","login.password":"စကားဝှက်","login.button":"ဝင်ရောက်ရန်","login.signingIn":"ဝင်ရောက်နေသည်…","login.signOut":"ထွက်ရန်","login.signedInAs":"ဝင်ရောက်ထားသည်: {email}","login.invalid":"အီးမေးလ် သို့မဟုတ် စကားဝှက်မှားနေပါသည်။ ထပ်ကြိုးစားပါ။","login.failed":"ဝင်ရောက်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.changePassword":"စကားဝှက် ပြောင်းရန်","login.newPassword":"စကားဝှက် အသစ်","login.confirmPassword":"စကားဝှက် အသစ် အတည်ပြုရန်","login.changePwBtn":"စကားဝှက် အသစ် သိမ်းရန်","login.changingPw":"သိမ်းနေသည်…","login.pwTooShort":"စကားဝှက်သည် အနည်းဆုံး ၆ လုံးရှိရမည်။","login.pwMismatch":"စကားဝှက် နှစ်ခု မတူညီပါ။","login.pwChanged":"စကားဝှက် ပြောင်းပြီးပါပြီ။","login.pwChangeFailed":"စကားဝှက် ပြောင်း၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.pwSessionExpired":"အချိန်ကုန်သွားပါပြီ။ ပြန်ဝင်ရောက်ပါ။"
+  "settings.eyebrow":"ဆိုင်ဆက်တင်","settings.title":"ဆက်တင်များ","settings.detail":"ပြေစာ၊ အခွန်၊ ဘာသာစကား၊ ငွေကြေးနှင့် မျက်နှာပြင်ပုံစံ။","settings.storeProfile":"ဆိုင်အချက်အလက်","settings.storeName":"ဆိုင်အမည်","settings.currency":"ငွေကြေး","settings.taxRate":"အခွန်နှုန်း (%)","settings.receiptFormat":"ပြေစာပုံစံ","settings.languageAppearance":"ဘာသာစကားနှင့် မျက်နှာပြင်","settings.languageHelp":"ချက်ချင်းပြောင်းလဲပြီး ဤစက်တွင် မှတ်ထားမည်။","settings.save":"ဆက်တင်သိမ်းရန်","settings.saved":"ဆက်တင်များ သိမ်းပြီးပါပြီ","settings.thb":"THB — ထိုင်းဘတ်","settings.mmk":"MMK — မြန်မာကျပ်","settings.usd":"USD — အမေရိကန်ဒေါ်လာ","settings.sgd":"SGD — စင်ကာပူဒေါ်လာ","settings.data":"ဒေတာ","settings.dataDetail":"အချက်အလက်အားလုံးကို ဤစက်တွင် သိမ်းထားသည်။","settings.exportBackup":"အရန်သိမ်းဆည်းဖိုင် ဒေါင်းလုဒ်လုပ်ရန် (JSON)","settings.resetDemo":"Demo ဒေတာ ပြန်ထည့်ရန်","settings.resetDone":"Demo ဒေတာ ပြန်ထည့်ပြီးပါပြီ","settings.resetConfirm":"Demo ဒေတာ ပြန်ထည့်မည်လား? လက်ရှိဒေတာ အစားထိုးသွားမည်။","settings.sync":"Cloud ချိတ်ဆက်မှု","sync.syncing":"စင့်ခ်လုပ်နေသည်…","sync.synced":"စင့်ခ်ပြီးပြီ • {time}","sync.offline":"အင်တာနက်မရှိ — ဒီစက်မှာပဲ သိမ်းထားသည်","sync.failed":"စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်","login.subtitle":"ကောင်တာဖွင့်ရန် ဝင်ရောက်ပါ။","login.email":"အီးမေးလ်","login.password":"စကားဝှက်","login.button":"ဝင်ရောက်ရန်","login.signingIn":"ဝင်ရောက်နေသည်…","login.signOut":"ထွက်ရန်","login.signedInAs":"ဝင်ရောက်ထားသည်: {email}","login.invalid":"အီးမေးလ် သို့မဟုတ် စကားဝှက်မှားနေပါသည်။ ထပ်ကြိုးစားပါ။","login.failed":"ဝင်ရောက်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.changePassword":"စကားဝှက် ပြောင်းရန်","login.newPassword":"စကားဝှက် အသစ်","login.confirmPassword":"စကားဝှက် အသစ် အတည်ပြုရန်","login.changePwBtn":"စကားဝှက် အသစ် သိမ်းရန်","login.changingPw":"သိမ်းနေသည်…","login.pwTooShort":"စကားဝှက်သည် အနည်းဆုံး ၆ လုံးရှိရမည်။","login.pwMismatch":"စကားဝှက် နှစ်ခု မတူညီပါ။","login.pwChanged":"စကားဝှက် ပြောင်းပြီးပါပြီ။","login.pwChangeFailed":"စကားဝှက် ပြောင်း၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.pwSessionExpired":"အချိန်ကုန်သွားပါပြီ။ ပြန်ဝင်ရောက်ပါ။","scan.button":"စကင်","scan.title":"ဘားကုဒ် စကင်ဖတ်ရန်","scan.hint":"ကင်မရာကို ဘားကုဒ်ဘက်သို့ ချိန်ပါ","scan.added":"{name} ကို စျေးခြင်းထဲ ထည့်ပြီးပါပြီ","scan.notFound":"ဤဘားကုဒ်နှင့် ကုန်ပစ္စည်း မရှိပါ","scan.keepScanning":"ဆက်စကင်ဖတ်ရန်","scan.cameraDenied":"ကင်မရာ ခွင့်ပြုချက် မရပါ။ ကင်မရာကို ခွင့်ပြုပြီး ထပ်ကြိုးစားပါ။","scan.unsupported":"ဤစက် သို့မဟုတ် ဘရောက်ဆာတွင် ဘားကုဒ်စကင် မရပါ။ Live POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.needHttps":"ကင်မရာစကင်အတွက် live link (HTTPS) လိုပါသည်။ POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.barcodeFilled":"ဘားကုဒ် ထည့်ပြီးပါပြီ: {code}","products.barcode":"ဘားကုဒ်"
 }};
 function t(k, vars){
   let s = (I18N[DB.settings.lang] && I18N[DB.settings.lang][k]) || I18N.en[k] || k;
@@ -1428,6 +1459,96 @@ function renderCurrent(){
   else if(curView === 'settings') renderSettingsForm();
 }
 
+/* ================= barcode scanner ================= */
+const SCAN_FORMATS = ['ean_13','ean_8','code_128','code_39','upc_a','upc_e','qr_code'];
+let scanStream = null, scanDetector = null, scanTimer = null, scanMode = 'pos', scanPaused = false;
+let scanLastCode = '', scanLastAt = 0, scanNotFoundCode = '';
+function scanSetStatus(msg){ document.getElementById('scanStatus').textContent = msg || ''; }
+function scanShowMessage(msg){
+  document.getElementById('scanVideo').style.visibility = 'hidden';
+  document.getElementById('scanFrame').style.visibility = 'hidden';
+  scanSetStatus(msg);
+}
+function openScanner(mode){
+  scanMode = mode || 'pos';
+  scanPaused = false; scanNotFoundCode = '';
+  document.getElementById('scanNotFound').classList.add('hidden');
+  document.getElementById('scanWrap').classList.remove('hidden');
+  document.getElementById('scanVideo').style.visibility = 'visible';
+  document.getElementById('scanFrame').style.visibility = 'visible';
+  if(!window.isSecureContext){ scanShowMessage(t('scan.needHttps')); return; }
+  if(!('BarcodeDetector' in window) || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)){
+    scanShowMessage(t('scan.unsupported')); return;
+  }
+  try { scanDetector = new BarcodeDetector({ formats: SCAN_FORMATS }); }
+  catch(e){ scanShowMessage(t('scan.unsupported')); return; }
+  scanSetStatus(t('scan.hint'));
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false }).then(function(stream){
+    scanStream = stream;
+    const video = document.getElementById('scanVideo');
+    video.srcObject = stream;
+    return video.play();
+  }).then(function(){
+    scanTick();
+  }).catch(function(){
+    scanShowMessage(t('scan.cameraDenied'));
+  });
+}
+function scanTick(){
+  if(!scanStream) return;
+  const video = document.getElementById('scanVideo');
+  if(video.readyState >= 2 && !scanPaused && scanDetector){
+    try {
+      scanDetector.detect(video).then(function(codes){
+        if(codes && codes.length) handleScan(codes[0].rawValue);
+      }).catch(function(){ /* ignore frame errors */ });
+    } catch(e){ /* BarcodeDetector unavailable */ }
+  }
+  scanTimer = setTimeout(scanTick, 200);
+}
+function handleScan(code){
+  if(!code) return;
+  const now = Date.now();
+  if(code === scanLastCode && now - scanLastAt < 1500) return;
+  scanLastCode = code; scanLastAt = now;
+  if(scanMode === 'product'){
+    const field = document.getElementById('pfBarcode');
+    if(field) field.value = code;
+    toast(t('scan.barcodeFilled', {code: code}));
+    closeScanner();
+    return;
+  }
+  const p = DB.products.find(function(x){ return x.active && (x.barcode || '') === code; });
+  if(p){
+    if(p.stock <= 0){ scanSetStatus(t('pos.outOfStock')); return; }
+    const before = cartQty(p.id);
+    addToCart(p.id);
+    if(cartQty(p.id) > before){
+      if(navigator.vibrate) navigator.vibrate(80);
+      scanSetStatus(t('scan.added', {name: p.name}));
+    } else {
+      scanSetStatus(t('pos.inStock', {count: p.stock}));
+    }
+  } else {
+    scanNotFoundCode = code;
+    scanPaused = true;
+    document.getElementById('scanNotFoundCode').textContent = code;
+    document.getElementById('scanNotFoundText').textContent = t('scan.notFound');
+    document.getElementById('scanNotFound').classList.remove('hidden');
+    scanSetStatus('');
+  }
+}
+function closeScanner(){
+  if(scanTimer){ clearTimeout(scanTimer); scanTimer = null; }
+  if(scanStream){ scanStream.getTracks().forEach(function(tr){ tr.stop(); }); scanStream = null; }
+  scanDetector = null;
+  document.getElementById('scanWrap').classList.add('hidden');
+  document.getElementById('scanNotFound').classList.add('hidden');
+  const video = document.getElementById('scanVideo');
+  video.srcObject = null;
+  scanPaused = false;
+}
+
 /* ================= products ================= */
 function renderProducts(){
   const q = (document.getElementById('productSearch').value || '').trim().toLowerCase();
@@ -1468,6 +1589,7 @@ function openProductForm(id){
     fieldHtml(t('products.productName'), '<input type="text" id="pfName" value="' + esc(p ? p.name : '') + '">') +
     '<div class="form-grid">' +
     fieldHtml(t('products.sku'), '<input type="text" id="pfSku" value="' + esc(p ? p.sku : '') + '">') +
+    fieldHtml(t('products.barcode'), '<div class="row" style="gap:8px"><input type="text" id="pfBarcode" value="' + esc(p ? (p.barcode || '') : '') + '" style="flex:1;min-width:0"><button class="btn icon-btn" type="button" id="pfScanBtn" aria-label="Scan">📷</button></div>') +
     fieldHtml(t('products.category'), '<select id="pfCat">' + catOpts + '</select>') +
     fieldHtml(t('products.brand'), '<input type="text" id="pfBrand" value="' + esc(p ? p.brand : '') + '">') +
     fieldHtml(t('products.costPrice'), '<input type="number" id="pfCost" min="0" step="any" value="' + (p ? p.costPrice : '') + '">') +
@@ -1489,6 +1611,7 @@ function openProductForm(id){
     const data = {
       name: name,
       sku: document.getElementById('pfSku').value.trim() || ('SKU-' + Date.now().toString(36).toUpperCase()),
+      barcode: document.getElementById('pfBarcode').value.trim(),
       category: document.getElementById('pfCat').value,
       brand: document.getElementById('pfBrand').value.trim(),
       costPrice: parseFloat(document.getElementById('pfCost').value) || 0,
@@ -1501,6 +1624,7 @@ function openProductForm(id){
     else DB.products.push(Object.assign({ id: uid('p'), barcode: '', unit: 'pc', description: '', supplier: '', active: true }, data));
     save(); closeModal(); renderProducts(); toast(t('products.saved'));
   });
+  document.getElementById('pfScanBtn').addEventListener('click', function(){ openScanner('product'); });
   const del = document.getElementById('pfDelete');
   if(del) del.addEventListener('click', function(){
     if(!confirm(t('common.confirmDelete'))) return;
@@ -1776,6 +1900,20 @@ function init(){
     });
   });
   document.getElementById('posSearch').addEventListener('input', function(e){ posQuery = e.target.value; renderPos(); });
+  document.getElementById('posScanBtn').addEventListener('click', function(){ openScanner('pos'); });
+  document.getElementById('scanCancelBtn').addEventListener('click', closeScanner);
+  document.getElementById('scanKeepBtn').addEventListener('click', function(){
+    document.getElementById('scanNotFound').classList.add('hidden');
+    scanPaused = false;
+    scanSetStatus(t('scan.hint'));
+  });
+  document.getElementById('scanAddProductBtn').addEventListener('click', function(){
+    const code = scanNotFoundCode;
+    closeScanner();
+    openProductForm(null);
+    const f = document.getElementById('pfBarcode');
+    if(f) f.value = code;
+  });
   document.getElementById('mobileCartBar').addEventListener('click', function(){
     // open the cart as a modal on mobile
     const panel = document.getElementById('cartPanel');
@@ -1827,7 +1965,12 @@ function init(){
     pendingWipe = true; pushCloud();
     toast(t('settings.resetDone'));
   });
-  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      if(!document.getElementById('scanWrap').classList.contains('hidden')) closeScanner();
+      else closeModal();
+    }
+  });
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>
