@@ -321,7 +321,6 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
 <!-- ======== mobile top bar ======== -->
 <div class="mobile-top">
   <div class="brand"><div class="brand-mark">M</div><div><strong id="mobileBrandName">Mercury Mobile Accessories</strong></div></div>
-  <button class="btn icon-btn" type="button" id="mobileMenuBtn" aria-label="Menu">⋯</button>
 </div>
 
 <div class="workspace" id="workspace">
@@ -1994,12 +1993,9 @@ function init(){
     e.stopPropagation();
     document.getElementById('posMenu').classList.toggle('hidden');
   });
-  document.getElementById('mobileMenuBtn').addEventListener('click', function(){
-    document.getElementById('moreSheet').classList.toggle('hidden');
-  });
   document.addEventListener('click', function(e){
     if(!e.target.closest('.menu-wrap')) document.getElementById('posMenu').classList.add('hidden');
-    if(!e.target.closest('#moreSheet') && !e.target.closest('#mobileMenuBtn') && !e.target.closest('#bottomNav')) document.getElementById('moreSheet').classList.add('hidden');
+    if(!e.target.closest('#moreSheet') && !e.target.closest('#bottomNav')) document.getElementById('moreSheet').classList.add('hidden');
   });
   document.querySelectorAll('.lang-toggle').forEach(function(tg){
     tg.querySelectorAll('button').forEach(function(b){
