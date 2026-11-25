@@ -50,7 +50,8 @@ small{color:var(--dim)}
 .brand{display:flex;align-items:center;gap:11px;min-width:0}
 .brand-mark{width:40px;height:40px;border-radius:12px;background:transparent;overflow:hidden;flex:none}
 .brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
-.brand strong,.brand small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand strong{display:block;line-height:1.15}
+.brand small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .brand strong{font-size:14px}
 .brand small{font-size:11px;color:#9fa9a2;margin-top:2px}
 .side-nav nav{display:flex;flex-direction:column;gap:3px;margin-top:28px}
@@ -194,6 +195,8 @@ body.logged-out .scan-wrap{display:none!important}
 .cash-entry{display:flex;align-items:baseline;gap:8px;margin:6px 0}
 .cash-entry input{width:100%;min-width:0;border:0;background:transparent;color:#fff;padding:0;font-size:28px;font-weight:700}
 .cash-entry input:focus{outline:0}
+.cash-entry input::-webkit-inner-spin-button{display:none}
+.cash-entry input{-moz-appearance:textfield;appearance:textfield}
 .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .keypad button{height:48px;background:var(--surface-2);font-size:17px;font-weight:700}
 .summary-box{background:var(--surface-2);border-radius:11px;padding:18px;margin-bottom:14px}
@@ -226,7 +229,7 @@ body.logged-out .scan-wrap{display:none!important}
   .side-nav .brand>div:last-child,.side-nav nav span,.side-foot small{display:none}
   .side-nav .brand{justify-content:center}
   .side-nav nav button{justify-content:center;padding:0}
-  .side-foot{display:grid;place-items:center}
+  .side-foot{display:none}
   .pos-page{grid-template-columns:minmax(0,1fr) 350px}
   .page{padding:30px 28px}
   .metric-strip{grid-template-columns:repeat(2,1fr)}
@@ -267,6 +270,25 @@ body.logged-out .scan-wrap{display:none!important}
 @media(max-width:360px){
   .metric-strip{grid-template-columns:1fr}
   .payment-methods{grid-template-columns:1fr 1fr}
+}
+
+/* ---------- wide desktop: use the space, two-column checkout ---------- */
+@media(min-width:1600px){
+  .page{max-width:1440px}
+}
+@media(min-width:768px){
+  .modal.wide{width:min(780px,100%);max-height:min(94vh,940px);padding:16px 20px}
+  .co-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;align-items:start}
+  .modal.wide .field{margin-bottom:10px}
+  .modal.wide .summary-box{padding:13px 16px;margin-bottom:10px}
+  .modal.wide .summary-box .due{font-size:26px;margin:2px 0 8px}
+  .modal.wide .cash-readout{padding:13px 16px;margin:8px 0}
+  .modal.wide .keypad button{height:44px}
+}
+/* Short desktop screens: the on-screen keypad is hidden — the physical
+   keyboard types the amount (the input is focused), so the modal fits. */
+@media(min-width:768px) and (max-height:820px){
+  .modal.wide .keypad{display:none}
 }
 
 /* ---------- login ---------- */
@@ -1405,23 +1427,27 @@ function openCheckout(){
   }).join('');
   openModal(
     '<header><h2>' + esc(t('checkout.title')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    '<div class="co-grid"><div class="co-col">' +
     '<div class="field"><span>' + esc(t('checkout.customer')) + '</span><select id="coCustomer">' + custOpts + '</select></div>' +
-    '<div class="field"><span>' + esc(t('checkout.paymentMethod')) + '</span><div class="payment-methods">' + payBtns + '</div></div>' +
     '<div class="field"><span>' + esc(t('checkout.orderDiscount')) + '</span><input type="number" id="coDiscount" min="0" step="any" value="0"></div>' +
     '<div class="summary-box"><div><span>' + esc(t('cart.subtotal')) + '</span><strong id="coSub">' + money(tot.subtotal) + '</strong></div>' +
     '<div><span>' + esc(t('checkout.orderDiscount')) + '</span><strong id="coDiscVal">' + money(0) + '</strong></div>' +
     '<div><span>' + esc(t('cart.tax', {rate: DB.settings.taxRate})) + '</span><strong id="coTax">' + money(tax) + '</strong></div>' +
     '<div><span>' + esc(t('checkout.amountDue')) + '</span></div><div class="due" id="coTotal">' + money(total) + '</div>' +
     '<div><span>' + esc(t('checkout.change')) + '</span><strong id="coChange">' + money(0) + '</strong></div></div>' +
+    '</div><div class="co-col">' +
+    '<div class="field"><span>' + esc(t('checkout.paymentMethod')) + '</span><div class="payment-methods">' + payBtns + '</div></div>' +
     '<div id="coCashBox"><div class="cash-readout"><span>' + esc(t('checkout.amountReceived')) + '</span>' +
     '<div class="cash-entry"><b>' + esc(CUR[DB.settings.currency].sym) + '</b><input type="number" id="coReceived" min="0" step="any" inputmode="decimal" placeholder="0"></div></div>' +
     '<div class="keypad">' +
     ['1','2','3','4','5','6','7','8','9','00','0','.'].map(function(k){ return '<button type="button" data-key="' + k + '">' + k + '</button>'; }).join('') +
     '<button type="button" class="quick-cash" data-key="exact">' + esc(t('checkout.next100')) + '</button>' +
     '<button type="button" data-key="clear">C</button></div></div>' +
+    '</div></div>' +
     '<div class="form-actions split" style="margin-top:16px"><button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
     '<button class="btn primary" type="button" id="coComplete">' + esc(t('checkout.complete')) + '</button></div>'
   );
+  document.getElementById('modalBox').classList.add('wide');
   let payMethod = 'Cash';
   let discount = 0;
   function recalc(){
@@ -1465,6 +1491,10 @@ function openCheckout(){
     if(payMethod === 'Cash' && r.received < r.total){ toast(t('checkout.notEnough')); return; }
     completeSale(payMethod, document.getElementById('coCustomer').value, discount, r);
   });
+  document.getElementById('coReceived').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') document.getElementById('coComplete').click();
+  });
+  if(window.innerWidth >= 768) document.getElementById('coReceived').focus();
   recalc();
 }
 function completeSale(payMethod, customerId, discount, r){
@@ -1553,6 +1583,7 @@ function openModal(html){
 }
 function closeModal(){
   document.getElementById('modalWrap').classList.add('hidden');
+  document.getElementById('modalBox').classList.remove('wide');
   document.getElementById('modalBox').innerHTML = '';
 }
 function fieldHtml(label, inner){
@@ -2009,6 +2040,34 @@ function init(){
     });
   });
   document.getElementById('posSearch').addEventListener('input', function(e){ posQuery = e.target.value; renderPos(); });
+  document.getElementById('posSearch').addEventListener('keydown', function(e){
+    /* USB barcode scanner (keyboard wedge) types the code + Enter: add the
+       exact barcode/SKU match, or the single filtered product; otherwise
+       leave the filtered list as-is. */
+    if(e.key !== 'Enter') return;
+    const q = posQuery.trim().toLowerCase();
+    if(!q) return;
+    let target = DB.products.find(function(p){
+      return p.active && ((p.barcode || '').toLowerCase() === q || (p.sku || '').toLowerCase() === q);
+    });
+    if(!target){
+      const list = DB.products.filter(function(p){
+        if(!p.active) return false;
+        if(posCat !== 'all' && p.category !== posCat) return false;
+        return (p.name + ' ' + p.sku + ' ' + (p.barcode || '') + ' ' + p.category).toLowerCase().indexOf(q) >= 0;
+      });
+      if(list.length === 1) target = list[0];
+    }
+    if(!target) return;
+    const before = cartQty(target.id);
+    addToCart(target.id);
+    if(cartQty(target.id) > before){
+      posQuery = '';
+      e.target.value = '';
+      renderPos();
+      e.target.focus();
+    }
+  });
   document.getElementById('posScanBtn').addEventListener('click', function(){ openScanner('pos'); });
   document.getElementById('scanCancelBtn').addEventListener('click', closeScanner);
   document.getElementById('scanKeepBtn').addEventListener('click', function(){
