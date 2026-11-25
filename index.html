@@ -391,6 +391,7 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
             <button type="button" data-nav="dashboard">🏠 <span data-t="nav.dashboard">Dashboard</span></button>
             <button type="button" data-nav="orders">🧾 <span data-t="nav.orders">Orders</span></button>
             <button type="button" data-nav="settings">⚙️ <span data-t="nav.settings">Settings</span></button>
+            <button type="button" id="posDrawerBtn">💵 <span data-t="drawer.open">Open drawer</span></button>
             <button type="button" id="posSignOutBtn">🚪 <span data-t="login.signOut">Sign out</span></button>
           </div>
         </div>
@@ -559,6 +560,18 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
       <input type="file" id="restoreFileInput" accept=".json,application/json" class="hidden">
     </div>
     <div class="panel">
+      <div class="panel-head"><div><h2 data-t="drawer.title">Cash drawer</h2><p data-t="drawer.autoOpenHelp">Only for cash sales. Needs a USB receipt printer connected on desktop Chrome.</p></div></div>
+      <p class="muted" id="drawerStatus">—</p>
+      <div class="row wrap" style="margin-top:12px">
+        <button class="btn" type="button" id="drawerConnectBtn">🖨 <span data-t="drawer.connect">Connect printer</span></button>
+        <button class="btn hidden" type="button" id="drawerDisconnectBtn">✕ <span data-t="drawer.disconnect">Disconnect</span></button>
+      </div>
+      <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
+        <label style="display:flex;gap:10px;align-items:flex-start;font-size:13px;font-weight:650;cursor:pointer"><input type="checkbox" id="setAutoDrawer" style="width:18px;height:18px;margin-top:1px;flex:none"> <span data-t="drawer.autoOpen">Open drawer automatically after a cash sale</span></label>
+      </div>
+      <p class="muted hidden" id="drawerUnsupported" style="margin-top:10px" data-t="drawer.unsupported">Cash drawer needs desktop Chrome on the live link (HTTPS) with a USB receipt printer.</p>
+    </div>
+    <div class="panel">
       <div class="panel-head"><div><h2 data-t="settings.sync">Cloud sync</h2></div></div>
       <p class="muted" id="syncStatus">—</p>
       <div class="row between" style="margin-top:14px">
@@ -643,7 +656,7 @@ en: {
   "expenses.eyebrow":"Operating costs","expenses.title":"Expenses","expenses.detail":"{amount} recorded in the current period.","expenses.add":"Add expense","expenses.recorded":"Expense recorded","expenses.name":"Expense name","expenses.save":"Save expense","expenses.deleted":"Expense deleted",
   "expenseCategory.Rent":"Rent","expenseCategory.Electricity":"Electricity","expenseCategory.Water":"Water","expenseCategory.Salary":"Salary","expenseCategory.Transportation":"Transportation","expenseCategory.Supplies":"Supplies","expenseCategory.Marketing":"Marketing","expenseCategory.Other":"Other",
   "staff.title":"Staff & permissions","staff.detail":"Role-based access for register and back-office work.","staff.add":"Add staff","staff.admin":"Admin","staff.manager":"Manager","staff.cashier":"Cashier","staff.role":"Role","staff.saved":"Staff saved","staff.deleted":"Staff deleted",
-  "settings.eyebrow":"Store configuration","settings.title":"Settings","settings.detail":"Receipt, tax, language, currency, and appearance.","settings.storeProfile":"Store profile","settings.storeName":"Store name","settings.currency":"Currency","settings.taxRate":"Tax rate (%)","settings.receiptFormat":"Receipt format","settings.languageAppearance":"Language & appearance","settings.languageHelp":"Changes immediately and is saved on this device.","settings.save":"Save settings","settings.saved":"Settings saved","settings.thb":"THB — Thai Baht","settings.mmk":"MMK — Myanmar Kyat","settings.usd":"USD — US Dollar","settings.sgd":"SGD — Singapore Dollar","settings.data":"Data","settings.dataDetail":"Everything is saved on this device.","settings.exportBackup":"Backup","settings.resetDemo":"Restore demo data","settings.resetDone":"Demo data restored","settings.resetConfirm":"Restore the demo data? Current data will be replaced.","backup.restoreBtn":"Restore","backup.invalid":"This is not a valid POS backup file. Nothing was changed.","backup.summaryTitle":"Restore this backup?","backup.exportedAt":"Backed up on {date}","backup.exportedUnknown":"Backup date unknown","backup.replaceWarning":"Current data on this device will be replaced.","backup.safetyNote":"A safety copy of your current data will be downloaded first.","backup.confirm":"Restore","backup.restored":"Backup restored.","backup.restoredSyncFailed":"Restored on this device, but cloud sync failed — it will retry on the next change.","backup.settingsIncluded":"Store settings included","backup.count.products":"Products","backup.count.customers":"Customers","backup.count.staff":"Staff","backup.count.orders":"Orders","backup.count.expenses":"Expenses","backup.count.movements":"Stock movements","settings.sync":"Cloud sync","sync.syncing":"Syncing…","sync.synced":"Synced • {time}","sync.offline":"Offline — changes saved on this device","sync.failed":"Sync failed — will retry on next change","login.subtitle":"Sign in to open the register.","login.email":"Email","login.password":"Password","login.button":"Log in","login.signingIn":"Signing in…","login.signOut":"Sign out","login.signedInAs":"Signed in as {email}","login.invalid":"Email or password is incorrect. Please try again.","login.failed":"Could not sign in. Check your connection and try again.","login.changePassword":"Change password","login.newPassword":"New password","login.confirmPassword":"Confirm new password","login.changePwBtn":"Save new password","login.changingPw":"Saving…","login.pwTooShort":"Password must be at least 6 characters.","login.pwMismatch":"The two passwords do not match.","login.pwChanged":"Password changed.","login.pwChangeFailed":"Could not change the password. Check your connection and try again.","login.pwSessionExpired":"Your session has expired. Please sign in again.","scan.button":"Scan","scan.title":"Scan barcode","scan.hint":"Point the camera at a barcode","scan.added":"{name} added to cart","scan.notFound":"No product with this barcode","scan.keepScanning":"Keep scanning","scan.cameraDenied":"Camera access was denied. Allow the camera and try again.","scan.unsupported":"Barcode scan is not supported on this device or browser. Open the live POS link in Chrome.","scan.needHttps":"Camera scan needs the live link (HTTPS). Open the POS link in Chrome.","scan.barcodeFilled":"Barcode filled: {code}","products.barcode":"Barcode"
+  "settings.eyebrow":"Store configuration","settings.title":"Settings","settings.detail":"Receipt, tax, language, currency, and appearance.","settings.storeProfile":"Store profile","settings.storeName":"Store name","settings.currency":"Currency","settings.taxRate":"Tax rate (%)","settings.receiptFormat":"Receipt format","settings.languageAppearance":"Language & appearance","settings.languageHelp":"Changes immediately and is saved on this device.","settings.save":"Save settings","settings.saved":"Settings saved","settings.thb":"THB — Thai Baht","settings.mmk":"MMK — Myanmar Kyat","settings.usd":"USD — US Dollar","settings.sgd":"SGD — Singapore Dollar","settings.data":"Data","settings.dataDetail":"Everything is saved on this device.","settings.exportBackup":"Backup","settings.resetDemo":"Restore demo data","settings.resetDone":"Demo data restored","settings.resetConfirm":"Restore the demo data? Current data will be replaced.","backup.restoreBtn":"Restore","backup.invalid":"This is not a valid POS backup file. Nothing was changed.","backup.summaryTitle":"Restore this backup?","backup.exportedAt":"Backed up on {date}","backup.exportedUnknown":"Backup date unknown","backup.replaceWarning":"Current data on this device will be replaced.","backup.safetyNote":"A safety copy of your current data will be downloaded first.","backup.confirm":"Restore","backup.restored":"Backup restored.","backup.restoredSyncFailed":"Restored on this device, but cloud sync failed — it will retry on the next change.","backup.settingsIncluded":"Store settings included","backup.count.products":"Products","backup.count.customers":"Customers","backup.count.staff":"Staff","backup.count.orders":"Orders","backup.count.expenses":"Expenses","backup.count.movements":"Stock movements","settings.sync":"Cloud sync","sync.syncing":"Syncing…","sync.synced":"Synced • {time}","sync.offline":"Offline — changes saved on this device","sync.failed":"Sync failed — will retry on next change","login.subtitle":"Sign in to open the register.","login.email":"Email","login.password":"Password","login.button":"Log in","login.signingIn":"Signing in…","login.signOut":"Sign out","login.signedInAs":"Signed in as {email}","login.invalid":"Email or password is incorrect. Please try again.","login.failed":"Could not sign in. Check your connection and try again.","login.changePassword":"Change password","login.newPassword":"New password","login.confirmPassword":"Confirm new password","login.changePwBtn":"Save new password","login.changingPw":"Saving…","login.pwTooShort":"Password must be at least 6 characters.","login.pwMismatch":"The two passwords do not match.","login.pwChanged":"Password changed.","login.pwChangeFailed":"Could not change the password. Check your connection and try again.","login.pwSessionExpired":"Your session has expired. Please sign in again.","scan.button":"Scan","scan.title":"Scan barcode","scan.hint":"Point the camera at a barcode","scan.added":"{name} added to cart","scan.notFound":"No product with this barcode","scan.keepScanning":"Keep scanning","scan.cameraDenied":"Camera access was denied. Allow the camera and try again.","scan.unsupported":"Barcode scan is not supported on this device or browser. Open the live POS link in Chrome.","scan.needHttps":"Camera scan needs the live link (HTTPS). Open the POS link in Chrome.","scan.barcodeFilled":"Barcode filled: {code}","products.barcode":"Barcode","drawer.title":"Cash drawer","drawer.open":"Open drawer","drawer.connect":"Connect printer","drawer.disconnect":"Disconnect","drawer.autoOpen":"Open drawer automatically after a cash sale","drawer.autoOpenHelp":"Only for cash sales. Needs a USB receipt printer connected on desktop Chrome.","drawer.statusConnected":"Printer: connected — {name}","drawer.statusSaved":"Printer: {name} (not connected)","drawer.statusNotConnected":"Printer: not connected","drawer.unsupported":"Cash drawer needs desktop Chrome on the live link (HTTPS) with a USB receipt printer.","drawer.opened":"Cash drawer opened.","drawer.notConnected":"Printer not connected — connect it in Settings → Hardware.","drawer.kickFailed":"Drawer did not open — printer not connected.","drawer.connected":"Printer connected.","drawer.disconnected":"Printer disconnected.","drawer.connectFailed":"Could not connect to the printer."
 },
 my: {
   "nav.dashboard":"ဒက်ရှ်ဘုတ်","nav.pos":"အရောင်းအသစ်","nav.products":"ကုန်ပစ္စည်းများ","nav.inventory":"စတော့စာရင်း","nav.orders":"အရောင်းစာရင်း","nav.customers":"ဖောက်သည်များ","nav.expenses":"အသုံးစရိတ်များ","nav.settings":"ဆက်တင်များ","nav.more":"နောက်ထပ်",
@@ -662,7 +675,7 @@ my: {
   "expenses.eyebrow":"လုပ်ငန်းကုန်ကျစရိတ်","expenses.title":"အသုံးစရိတ်များ","expenses.detail":"ယခုကာလတွင် {amount} မှတ်တမ်းတင်ထားသည်။","expenses.add":"အသုံးစရိတ်ထည့်ရန်","expenses.recorded":"အသုံးစရိတ် မှတ်တမ်းတင်ပြီးပါပြီ","expenses.name":"အသုံးစရိတ်အမည်","expenses.save":"အသုံးစရိတ်သိမ်းရန်","expenses.deleted":"အသုံးစရိတ် ဖျက်ပြီးပါပြီ",
   "expenseCategory.Rent":"အိမ်ငှားခ","expenseCategory.Electricity":"မီတာခ","expenseCategory.Water":"ရေဖိုး","expenseCategory.Salary":"လစာ","expenseCategory.Transportation":"သယ်ယူပို့ဆောင်ခ","expenseCategory.Supplies":"အသုံးအဆောင်","expenseCategory.Marketing":"ကြော်ငြာစရိတ်","expenseCategory.Other":"အခြား",
   "staff.title":"ဝန်ထမ်းနှင့် လုပ်ပိုင်ခွင့်များ","staff.detail":"ကောင်တာနှင့် စီမံခန့်ခွဲမှုအလုပ်များအတွက် ရာထူးအလိုက် အသုံးပြုခွင့်။","staff.add":"ဝန်ထမ်းထည့်ရန်","staff.admin":"စီမံခန့်ခွဲသူ","staff.manager":"မန်နေဂျာ","staff.cashier":"ငွေကိုင်","staff.role":"ရာထူး","staff.saved":"ဝန်ထမ်းအသုံးပြုခွင့် သိမ်းပြီးပါပြီ","staff.deleted":"ဝန်ထမ်း ဖျက်ပြီးပါပြီ",
-  "settings.eyebrow":"ဆိုင်ဆက်တင်","settings.title":"ဆက်တင်များ","settings.detail":"ပြေစာ၊ အခွန်၊ ဘာသာစကား၊ ငွေကြေးနှင့် မျက်နှာပြင်ပုံစံ။","settings.storeProfile":"ဆိုင်အချက်အလက်","settings.storeName":"ဆိုင်အမည်","settings.currency":"ငွေကြေး","settings.taxRate":"အခွန်နှုန်း (%)","settings.receiptFormat":"ပြေစာပုံစံ","settings.languageAppearance":"ဘာသာစကားနှင့် မျက်နှာပြင်","settings.languageHelp":"ချက်ချင်းပြောင်းလဲပြီး ဤစက်တွင် မှတ်ထားမည်။","settings.save":"ဆက်တင်သိမ်းရန်","settings.saved":"ဆက်တင်များ သိမ်းပြီးပါပြီ","settings.thb":"THB — ထိုင်းဘတ်","settings.mmk":"MMK — မြန်မာကျပ်","settings.usd":"USD — အမေရိကန်ဒေါ်လာ","settings.sgd":"SGD — စင်ကာပူဒေါ်လာ","settings.data":"ဒေတာ","settings.dataDetail":"အချက်အလက်အားလုံးကို ဤစက်တွင် သိမ်းထားသည်။","settings.exportBackup":"အရန်သိမ်းမယ်","settings.resetDemo":"Demo ဒေတာ ပြန်ထည့်ရန်","settings.resetDone":"Demo ဒေတာ ပြန်ထည့်ပြီးပါပြီ","settings.resetConfirm":"Demo ဒေတာ ပြန်ထည့်မည်လား? လက်ရှိဒေတာ အစားထိုးသွားမည်။","backup.restoreBtn":"ပြန်ယူမယ်","backup.invalid":"ဤဖိုင်သည် POS အရန်သိမ်းဆည်းဖိုင် အမှန်မဟုတ်ပါ။ ဘာမှမပြောင်းလဲပါ။","backup.summaryTitle":"ဤအရန်ဖိုင်ကို ပြန်ယူမည်လား?","backup.exportedAt":"အရန်သိမ်းသည့်ရက် {date}","backup.exportedUnknown":"အရန်သိမ်းသည့်ရက် မသိပါ","backup.replaceWarning":"ဤစက်ပေါ်ရှိ လက်ရှိဒေတာ အစားထိုးသွားမည်။","backup.safetyNote":"လက်ရှိဒေတာကို အရင် အရန်အဖြစ် ဒေါင်းလုဒ်လုပ်ပေးမည်။","backup.confirm":"ပြန်ယူမည်","backup.restored":"အရန်ဖိုင်ကို ပြန်ယူပြီးပါပြီ။","backup.restoredSyncFailed":"ဤစက်တွင် ပြန်ယူပြီးပါပြီ၊ သို့သော် cloud စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်။","backup.settingsIncluded":"ဆိုင်ဆက်တင် ပါဝင်သည်","backup.count.products":"ကုန်ပစ္စည်းများ","backup.count.customers":"ဖောက်သည်များ","backup.count.staff":"ဝန်ထမ်းများ","backup.count.orders":"အော်ဒါများ","backup.count.expenses":"အသုံးစရိတ်များ","backup.count.movements":"စတော့ အပြောင်းအလဲများ","settings.sync":"Cloud ချိတ်ဆက်မှု","sync.syncing":"စင့်ခ်လုပ်နေသည်…","sync.synced":"စင့်ခ်ပြီးပြီ • {time}","sync.offline":"အင်တာနက်မရှိ — ဒီစက်မှာပဲ သိမ်းထားသည်","sync.failed":"စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်","login.subtitle":"ကောင်တာဖွင့်ရန် ဝင်ရောက်ပါ။","login.email":"အီးမေးလ်","login.password":"စကားဝှက်","login.button":"ဝင်ရောက်ရန်","login.signingIn":"ဝင်ရောက်နေသည်…","login.signOut":"ထွက်ရန်","login.signedInAs":"ဝင်ရောက်ထားသည်: {email}","login.invalid":"အီးမေးလ် သို့မဟုတ် စကားဝှက်မှားနေပါသည်။ ထပ်ကြိုးစားပါ။","login.failed":"ဝင်ရောက်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.changePassword":"စကားဝှက် ပြောင်းရန်","login.newPassword":"စကားဝှက် အသစ်","login.confirmPassword":"စကားဝှက် အသစ် အတည်ပြုရန်","login.changePwBtn":"စကားဝှက် အသစ် သိမ်းရန်","login.changingPw":"သိမ်းနေသည်…","login.pwTooShort":"စကားဝှက်သည် အနည်းဆုံး ၆ လုံးရှိရမည်။","login.pwMismatch":"စကားဝှက် နှစ်ခု မတူညီပါ။","login.pwChanged":"စကားဝှက် ပြောင်းပြီးပါပြီ။","login.pwChangeFailed":"စကားဝှက် ပြောင်း၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.pwSessionExpired":"အချိန်ကုန်သွားပါပြီ။ ပြန်ဝင်ရောက်ပါ။","scan.button":"စကင်","scan.title":"ဘားကုဒ် စကင်ဖတ်ရန်","scan.hint":"ကင်မရာကို ဘားကုဒ်ဘက်သို့ ချိန်ပါ","scan.added":"{name} ကို စျေးခြင်းထဲ ထည့်ပြီးပါပြီ","scan.notFound":"ဤဘားကုဒ်နှင့် ကုန်ပစ္စည်း မရှိပါ","scan.keepScanning":"ဆက်စကင်ဖတ်ရန်","scan.cameraDenied":"ကင်မရာ ခွင့်ပြုချက် မရပါ။ ကင်မရာကို ခွင့်ပြုပြီး ထပ်ကြိုးစားပါ။","scan.unsupported":"ဤစက် သို့မဟုတ် ဘရောက်ဆာတွင် ဘားကုဒ်စကင် မရပါ။ Live POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.needHttps":"ကင်မရာစကင်အတွက် live link (HTTPS) လိုပါသည်။ POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.barcodeFilled":"ဘားကုဒ် ထည့်ပြီးပါပြီ: {code}","products.barcode":"ဘားကုဒ်"
+  "settings.eyebrow":"ဆိုင်ဆက်တင်","settings.title":"ဆက်တင်များ","settings.detail":"ပြေစာ၊ အခွန်၊ ဘာသာစကား၊ ငွေကြေးနှင့် မျက်နှာပြင်ပုံစံ။","settings.storeProfile":"ဆိုင်အချက်အလက်","settings.storeName":"ဆိုင်အမည်","settings.currency":"ငွေကြေး","settings.taxRate":"အခွန်နှုန်း (%)","settings.receiptFormat":"ပြေစာပုံစံ","settings.languageAppearance":"ဘာသာစကားနှင့် မျက်နှာပြင်","settings.languageHelp":"ချက်ချင်းပြောင်းလဲပြီး ဤစက်တွင် မှတ်ထားမည်။","settings.save":"ဆက်တင်သိမ်းရန်","settings.saved":"ဆက်တင်များ သိမ်းပြီးပါပြီ","settings.thb":"THB — ထိုင်းဘတ်","settings.mmk":"MMK — မြန်မာကျပ်","settings.usd":"USD — အမေရိကန်ဒေါ်လာ","settings.sgd":"SGD — စင်ကာပူဒေါ်လာ","settings.data":"ဒေတာ","settings.dataDetail":"အချက်အလက်အားလုံးကို ဤစက်တွင် သိမ်းထားသည်။","settings.exportBackup":"အရန်သိမ်းမယ်","settings.resetDemo":"Demo ဒေတာ ပြန်ထည့်ရန်","settings.resetDone":"Demo ဒေတာ ပြန်ထည့်ပြီးပါပြီ","settings.resetConfirm":"Demo ဒေတာ ပြန်ထည့်မည်လား? လက်ရှိဒေတာ အစားထိုးသွားမည်။","backup.restoreBtn":"ပြန်ယူမယ်","backup.invalid":"ဤဖိုင်သည် POS အရန်သိမ်းဆည်းဖိုင် အမှန်မဟုတ်ပါ။ ဘာမှမပြောင်းလဲပါ။","backup.summaryTitle":"ဤအရန်ဖိုင်ကို ပြန်ယူမည်လား?","backup.exportedAt":"အရန်သိမ်းသည့်ရက် {date}","backup.exportedUnknown":"အရန်သိမ်းသည့်ရက် မသိပါ","backup.replaceWarning":"ဤစက်ပေါ်ရှိ လက်ရှိဒေတာ အစားထိုးသွားမည်။","backup.safetyNote":"လက်ရှိဒေတာကို အရင် အရန်အဖြစ် ဒေါင်းလုဒ်လုပ်ပေးမည်။","backup.confirm":"ပြန်ယူမည်","backup.restored":"အရန်ဖိုင်ကို ပြန်ယူပြီးပါပြီ။","backup.restoredSyncFailed":"ဤစက်တွင် ပြန်ယူပြီးပါပြီ၊ သို့သော် cloud စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်။","backup.settingsIncluded":"ဆိုင်ဆက်တင် ပါဝင်သည်","backup.count.products":"ကုန်ပစ္စည်းများ","backup.count.customers":"ဖောက်သည်များ","backup.count.staff":"ဝန်ထမ်းများ","backup.count.orders":"အော်ဒါများ","backup.count.expenses":"အသုံးစရိတ်များ","backup.count.movements":"စတော့ အပြောင်းအလဲများ","settings.sync":"Cloud ချိတ်ဆက်မှု","sync.syncing":"စင့်ခ်လုပ်နေသည်…","sync.synced":"စင့်ခ်ပြီးပြီ • {time}","sync.offline":"အင်တာနက်မရှိ — ဒီစက်မှာပဲ သိမ်းထားသည်","sync.failed":"စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်","login.subtitle":"ကောင်တာဖွင့်ရန် ဝင်ရောက်ပါ။","login.email":"အီးမေးလ်","login.password":"စကားဝှက်","login.button":"ဝင်ရောက်ရန်","login.signingIn":"ဝင်ရောက်နေသည်…","login.signOut":"ထွက်ရန်","login.signedInAs":"ဝင်ရောက်ထားသည်: {email}","login.invalid":"အီးမေးလ် သို့မဟုတ် စကားဝှက်မှားနေပါသည်။ ထပ်ကြိုးစားပါ။","login.failed":"ဝင်ရောက်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.changePassword":"စကားဝှက် ပြောင်းရန်","login.newPassword":"စကားဝှက် အသစ်","login.confirmPassword":"စကားဝှက် အသစ် အတည်ပြုရန်","login.changePwBtn":"စကားဝှက် အသစ် သိမ်းရန်","login.changingPw":"သိမ်းနေသည်…","login.pwTooShort":"စကားဝှက်သည် အနည်းဆုံး ၆ လုံးရှိရမည်။","login.pwMismatch":"စကားဝှက် နှစ်ခု မတူညီပါ။","login.pwChanged":"စကားဝှက် ပြောင်းပြီးပါပြီ။","login.pwChangeFailed":"စကားဝှက် ပြောင်း၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.pwSessionExpired":"အချိန်ကုန်သွားပါပြီ။ ပြန်ဝင်ရောက်ပါ။","scan.button":"စကင်","scan.title":"ဘားကုဒ် စကင်ဖတ်ရန်","scan.hint":"ကင်မရာကို ဘားကုဒ်ဘက်သို့ ချိန်ပါ","scan.added":"{name} ကို စျေးခြင်းထဲ ထည့်ပြီးပါပြီ","scan.notFound":"ဤဘားကုဒ်နှင့် ကုန်ပစ္စည်း မရှိပါ","scan.keepScanning":"ဆက်စကင်ဖတ်ရန်","scan.cameraDenied":"ကင်မရာ ခွင့်ပြုချက် မရပါ။ ကင်မရာကို ခွင့်ပြုပြီး ထပ်ကြိုးစားပါ။","scan.unsupported":"ဤစက် သို့မဟုတ် ဘရောက်ဆာတွင် ဘားကုဒ်စကင် မရပါ။ Live POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.needHttps":"ကင်မရာစကင်အတွက် live link (HTTPS) လိုပါသည်။ POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.barcodeFilled":"ဘားကုဒ် ထည့်ပြီးပါပြီ: {code}","products.barcode":"ဘားကုဒ်","drawer.title":"ငွေသေတ္တာ","drawer.open":"ငွေသေတ္တာ ဖွင့်ရန်","drawer.connect":"ပရင်တာ ချိတ်ဆက်ရန်","drawer.disconnect":"ချိတ်ဆက်မှု ဖြုတ်ရန်","drawer.autoOpen":"ငွေသားဖြင့် ရောင်းပြီးတိုင်း ငွေသေတ္တာကို အလိုအလျောက် ဖွင့်ရန်","drawer.autoOpenHelp":"ငွေသားအရောင်းအတွက်သာ။ Desktop Chrome တွင် USB ပရင်တာ ချိတ်ဆက်ထားရန် လိုသည်။","drawer.statusConnected":"ပရင်တာ: ချိတ်ဆက်ထားသည် — {name}","drawer.statusSaved":"ပရင်တာ: {name} (မချိတ်ဆက်ရသေးပါ)","drawer.statusNotConnected":"ပရင်တာ: မချိတ်ဆက်ရသေးပါ","drawer.unsupported":"ငွေသေတ္တာအတွက် live link (HTTPS) ကို desktop Chrome တွင် USB ပရင်တာဖြင့် ဖွင့်ရန် လိုသည်။","drawer.opened":"ငွေသေတ္တာ ဖွင့်ပြီးပါပြီ။","drawer.notConnected":"ပရင်တာ မချိတ်ဆက်ရသေးပါ — Settings → Hardware တွင် ချိတ်ဆက်ပါ။","drawer.kickFailed":"ငွေသေတ္တာ မပွင့်ပါ — ပရင်တာ မချိတ်ဆက်ရသေးပါ။","drawer.connected":"ပရင်တာ ချိတ်ဆက်ပြီးပါပြီ။","drawer.disconnected":"ပရင်တာ ချိတ်ဆက်မှု ဖြုတ်ပြီးပါပြီ။","drawer.connectFailed":"ပရင်တာ ချိတ်ဆက်၍မရပါ။"
 }};
 function t(k, vars){
   let s = (I18N[DB.settings.lang] && I18N[DB.settings.lang][k]) || I18N.en[k] || k;
@@ -867,6 +880,7 @@ function enterApp(){
   applyLang();
   showView('dashboard');
   initialSync();
+  drawerReconnect().then(function(){ renderHardware(); });
 }
 function signOut(){
   clearAuth();
@@ -1102,6 +1116,130 @@ function toast(msg){
   el.textContent = msg; el.classList.remove('hidden');
   clearTimeout(toast._t);
   toast._t = setTimeout(function(){ el.classList.add('hidden'); }, 2600);
+}
+
+/* ================= cash drawer (WebUSB + ESC/POS) ================= */
+/* The drawer is driven by the receipt printer: the printer sends a pulse to
+   the drawer port. The kick command is ESC/POS: ESC p m t1 t2
+   (1B 70 00 19 FA = drawer 1, 25ms on / 250ms off). Best-effort only: a
+   failed kick never blocks a sale. Hardware prefs live in their own
+   localStorage key (per device) so cloud sync never touches them. */
+const DRAWER_HW_KEY = 'posHtmlHardware.v1';
+const DRAWER_KICK = new Uint8Array([0x1B, 0x70, 0x00, 0x19, 0xFA]);
+let hw = loadHardware();
+let drawerDevice = null, drawerOutEndpoint = 0, drawerKickedOrders = {};
+function loadHardware(){
+  try{
+    const d = JSON.parse(localStorage.getItem(DRAWER_HW_KEY) || 'null');
+    if(d && typeof d === 'object') return { autoDrawer: !!d.autoDrawer, printer: (d.printer && typeof d.printer === 'object') ? d.printer : null };
+  }catch(e){}
+  return { autoDrawer: false, printer: null };
+}
+function saveHardware(){
+  try{ localStorage.setItem(DRAWER_HW_KEY, JSON.stringify(hw)); }catch(e){}
+}
+function drawerSupported(){ return !!(navigator.usb && window.isSecureContext); }
+function drawerFindOut(device){
+  if(!device.configuration) return null;
+  const ifaces = device.configuration.interfaces || [];
+  function scan(wantBulk){
+    for(let i = 0; i < ifaces.length; i++){
+      const alts = ifaces[i].alternates || [];
+      for(let a = 0; a < alts.length; a++){
+        const eps = alts[a].endpoints || [];
+        for(let e = 0; e < eps.length; e++){
+          if(eps[e].direction === 'out' && (!wantBulk || eps[e].type === 'bulk')) return { interfaceNumber: ifaces[i].interfaceNumber, endpointNumber: eps[e].endpointNumber };
+        }
+      }
+    }
+    return null;
+  }
+  return scan(true) || scan(false);
+}
+function drawerOpenDevice(device){
+  return Promise.resolve().then(function(){
+    if(!device.opened) return device.open();
+  }).then(function(){
+    if(!device.configuration) return device.selectConfiguration(1);
+  }).then(function(){
+    const found = drawerFindOut(device);
+    if(!found) throw new Error('no out endpoint');
+    return device.claimInterface(found.interfaceNumber).then(function(){ return found.endpointNumber; });
+  }).then(function(ep){
+    drawerDevice = device; drawerOutEndpoint = ep; return true;
+  }).catch(function(){ return false; });
+}
+function drawerConnect(){
+  if(!drawerSupported()){ toast(t('drawer.unsupported')); return Promise.resolve(false); }
+  return navigator.usb.requestDevice({ filters: [] }).then(function(device){
+    return drawerOpenDevice(device).then(function(ok){
+      if(!ok){ toast(t('drawer.connectFailed')); return false; }
+      hw.printer = { vendorId: device.vendorId, productId: device.productId, productName: device.productName || '', serialNumber: device.serialNumber || '' };
+      saveHardware(); renderHardware(); toast(t('drawer.connected')); return true;
+    });
+  }).catch(function(e){
+    if(e && e.name === 'NotFoundError') return false; /* user cancelled the picker */
+    toast(t('drawer.connectFailed')); return false;
+  });
+}
+function drawerReconnect(){
+  if(!drawerSupported() || !hw.printer || drawerDevice) return Promise.resolve(!!drawerDevice);
+  return navigator.usb.getDevices().then(function(devices){
+    const dev = devices.find(function(d){
+      return d.vendorId === hw.printer.vendorId && d.productId === hw.printer.productId &&
+        (!hw.printer.serialNumber || d.serialNumber === hw.printer.serialNumber);
+    });
+    if(!dev) return false;
+    return drawerOpenDevice(dev);
+  }).catch(function(){ return false; });
+}
+function drawerDisconnect(){
+  const close = drawerDevice ? drawerDevice.close().catch(function(){}) : Promise.resolve();
+  return close.then(function(){
+    drawerDevice = null; drawerOutEndpoint = 0; hw.printer = null; saveHardware(); renderHardware(); toast(t('drawer.disconnected'));
+  });
+}
+function kickDrawer(){
+  /* Returns 'ok' | 'no-device' | 'failed'. Never throws. */
+  function attempt(){
+    if(!drawerDevice) return Promise.resolve('no-device');
+    return drawerDevice.transferOut(drawerOutEndpoint, DRAWER_KICK).then(function(res){
+      return (res && res.status === 'ok') ? 'ok' : 'failed';
+    }).catch(function(){ drawerDevice = null; drawerOutEndpoint = 0; return 'failed'; });
+  }
+  if(drawerDevice) return attempt();
+  return drawerReconnect().then(function(ok){ return ok ? attempt() : 'no-device'; });
+}
+function openDrawerManual(){
+  if(!drawerSupported()){ toast(t('drawer.unsupported')); return; }
+  kickDrawer().then(function(res){
+    if(res === 'ok') toast(t('drawer.opened'));
+    else if(res === 'no-device') toast(t('drawer.notConnected'));
+    else toast(t('drawer.kickFailed'));
+  });
+}
+function maybeAutoKick(order){
+  if(!hw.autoDrawer || drawerKickedOrders[order.id]) return;
+  drawerKickedOrders[order.id] = true;
+  kickDrawer().then(function(res){ if(res !== 'ok') toast(t('drawer.kickFailed')); });
+}
+function renderHardware(){
+  const supported = drawerSupported();
+  const unsupported = document.getElementById('drawerUnsupported');
+  if(unsupported) unsupported.classList.toggle('hidden', supported);
+  const st = document.getElementById('drawerStatus');
+  if(st){
+    if(!supported) st.textContent = t('drawer.unsupported');
+    else if(drawerDevice) st.textContent = t('drawer.statusConnected', {name: drawerDevice.productName || (hw.printer && hw.printer.productName) || 'USB printer'});
+    else if(hw.printer) st.textContent = t('drawer.statusSaved', {name: hw.printer.productName || 'USB printer'});
+    else st.textContent = t('drawer.statusNotConnected');
+  }
+  const cb = document.getElementById('drawerConnectBtn');
+  if(cb) cb.classList.toggle('hidden', !!drawerDevice);
+  const db = document.getElementById('drawerDisconnectBtn');
+  if(db) db.classList.toggle('hidden', !drawerDevice);
+  const auto = document.getElementById('setAutoDrawer');
+  if(auto) auto.checked = !!hw.autoDrawer;
 }
 
 /* ================= backup & restore (JSON file) ================= */
@@ -1528,6 +1666,7 @@ function completeSale(payMethod, customerId, discount, r){
   closeModal();
   showReceipt(order.id, true);
   toast(t('checkout.saleCompleted'));
+  if(payMethod === 'Cash') maybeAutoKick(order);
 }
 function receiptHtml(order){
   const s = DB.settings;
@@ -1561,6 +1700,7 @@ function showReceipt(orderId, justCompleted){
     (justCompleted ? '<div class="success-mark">✓</div><h2 style="text-align:center;margin:0 0 14px">' + esc(t('checkout.saleCompleted')) + '</h2>' : '<header><h2>' + esc(t('receipt.title')) + ' · ' + esc(order.orderNumber) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>') +
     '<div id="receiptView">' + receiptHtml(order) + '</div>' +
     '<div class="receipt-actions"><button class="btn" type="button" id="rcPrint">🖨 ' + esc(t('receipt.print')) + '</button>' +
+    '<button class="btn" type="button" id="rcDrawer">💵 ' + esc(t('drawer.open')) + '</button>' +
     '<button class="btn" type="button" data-close>' + esc(t('common.close')) + '</button>' +
     '<button class="btn primary" type="button" id="rcNew">' + esc(t('receipt.newSale')) + '</button></div>'
   );
@@ -1568,6 +1708,7 @@ function showReceipt(orderId, justCompleted){
     document.getElementById('printArea').innerHTML = receiptHtml(order);
     window.print();
   });
+  document.getElementById('rcDrawer').addEventListener('click', openDrawerManual);
   document.getElementById('rcNew').addEventListener('click', function(){
     closeModal(); showView('pos');
   });
@@ -1976,6 +2117,7 @@ function renderSettingsForm(){
       save(); renderSettingsForm(); toast(t('staff.deleted'));
     });
   });
+  renderHardware();
 }
 function openStaffForm(){
   openModal(
@@ -2070,6 +2212,17 @@ function init(){
   });
   document.getElementById('posScanBtn').addEventListener('click', function(){ openScanner('pos'); });
   document.getElementById('scanCancelBtn').addEventListener('click', closeScanner);
+  document.getElementById('posDrawerBtn').addEventListener('click', function(){ document.getElementById('posMenu').classList.add('hidden'); openDrawerManual(); });
+  document.getElementById('drawerConnectBtn').addEventListener('click', drawerConnect);
+  document.getElementById('drawerDisconnectBtn').addEventListener('click', drawerDisconnect);
+  document.getElementById('setAutoDrawer').addEventListener('change', function(e){ hw.autoDrawer = e.target.checked; saveHardware(); });
+  if(navigator.usb){
+    navigator.usb.addEventListener('connect', function(){ drawerReconnect().then(function(){ renderHardware(); }); });
+    navigator.usb.addEventListener('disconnect', function(e){
+      if(drawerDevice && e.device === drawerDevice){ drawerDevice = null; drawerOutEndpoint = 0; }
+      renderHardware();
+    });
+  }
   document.getElementById('scanKeepBtn').addEventListener('click', function(){
     document.getElementById('scanNotFound').classList.add('hidden');
     scanPaused = false;
