@@ -1823,6 +1823,7 @@ function renderCart(){
   const panel = document.getElementById('cartPanel');
   const count = cart.reduce(function(s,l){ return s + l.qty; }, 0);
   const tot = cartTotals();
+  if(panel){
   let itemsHtml = '';
   if(cart.length === 0){
     itemsHtml = '<div class="empty"><div class="empty-mark">🧾</div><h3>' + esc(t('cart.ready')) + '</h3><p>' + esc(t('cart.readyDetail')) + '</p></div>';
@@ -1855,6 +1856,7 @@ function renderCart(){
   panel.querySelectorAll('[data-qty]').forEach(function(inp){
     inp.addEventListener('change', function(){ setQty(inp.dataset.qty, parseInt(inp.value, 10)); });
   });
+  }
   // mobile cart bar
   const bar = document.getElementById('mobileCartBar');
   if(count > 0){
@@ -1975,6 +1977,7 @@ function completeSale(payMethod, customerId, discount, r){
   });
   save();
   cart = [];
+  renderCart();
   lastOrderId = order.id;
   closeModal();
   showReceipt(order.id, true);
@@ -2028,7 +2031,20 @@ function showReceipt(orderId, justCompleted){
 }
 
 /* ================= modal helpers ================= */
+// The cart panel is moved into the modal when the mobile cart sheet opens.
+// openModal/closeModal replace modalBox.innerHTML, which would destroy the
+// panel if it is still inside the modal. Rescue it first.
+function rescueCartPanel(){
+  const panel = document.getElementById('cartPanel');
+  const pos = document.getElementById('view-pos');
+  if(panel && pos && panel.parentElement !== pos){
+    panel.style.display = ''; panel.style.position = ''; panel.style.height = '';
+    panel.style.maxHeight = ''; panel.style.padding = ''; panel.style.border = '';
+    pos.appendChild(panel);
+  }
+}
 function openModal(html){
+  rescueCartPanel();
   document.getElementById('modalBox').innerHTML = html;
   document.getElementById('modalWrap').classList.remove('hidden');
   document.querySelectorAll('#modalBox [data-close]').forEach(function(b){
@@ -2036,6 +2052,7 @@ function openModal(html){
   });
 }
 function closeModal(){
+  rescueCartPanel();
   document.getElementById('modalWrap').classList.add('hidden');
   document.getElementById('modalBox').classList.remove('wide');
   document.getElementById('modalBox').innerHTML = '';
