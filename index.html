@@ -1977,7 +1977,7 @@ function completeSale(payMethod, customerId, discount, r){
   });
   save();
   cart = [];
-  renderCart();
+  renderCurrent();
   lastOrderId = order.id;
   closeModal();
   showReceipt(order.id, true);
