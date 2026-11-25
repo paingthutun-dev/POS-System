@@ -503,6 +503,7 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
   <section class="page hidden" id="view-orders">
     <div class="page-head">
       <div><p class="eyebrow" data-t="orders.eyebrow">Sales ledger</p><h1 data-t="orders.title">Orders</h1><p id="ordersDetail">—</p></div>
+      <div class="head-actions"><input type="month" id="exportMonth" style="width:auto;min-width:165px" aria-label="Month"><button class="btn" type="button" id="exportExcelBtn">📊 <span data-t="orders.exportExcel">Export Excel</span></button></div>
     </div>
     <div class="panel">
       <div class="row wrap" style="margin-bottom:14px">
@@ -688,7 +689,7 @@ en: {
   "products.eyebrow":"Catalog","products.title":"Products","products.detail":"{count} active products across {categories} categories.","products.add":"Add product","products.search":"Search product or SKU","products.all":"All products","products.low":"Low stock","products.sortName":"Name A–Z","products.sortStock":"Stock low to high","products.sortPrice":"Price high to low","products.edit":"Edit product","products.productName":"Product name","products.sku":"SKU","products.costPrice":"Cost price","products.sellingPrice":"Selling price","products.discountPrice":"Discount price (optional)","products.stockQty":"Stock quantity","products.minStock":"Minimum stock","products.category":"Category","products.brand":"Brand","products.saved":"Product saved","products.deleted":"Product deleted","products.sale":"Sale",
   "category.Phones":"Phones","category.Accessories":"Accessories","category.Chargers":"Chargers","category.Cables":"Cables","category.Earphones":"Earphones","category.Power Banks":"Power Banks","category.Cases":"Cases","category.Screen Protectors":"Screen Protectors",
   "inventory.eyebrow":"Stock control","inventory.title":"Inventory","inventory.detail":"Every sale and adjustment leaves an auditable movement.","inventory.products":"Products","inventory.stockValue":"Stock value","inventory.atCost":"At cost","inventory.needsAttention":"Needs attention","inventory.levels":"Stock levels","inventory.tap":"Tap an item to record movement","inventory.history":"Movement history","inventory.newest":"Newest first","inventory.type":"Movement","inventory.stockIn":"Stock in","inventory.stockOut":"Stock out","inventory.adjustment":"Adjustment (+ / −)","inventory.quantity":"Quantity","inventory.reason":"Reason / note","inventory.reasonPlaceholder":"Supplier delivery, damaged unit, count correction…","inventory.update":"Update stock","inventory.updated":"Inventory updated","inventory.current":"Current stock: {count}","inventory.low":"Low stock","inventory.out":"Out of stock","inventory.sale":"Sale","inventory.noHistory":"No movements yet.",
-  "orders.eyebrow":"Sales ledger","orders.title":"Orders","orders.detail":"{count} sales records with receipts and stock history.","orders.search":"Order, customer or payment","orders.all":"All statuses","orders.order":"Order","orders.customer":"Customer","orders.payment":"Payment","orders.total":"Total","orders.completed":"Completed","orders.refunded":"Refunded","orders.cancelled":"Cancelled","orders.refund":"Refund","orders.refundedMsg":"Order refunded — stock returned.","orders.noOrders":"No orders yet.",
+  "orders.eyebrow":"Sales ledger","orders.title":"Orders","orders.detail":"{count} sales records with receipts and stock history.","orders.search":"Order, customer or payment","orders.all":"All statuses","orders.order":"Order","orders.customer":"Customer","orders.payment":"Payment","orders.total":"Total","orders.completed":"Completed","orders.refunded":"Refunded","orders.cancelled":"Cancelled","orders.refund":"Refund","orders.refundedMsg":"Order refunded — stock returned.","orders.noOrders":"No orders yet.","orders.exportExcel":"Export Excel","orders.exported":"Excel file downloaded.","orders.xDate":"Date","orders.xOrderNo":"Order No.","orders.xProduct":"Product","orders.xSku":"SKU","orders.xQty":"Qty","orders.xUnitPrice":"Unit Price","orders.xDiscount":"Discount","orders.xLineTotal":"Line Total","orders.xPayment":"Payment Method","orders.xCashier":"Cashier","orders.xCustomer":"Customer","orders.xTotal":"Total","orders.xOrders":"Orders","orders.xByPayment":"By payment method","orders.xGrandTotal":"Grand total",
   "customers.eyebrow":"Relationships","customers.title":"Customers","customers.detail":"Profiles, contact details, and purchase history.","customers.add":"Add customer","customers.saved":"Customer saved","customers.name":"Name","customers.phone":"Phone","customers.totalPurchases":"Total purchases","customers.orders":"Orders","customers.deleted":"Customer deleted",
   "expenses.eyebrow":"Operating costs","expenses.title":"Expenses","expenses.detail":"{amount} recorded in the current period.","expenses.add":"Add expense","expenses.recorded":"Expense recorded","expenses.name":"Expense name","expenses.save":"Save expense","expenses.deleted":"Expense deleted",
   "expenseCategory.Rent":"Rent","expenseCategory.Electricity":"Electricity","expenseCategory.Water":"Water","expenseCategory.Salary":"Salary","expenseCategory.Transportation":"Transportation","expenseCategory.Supplies":"Supplies","expenseCategory.Marketing":"Marketing","expenseCategory.Other":"Other",
@@ -707,7 +708,7 @@ my: {
   "products.eyebrow":"ကုန်ပစ္စည်းစာရင်း","products.title":"ကုန်ပစ္စည်းများ","products.detail":"အမျိုးအစား {categories} ခုတွင် အသုံးပြုနေသောပစ္စည်း {count} မျိုး။","products.add":"ကုန်ပစ္စည်းထည့်ရန်","products.search":"ကုန်ပစ္စည်း သို့ SKU ရှာရန်","products.all":"ကုန်ပစ္စည်းအားလုံး","products.low":"စတော့နည်း","products.sortName":"အမည် က မှ အ","products.sortStock":"စတော့နည်းမှ များသို့","products.sortPrice":"စျေးမြင့်မှ နိမ့်သို့","products.edit":"ကုန်ပစ္စည်းပြင်ဆင်ရန်","products.productName":"ကုန်ပစ္စည်းအမည်","products.sku":"SKU","products.costPrice":"အရင်းစျေး","products.sellingPrice":"ရောင်းစျေး","products.discountPrice":"လျှော့စျေး (မရှိလျှင် ထားခဲ့ပါ)","products.stockQty":"စတော့အရေအတွက်","products.minStock":"အနည်းဆုံးစတော့","products.category":"အမျိုးအစား","products.brand":"အမှတ်တံဆိပ်","products.saved":"ကုန်ပစ္စည်း သိမ်းပြီးပါပြီ","products.deleted":"ကုန်ပစ္စည်း ဖျက်ပြီးပါပြီ","products.sale":"လျှော့စျေး",
   "category.Phones":"ဖုန်းများ","category.Accessories":"ဖုန်းအပိုပစ္စည်းများ","category.Chargers":"အားသွင်းခေါင်းများ","category.Cables":"ကြိုးများ","category.Earphones":"နားကြပ်များ","category.Power Banks":"ပါဝါဘဏ်များ","category.Cases":"ဖုန်းကာဗာများ","category.Screen Protectors":"မှန်ကာများ",
   "inventory.eyebrow":"စတော့ထိန်းချုပ်မှု","inventory.title":"စတော့စာရင်း","inventory.detail":"အရောင်းနှင့် စတော့ပြင်ဆင်မှုတိုင်းကို စစ်ဆေးနိုင်ရန် မှတ်တမ်းတင်ထားသည်။","inventory.products":"ကုန်ပစ္စည်းများ","inventory.stockValue":"စတော့တန်ဖိုး","inventory.atCost":"အရင်းတန်ဖိုး","inventory.needsAttention":"စစ်ဆေးရန်လို","inventory.levels":"စတော့လက်ကျန်","inventory.tap":"အဝင်အထွက်မှတ်ရန် ပစ္စည်းကို နှိပ်ပါ","inventory.history":"အဝင်အထွက်မှတ်တမ်း","inventory.newest":"နောက်ဆုံးမှတ်တမ်း ဦးစွာ","inventory.type":"လုပ်ဆောင်ချက်","inventory.stockIn":"စတော့ဝင်","inventory.stockOut":"စတော့ထွက်","inventory.adjustment":"စတော့ပြင်ဆင်မှု (+ / −)","inventory.quantity":"အရေအတွက်","inventory.reason":"အကြောင်းရင်း / မှတ်ချက်","inventory.reasonPlaceholder":"ကုန်ဝင်၊ ပျက်စီး၊ စာရင်းပြင်ဆင်မှု…","inventory.update":"စတော့ပြင်ဆင်ရန်","inventory.updated":"စတော့စာရင်း ပြင်ဆင်ပြီးပါပြီ","inventory.current":"လက်ရှိစတော့: {count}","inventory.low":"စတော့နည်း","inventory.out":"စတော့ကုန်","inventory.sale":"အရောင်း","inventory.noHistory":"အဝင်အထွက်မှတ်တမ်း မရှိသေးပါ။",
-  "orders.eyebrow":"အရောင်းမှတ်တမ်း","orders.title":"အရောင်းစာရင်း","orders.detail":"ပြေစာနှင့် စတော့မှတ်တမ်းပါ အရောင်း {count} ခု။","orders.search":"အရောင်းအမှတ်၊ ဖောက်သည် သို့ ငွေပေးချေမှု ရှာရန်","orders.all":"အခြေအနေအားလုံး","orders.order":"အရောင်း","orders.customer":"ဖောက်သည်","orders.payment":"ငွေပေးချေမှု","orders.total":"စုစုပေါင်း","orders.completed":"ပြီးမြောက်","orders.refunded":"ငွေပြန်အမ်းပြီး","orders.cancelled":"ပယ်ဖျက်ပြီး","orders.refund":"ငွေပြန်အမ်းရန်","orders.refundedMsg":"ငွေပြန်အမ်းပြီးပါပြီ — စတော့ထဲ ပြန်ထည့်ထားသည်။","orders.noOrders":"အရောင်းမှတ်တမ်း မရှိသေးပါ။",
+  "orders.eyebrow":"အရောင်းမှတ်တမ်း","orders.title":"အရောင်းစာရင်း","orders.detail":"ပြေစာနှင့် စတော့မှတ်တမ်းပါ အရောင်း {count} ခု။","orders.search":"အရောင်းအမှတ်၊ ဖောက်သည် သို့ ငွေပေးချေမှု ရှာရန်","orders.all":"အခြေအနေအားလုံး","orders.order":"အရောင်း","orders.customer":"ဖောက်သည်","orders.payment":"ငွေပေးချေမှု","orders.total":"စုစုပေါင်း","orders.completed":"ပြီးမြောက်","orders.refunded":"ငွေပြန်အမ်းပြီး","orders.cancelled":"ပယ်ဖျက်ပြီး","orders.refund":"ငွေပြန်အမ်းရန်","orders.refundedMsg":"ငွေပြန်အမ်းပြီးပါပြီ — စတော့ထဲ ပြန်ထည့်ထားသည်။","orders.noOrders":"အရောင်းမှတ်တမ်း မရှိသေးပါ။","orders.exportExcel":"Excel ထုတ်ရန်","orders.exported":"Excel ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ။","orders.xDate":"ရက်စွဲ","orders.xOrderNo":"အရောင်းအမှတ်","orders.xProduct":"ကုန်ပစ္စည်း","orders.xSku":"SKU","orders.xQty":"အရေအတွက်","orders.xUnitPrice":"တစ်ခုဈေး","orders.xDiscount":"လျှော့ဈေး","orders.xLineTotal":"စုစုပေါင်း","orders.xPayment":"ငွေပေးချေမှု","orders.xCashier":"ငွေကိုင်","orders.xCustomer":"ဖောက်သည်","orders.xTotal":"စုစုပေါင်း","orders.xOrders":"အရောင်း","orders.xByPayment":"ငွေပေးချေမှုအလိုက်","orders.xGrandTotal":"စုစုပေါင်းချုပ်",
   "customers.eyebrow":"ဖောက်သည်ဆက်ဆံရေး","customers.title":"ဖောက်သည်များ","customers.detail":"ဖောက်သည်အချက်အလက်နှင့် ဝယ်ယူမှုမှတ်တမ်းများ။","customers.add":"ဖောက်သည်ထည့်ရန်","customers.saved":"ဖောက်သည်အချက်အလက် သိမ်းပြီးပါပြီ","customers.name":"အမည်","customers.phone":"ဖုန်း","customers.totalPurchases":"စုစုပေါင်းဝယ်ယူမှု","customers.orders":"အရောင်းအရေအတွက်","customers.deleted":"ဖောက်သည် ဖျက်ပြီးပါပြီ",
   "expenses.eyebrow":"လုပ်ငန်းကုန်ကျစရိတ်","expenses.title":"အသုံးစရိတ်များ","expenses.detail":"ယခုကာလတွင် {amount} မှတ်တမ်းတင်ထားသည်။","expenses.add":"အသုံးစရိတ်ထည့်ရန်","expenses.recorded":"အသုံးစရိတ် မှတ်တမ်းတင်ပြီးပါပြီ","expenses.name":"အသုံးစရိတ်အမည်","expenses.save":"အသုံးစရိတ်သိမ်းရန်","expenses.deleted":"အသုံးစရိတ် ဖျက်ပြီးပါပြီ",
   "expenseCategory.Rent":"အိမ်ငှားခ","expenseCategory.Electricity":"မီတာခ","expenseCategory.Water":"ရေဖိုး","expenseCategory.Salary":"လစာ","expenseCategory.Transportation":"သယ်ယူပို့ဆောင်ခ","expenseCategory.Supplies":"အသုံးအဆောင်","expenseCategory.Marketing":"ကြော်ငြာစရိတ်","expenseCategory.Other":"အခြား",
@@ -1293,13 +1294,223 @@ function backupEnvelope(){
   return { app:'pos-html', version:1, exportedAt:new Date().toISOString(),
     data:{ settings:DB.settings, products:DB.products, customers:DB.customers, staff:DB.staff, orders:DB.orders, expenses:DB.expenses, movements:DB.movements, nextOrderSeq:DB.nextOrderSeq } };
 }
-function downloadJson(filename, obj){
-  const blob = new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'});
+function downloadBlob(filename, blob){
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = filename;
   a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+}
+function downloadJson(filename, obj){
+  downloadBlob(filename, new Blob([JSON.stringify(obj, null, 2)], {type:'application/json'}));
+}
+
+/* ================= XLSX export (hand-rolled, no libraries) ================= */
+/* Minimal .xlsx writer: STORED (uncompressed) ZIP entries + CRC32, UTF-8 XML.
+   Excel and Google Sheets accept stored entries. Dates are Excel serials. */
+function xlsxCrc32(bytes){
+  if(!xlsxCrc32.table){
+    const tb = new Uint32Array(256);
+    for(let n = 0; n < 256; n++){
+      let c = n;
+      for(let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      tb[n] = c >>> 0;
+    }
+    xlsxCrc32.table = tb;
+  }
+  let crc = 0xFFFFFFFF;
+  for(let i = 0; i < bytes.length; i++) crc = xlsxCrc32.table[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+function xlsxZip(files){
+  const enc = new TextEncoder();
+  const parts = [];
+  const central = [];
+  let offset = 0;
+  files.forEach(function(f){
+    const nameBytes = enc.encode(f.name);
+    const data = typeof f.data === 'string' ? enc.encode(f.data) : f.data;
+    const crc = xlsxCrc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true);
+    lh.setUint16(4, 20, true);
+    lh.setUint16(6, 0x0800, true);   // UTF-8 filenames
+    lh.setUint16(8, 0, true);        // method: STORED
+    lh.setUint16(10, 0, true);
+    lh.setUint16(12, 0x21, true);    // 1980-01-01
+    lh.setUint32(14, crc, true);
+    lh.setUint32(18, data.length, true);
+    lh.setUint32(22, data.length, true);
+    lh.setUint16(26, nameBytes.length, true);
+    lh.setUint16(28, 0, true);
+    parts.push(lh.buffer, nameBytes, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true);
+    ch.setUint16(4, 20, true);
+    ch.setUint16(6, 20, true);
+    ch.setUint16(8, 0x0800, true);
+    ch.setUint16(10, 0, true);
+    ch.setUint16(12, 0, true);
+    ch.setUint16(14, 0x21, true);
+    ch.setUint32(16, crc, true);
+    ch.setUint32(20, data.length, true);
+    ch.setUint32(24, data.length, true);
+    ch.setUint16(28, nameBytes.length, true);
+    ch.setUint16(30, 0, true);
+    ch.setUint16(32, 0, true);
+    ch.setUint16(34, 0, true);
+    ch.setUint16(36, 0, true);
+    ch.setUint32(38, 0, true);
+    ch.setUint32(42, offset, true);
+    central.push(ch.buffer, nameBytes);
+    offset += 30 + nameBytes.length + data.length;
+  });
+  const cdSize = central.reduce(function(s, b){ return s + b.byteLength; }, 0);
+  const eocd = new DataView(new ArrayBuffer(22));
+  eocd.setUint32(0, 0x06054b50, true);
+  eocd.setUint16(4, 0, true);
+  eocd.setUint16(6, 0, true);
+  eocd.setUint16(8, files.length, true);
+  eocd.setUint16(10, files.length, true);
+  eocd.setUint32(12, cdSize, true);
+  eocd.setUint32(16, offset, true);
+  eocd.setUint16(20, 0, true);
+  parts.push.apply(parts, central);
+  parts.push(eocd.buffer);
+  return new Blob(parts, {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+/* Excel serial date (epoch 1899-12-30, local time). */
+function xlsxDateSerial(ts){
+  const d = new Date(ts);
+  const day = Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - Date.UTC(1899, 11, 30)) / 86400000);
+  const frac = (d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds()) / 86400;
+  return day + frac;
+}
+function xlsxCol(n){
+  let s = '';
+  n++;
+  while(n > 0){ const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); }
+  return s;
+}
+function xlsxCellXml(ref, cell, shared){
+  if(cell.t === 's'){
+    let idx = shared.map[cell.v];
+    if(idx === undefined){ idx = shared.list.length; shared.map[cell.v] = idx; shared.list.push(cell.v); }
+    shared.count = (shared.count || 0) + 1;
+    return '<c r="' + ref + '" t="s"' + (cell.s ? ' s="' + cell.s + '"' : '') + '><v>' + idx + '</v></c>';
+  }
+  return '<c r="' + ref + '"' + (cell.s ? ' s="' + cell.s + '"' : '') + '><v>' + cell.v + '</v></c>';
+}
+function xlsxSheetXml(cols, rows, shared){
+  let xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:' + xlsxCol(cols.length - 1) + rows.length + '"/><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols>' +
+    cols.map(function(c, i){ return '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + c.w + '" customWidth="1"/>'; }).join('') +
+    '</cols><sheetData>';
+  rows.forEach(function(row, ri){
+    xml += '<row r="' + (ri + 1) + '">';
+    row.forEach(function(cell, ci){
+      if(cell == null) return;
+      xml += xlsxCellXml(xlsxCol(ci) + (ri + 1), cell, shared);
+    });
+    xml += '</row>';
+  });
+  return xml + '</sheetData></worksheet>';
+}
+const XLSX_STYLES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+'<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+'<numFmts count="2"><numFmt numFmtId="164" formatCode="yyyy-mm-dd"/><numFmt numFmtId="165" formatCode="yyyy-mm-dd hh:mm"/></numFmts>' +
+'<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>' +
+'<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>' +
+'<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>' +
+'<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+'<cellXfs count="8">' +
+'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+'<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0"/>' +
+'<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+'<xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+'<xf numFmtId="2" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+'<xf numFmtId="2" fontId="1" fillId="0" borderId="0" xfId="0"/>' +
+'<xf numFmtId="1" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+'<xf numFmtId="1" fontId="1" fillId="0" borderId="0" xfId="0"/>' +
+'</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+/* Build the monthly sales workbook. Returns a Blob, or null if the month is invalid. */
+function buildSalesXlsx(monthVal){
+  const parts = (monthVal || '').split('-');
+  const y = parseInt(parts[0], 10), m = parseInt(parts[1], 10);
+  if(!y || !m || m < 1 || m > 12) return null;
+  const orders = DB.orders.filter(function(o){
+    if(o.status !== 'Completed') return false;
+    const d = new Date(o.createdAt);
+    return d.getFullYear() === y && (d.getMonth() + 1) === m;
+  }).sort(function(a, b){ return a.createdAt - b.createdAt || (a.orderNumber < b.orderNumber ? -1 : 1); });
+  const S = function(v, st){ return {t:'s', v:String(v == null ? '' : v), s:st || 0}; };
+  const N = function(v, st){ return {t:'n', v:round2(v || 0), s:st || 0}; };
+  const D = function(ts, st){ return {t:'n', v:xlsxDateSerial(ts), s:st}; };
+  /* ---- Sales (detail) ---- */
+  const salesRows = [[S(t('orders.xDate'), 1), S(t('orders.xOrderNo'), 1), S(t('orders.xProduct'), 1), S(t('orders.xSku'), 1), S(t('orders.xQty'), 1), S(t('orders.xUnitPrice'), 1), S(t('orders.xDiscount'), 1), S(t('orders.xLineTotal'), 1), S(t('orders.xPayment'), 1), S(t('orders.xCashier'), 1), S(t('orders.xCustomer'), 1)]];
+  let totalQty = 0, totalLine = 0;
+  orders.forEach(function(o){
+    const cust = custById(o.customerId);
+    (o.items || []).forEach(function(it){
+      salesRows.push([D(o.createdAt, 3), S(o.orderNumber), S(it.productName), S(it.sku || ''), N(it.quantity, 6), N(it.unitPrice, 4), N(it.discount || 0, 4), N(it.lineTotal, 4), S(tPay(o.paymentMethod)), S(o.cashier || ''), S(cust ? cust.name : t('common.walkIn'))]);
+      totalQty += it.quantity || 0;
+      totalLine = round2(totalLine + (it.lineTotal || 0));
+    });
+  });
+  salesRows.push([S(t('orders.xTotal'), 1), null, null, null, N(totalQty, 7), null, null, N(totalLine, 5), null, null, null]);
+  /* ---- Summary ---- */
+  const byDay = {}, byPay = {};
+  let grandOrders = 0, grandTotal = 0;
+  orders.forEach(function(o){
+    const key = fmtDay(o.createdAt);
+    byDay[key] = byDay[key] || {count:0, total:0};
+    byDay[key].count++; byDay[key].total = round2(byDay[key].total + o.total);
+    byPay[o.paymentMethod] = byPay[o.paymentMethod] || {count:0, total:0};
+    byPay[o.paymentMethod].count++; byPay[o.paymentMethod].total = round2(byPay[o.paymentMethod].total + o.total);
+    grandOrders++; grandTotal = round2(grandTotal + o.total);
+  });
+  const sumRows = [[S(t('orders.xDate'), 1), S(t('orders.xOrders'), 1), S(t('orders.xTotal'), 1)]];
+  Object.keys(byDay).sort().forEach(function(k){
+    sumRows.push([D(new Date(k + 'T00:00:00').getTime(), 2), N(byDay[k].count, 6), N(byDay[k].total, 4)]);
+  });
+  sumRows.push([null, null, null]);
+  sumRows.push([S(t('orders.xByPayment'), 1), S(t('orders.xOrders'), 1), S(t('orders.xTotal'), 1)]);
+  PAY_METHODS.forEach(function(pm){
+    if(!byPay[pm]) return;
+    sumRows.push([S(tPay(pm)), N(byPay[pm].count, 6), N(byPay[pm].total, 4)]);
+  });
+  sumRows.push([null, null, null]);
+  sumRows.push([S(t('orders.xGrandTotal'), 1), N(grandOrders, 7), N(grandTotal, 5)]);
+  /* ---- Assemble workbook ---- */
+  const shared = {list:[], map:{}, count:0};
+  const salesXml = xlsxSheetXml([{w:19},{w:13},{w:28},{w:13},{w:7},{w:12},{w:11},{w:13},{w:14},{w:12},{w:16}], salesRows, shared);
+  const sumXml = xlsxSheetXml([{w:14},{w:10},{w:16}], sumRows, shared);
+  const sst = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="' + shared.count + '" uniqueCount="' + shared.list.length + '">' +
+    shared.list.map(function(s){ return '<si><t xml:space="preserve">' + esc(s) + '</t></si>'; }).join('') + '</sst>';
+  const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/></Types>';
+  const rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  const workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Sales" sheetId="1" r:id="rId1"/><sheet name="Summary" sheetId="2" r:id="rId2"/></sheets></workbook>';
+  const workbookRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/></Relationships>';
+  return xlsxZip([
+    {name:'[Content_Types].xml', data:contentTypes},
+    {name:'_rels/.rels', data:rels},
+    {name:'xl/workbook.xml', data:workbook},
+    {name:'xl/_rels/workbook.xml.rels', data:workbookRels},
+    {name:'xl/worksheets/sheet1.xml', data:salesXml},
+    {name:'xl/worksheets/sheet2.xml', data:sumXml},
+    {name:'xl/styles.xml', data:XLSX_STYLES},
+    {name:'xl/sharedStrings.xml', data:sst}
+  ]);
+}
+function curMonthStr(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+}
+function exportMonthExcel(){
+  const monthVal = document.getElementById('exportMonth').value;
+  const blob = buildSalesXlsx(monthVal);
+  if(!blob) return false;
+  downloadBlob('sales-' + monthVal + '.xlsx', blob);
+  return true;
 }
 function showBackupMsg(msg){
   const el = document.getElementById('backupMsg');
@@ -2318,6 +2529,10 @@ function init(){
   document.getElementById('addProductBtn').addEventListener('click', function(){ openProductForm(null); });
   document.getElementById('orderSearch').addEventListener('input', renderOrders);
   document.getElementById('orderStatusFilter').addEventListener('change', renderOrders);
+  document.getElementById('exportMonth').value = curMonthStr();
+  document.getElementById('exportExcelBtn').addEventListener('click', function(){
+    if(exportMonthExcel()) toast(t('orders.exported'));
+  });
   document.getElementById('addCustomerBtn').addEventListener('click', function(){ openCustomerForm(null); });
   document.getElementById('addExpenseBtn').addEventListener('click', openExpenseForm);
   document.getElementById('addStaffBtn').addEventListener('click', openStaffForm);
