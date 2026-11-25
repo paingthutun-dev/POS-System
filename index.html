@@ -78,7 +78,8 @@ small{color:var(--dim)}
 .side-nav nav button{min-height:43px;display:flex;align-items:center;gap:12px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:#aab3ad;text-align:left;font-size:13px;font-weight:650}
 .side-nav nav button:hover{background:#222824;color:#fff}
 .side-nav nav button.active{background:#dff8ea;color:#095c3a}
-.side-nav nav button .ico{font-size:16px;width:22px;text-align:center}
+.side-nav nav button .ico{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;flex:none}
+.side-nav nav button .ico svg{width:20px;height:20px;display:block}
 .side-foot{margin-top:auto;padding-top:14px;border-top:1px solid #2e3630}
 .side-foot small{font-size:10px;color:#7f8a82;display:block;margin-top:8px}
 .workspace{min-height:100vh;margin-left:var(--nav-w)}
@@ -1624,6 +1625,20 @@ function onRestoreFilePicked(e){
 }
 
 /* ================= navigation & language ================= */
+/* Side-rail icons are inline SVG (no font dependency): emoji do not render on
+   some Android tablets (e.g. Xiaomi Pad), leaving the rail blank. The phone
+   bottom nav keeps its emoji icons, which render fine there. */
+const SVG_OPEN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+const NAV_SVG = {
+  dashboard: SVG_OPEN + '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+  pos: SVG_OPEN + '<path d="M5 2h14v20l-2.3-1.6-2.2 1.6-2.5-1.6-2.5 1.6-2.3-1.6L5 22z"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/></svg>',
+  products: SVG_OPEN + '<rect x="7" y="2" width="10" height="20" rx="2" ry="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>',
+  inventory: SVG_OPEN + '<path d="M16.5 9.4 7.55 4.24"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+  orders: SVG_OPEN + '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+  customers: SVG_OPEN + '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  expenses: SVG_OPEN + '<rect x="2" y="6" width="20" height="12" rx="2" ry="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg>',
+  settings: SVG_OPEN + '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+};
 const NAV = [
   {id:'dashboard', icon:'🏠'}, {id:'pos', icon:'🧾'}, {id:'products', icon:'📱'},
   {id:'inventory', icon:'📦'}, {id:'orders', icon:'🧾'}, {id:'customers', icon:'👥'},
@@ -1645,7 +1660,7 @@ function showView(id){
 }
 function buildNav(){
   document.getElementById('sideNavBtns').innerHTML = NAV.map(function(n){
-    return '<button type="button" data-nav="' + n.id + '"><span class="ico">' + n.icon + '</span><span data-t="nav.' + n.id + '">' + t('nav.' + n.id) + '</span></button>';
+    return '<button type="button" data-nav="' + n.id + '"><span class="ico">' + NAV_SVG[n.id] + '</span><span data-t="nav.' + n.id + '">' + t('nav.' + n.id) + '</span></button>';
   }).join('');
   document.getElementById('bottomNav').innerHTML = BOTTOM_NAV.map(function(id){
     if(id === 'more') return '<button type="button" data-nav="more"><span class="ico">⋯</span><span data-t="nav.more">' + t('nav.more') + '</span></button>';
