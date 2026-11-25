@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>POS System</title>
+<style>
+:root{
+  --bg:#f6f7f3; --surface:#ffffff; --surface-2:#eef0eb; --text:#161917; --dim:#68706b;
+  --border:#dfe3dc; --accent:#16a36a; --accent-strong:#087a4b; --danger:#d94a38;
+  --warn:#c88719; --blue:#267b9b; --radius:12px;
+  --shadow:0 14px 34px rgba(25,34,29,.08);
+  --nav-w:232px; --bottom-nav-h:67px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);min-width:320px;
+  font-family:"Noto Sans Myanmar","Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+  font-synthesis:none;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.5}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(22,163,106,.35);outline-offset:2px}
+input,select,textarea{background:var(--surface);border:1px solid var(--border);border-radius:8px;min-height:44px;padding:0 12px;width:100%}
+textarea{min-height:82px;padding:10px 12px;resize:vertical}
+h1{font-size:29px;letter-spacing:-.04em;line-height:1.05;margin:0;font-weight:760}
+h2{font-size:16px;margin:0;letter-spacing:-.02em}
+h3{font-size:14px;margin:0}
+small{color:var(--dim)}
+.hidden{display:none!important}
+
+/* ---------- buttons ---------- */
+.btn{min-height:44px;border:1px solid var(--border);background:var(--surface);border-radius:9px;
+  padding:0 14px;font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.btn.primary{background:var(--accent);color:#071c12;border-color:transparent}
+.btn.primary:hover{background:var(--accent-strong);color:#fff}
+.btn.danger{background:var(--danger);color:#fff;border-color:transparent}
+.btn.ghost{border:0;background:transparent;color:var(--accent-strong)}
+.btn.block{width:100%}
+.btn.big{min-height:55px;font-size:15px;border-radius:10px}
+.icon-btn{width:44px;padding:0;flex:none}
+
+/* ---------- shell / nav ---------- */
+.side-nav{position:fixed;z-index:30;left:0;top:0;bottom:0;width:var(--nav-w);padding:18px 14px;
+  background:#171b18;color:#edf2ee;display:flex;flex-direction:column;border-right:1px solid #2c332e}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand-mark{width:40px;height:40px;border-radius:12px;background:var(--accent);color:#06190f;display:grid;place-items:center;font-weight:900;font-size:15px;flex:none}
+.brand strong,.brand small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand strong{font-size:14px}
+.brand small{font-size:11px;color:#9fa9a2;margin-top:2px}
+.side-nav nav{display:flex;flex-direction:column;gap:3px;margin-top:28px}
+.side-nav nav button{min-height:43px;display:flex;align-items:center;gap:12px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:#aab3ad;text-align:left;font-size:13px;font-weight:650}
+.side-nav nav button:hover{background:#222824;color:#fff}
+.side-nav nav button.active{background:#dff8ea;color:#095c3a}
+.side-nav nav button .ico{font-size:16px;width:22px;text-align:center}
+.side-foot{margin-top:auto;padding-top:14px;border-top:1px solid #2e3630}
+.side-foot small{font-size:10px;color:#7f8a82;display:block;margin-top:8px}
+.workspace{min-height:100vh;margin-left:var(--nav-w)}
+.page{padding:36px 42px 64px;max-width:1200px;margin:auto}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:24px;flex-wrap:wrap}
+.page-head p{margin:8px 0 0;color:var(--dim);font-size:13px}
+.eyebrow{margin:0 0 5px;color:var(--dim);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.head-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mobile-top,.bottom-nav,.more-sheet{display:none}
+
+/* ---------- panels, tables, lists ---------- */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:16px}
+.panel-head p{margin:4px 0 0;color:var(--dim);font-size:12px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field>span{font-size:11px;color:var(--dim);font-weight:750}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.form-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+.form-actions.split{justify-content:stretch}
+.form-actions.split>*{flex:1}
+.row{display:flex;gap:10px;align-items:center}
+.row.between{justify-content:space-between}
+.row.wrap{flex-wrap:wrap}
+.muted{color:var(--dim);font-size:12px}
+.badge{display:inline-flex;align-items:center;min-height:26px;padding:0 9px;border-radius:999px;background:var(--surface-2);color:var(--dim);font-size:10px;font-weight:800}
+.badge.good{background:#dcf5e6;color:var(--accent-strong)}
+.badge.warn{background:#fdf0d3;color:var(--warn)}
+.badge.bad{background:#fde3df;color:var(--danger)}
+.badge.blue{background:#e2f0f6;color:var(--blue)}
+.searchbar{min-height:50px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;gap:10px;padding:0 13px}
+.searchbar input{border:0;background:transparent;min-width:0;padding:0;min-height:46px}
+.searchbar input:focus{outline:0}
+.list-row{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--border);min-height:60px}
+.list-row:last-child{border-bottom:0}
+.list-row .grow{flex:1;min-width:0}
+.list-row strong,.list-row small{display:block}
+.list-row strong{font-size:13px}
+.list-row small{font-size:11px;color:var(--dim);margin-top:3px}
+.list-row .amt{text-align:right;font-weight:800;font-size:13px;white-space:nowrap}
+.avatar{width:42px;height:42px;border-radius:50%;background:#d7f4e4;color:#0d7347;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+.empty{text-align:center;padding:42px 20px;color:var(--dim)}
+.empty h3{margin:0;color:var(--text);font-size:14px}
+.empty p{font-size:12px;max-width:280px;margin:7px auto 0}
+.toast{position:fixed;z-index:200;left:50%;bottom:26px;transform:translateX(-50%);background:#111713;color:#fff;padding:12px 18px;border-radius:9px;box-shadow:var(--shadow);font-size:13px;font-weight:700;max-width:min(90vw,560px);text-align:center}
+
+/* ---------- dashboard ---------- */
+.metric-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:20px}
+.metric{background:var(--surface);padding:18px}
+.metric>span{display:block;color:var(--dim);font-size:11px}
+.metric>strong{display:block;font-size:22px;letter-spacing:-.04em;margin:7px 0}
+.metric>small{font-size:11px}
+.dash-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(270px,.7fr);gap:18px}
+.top-list{display:grid;gap:10px}
+.top-list>div{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);font-size:13px}
+.top-list>div:last-child{border-bottom:0}
+.top-list small{display:block;color:var(--dim);font-size:11px;margin-top:2px}
+
+/* ---------- POS ---------- */
+.pos-page{min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) 390px}
+.catalog-pane{padding:26px 28px 40px;overflow-y:auto}
+.pos-toolbar{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:12px;margin-bottom:16px}
+.pos-toolbar h1{font-size:22px}
+.pos-title small{display:block;margin-top:4px;color:var(--dim);font-size:11px;font-weight:650}
+.menu-wrap{position:relative}
+.menu-pop{position:absolute;z-index:40;right:0;top:51px;width:250px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:11px;box-shadow:var(--shadow)}
+.menu-pop .lang-toggle{margin-bottom:8px}
+.menu-pop>button{width:100%;display:flex;gap:10px;align-items:center;border:0;background:transparent;text-align:left;padding:10px 8px;border-radius:8px;font-size:13px;font-weight:650}
+.menu-pop>button:hover{background:var(--surface-2)}
+.lang-toggle{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);width:100%;max-width:220px}
+.lang-toggle button{min-height:38px;border:0;border-radius:6px;padding:0 8px;background:transparent;color:var(--dim);font-size:12px;font-weight:700}
+.lang-toggle button.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.category-row{display:flex;flex-wrap:wrap;gap:7px;padding:13px 0 15px}
+.category-row button{white-space:nowrap;min-height:44px;padding:0 14px}
+.category-row button.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px}
+.product-card{padding:0;display:block;text-align:left;border-radius:11px;overflow:hidden;background:var(--surface);border:1px solid var(--border);position:relative}
+.product-card:hover{border-color:var(--accent)}
+.product-card.sold-out{opacity:.55}
+.product-photo{height:96px;background:#f1f3ef;display:grid;place-items:center;font-size:34px}
+.product-copy{padding:11px}
+.product-copy>small{font-size:10px;color:var(--dim);display:block;margin-bottom:4px}
+.product-copy>strong{font-size:13px;line-height:1.25;display:block;min-height:33px}
+.product-copy .p-price{font-size:14px;font-weight:800;margin-top:8px}
+.product-copy del{color:var(--dim);font-size:11px;font-weight:400;margin-left:6px}
+.product-copy em{display:block;font-style:normal;color:var(--dim);font-size:10px;margin-top:5px}
+.product-copy em.low{color:var(--warn);font-weight:800}
+.cart-count{position:absolute;top:9px;right:9px;background:var(--accent);color:#06190f;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;font-size:11px;font-weight:800}
+.sale-badge{position:absolute;top:9px;left:9px;background:var(--danger);color:#fff;padding:4px 7px;border-radius:5px;font-size:9px;font-weight:900}
+.cart-panel{background:var(--surface);border-left:1px solid var(--border);height:100vh;display:flex;flex-direction:column;padding:24px 22px;overflow:hidden;position:sticky;top:0}
+.cart-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.cart-head h2{font-size:19px}
+.cart-items{overflow-y:auto;flex:1}
+.cart-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:13px 0;border-bottom:1px solid var(--border)}
+.cart-item strong{font-size:12px;line-height:1.25;display:block}
+.cart-item small{font-size:10px;color:var(--dim);display:block;margin:3px 0 7px}
+.stepper{display:inline-flex;align-items:center}
+.stepper button{width:40px;height:40px;min-height:40px;padding:0;background:var(--surface-2);font-size:16px;font-weight:800}
+.stepper input{width:44px;height:40px;min-height:40px;padding:0;text-align:center;border-left:0;border-right:0;border-radius:0}
+.stepper input::-webkit-inner-spin-button{display:none}
+.line-total{text-align:right}
+.line-total strong{font-size:12px;display:block}
+.line-total button{border:0;background:transparent;color:var(--dim);width:40px;min-height:40px;padding:0;margin-top:2px}
+.totals{border-top:1px solid var(--border);padding-top:13px;margin-top:12px}
+.totals>div{display:flex;justify-content:space-between;gap:10px;margin:8px 0;font-size:12px;color:var(--dim)}
+.totals strong{color:var(--text)}
+.totals .grand{font-size:17px;color:var(--text);margin-top:14px}
+.charge-btn{border:0;border-radius:10px;background:var(--accent);color:#051b10;min-height:55px;font-size:15px;font-weight:850;padding:0 17px;display:flex;justify-content:space-between;width:100%;margin-top:14px}
+.charge-btn:hover{background:var(--accent-strong);color:#fff}
+.mobile-cartbar{display:none}
+
+/* ---------- modal ---------- */
+.modal-wrap{position:fixed;z-index:80;inset:0;display:grid;place-items:center;padding:20px}
+.modal-backdrop{position:absolute;inset:0;border:0;background:rgba(9,13,10,.55)}
+.modal{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:14px;width:min(540px,100%);max-height:min(90vh,900px);overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.25);padding:20px}
+.modal>header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.modal>header h2{font-size:18px}
+.payment-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:17px}
+.payment-methods button{min-height:48px;padding:4px;font-size:12px;font-weight:700}
+.payment-methods button.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.cash-readout{background:#111813;color:#fff;border-radius:11px;padding:17px;margin:10px 0}
+.cash-readout span{display:block;color:#a9b6ad;font-size:11px}
+.cash-entry{display:flex;align-items:baseline;gap:8px;margin:6px 0}
+.cash-entry input{width:100%;min-width:0;border:0;background:transparent;color:#fff;padding:0;font-size:28px;font-weight:700}
+.cash-entry input:focus{outline:0}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.keypad button{height:48px;background:var(--surface-2);font-size:17px;font-weight:700}
+.summary-box{background:var(--surface-2);border-radius:11px;padding:18px;margin-bottom:14px}
+.summary-box .due{font-size:32px;font-weight:800;letter-spacing:-.03em;margin:4px 0 12px}
+.summary-box>div{display:flex;justify-content:space-between;font-size:13px;margin:6px 0;color:var(--dim)}
+.summary-box>div strong{color:var(--text)}
+.success-mark{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:#dcf5e6;color:var(--accent-strong);font-size:24px;font-weight:900;margin:0 auto 14px}
+
+/* ---------- receipt ---------- */
+.receipt-paper{width:min(360px,100%);margin:auto;background:#fff;color:#111;padding:24px 22px;font-size:11px;line-height:1.5}
+.receipt-paper h3{text-align:center;margin:0;font-size:15px}
+.receipt-paper>p{text-align:center;line-height:1.5;margin:6px 0}
+.receipt-meta{border-top:1px dashed #bbb;border-bottom:1px dashed #bbb;padding:10px 0;margin:13px 0}
+.receipt-meta span{display:block;margin:3px 0}
+.receipt-line,.receipt-total{display:flex;justify-content:space-between;gap:15px;margin:8px 0}
+.receipt-total{border-top:1px dashed #bbb;border-bottom:1px dashed #bbb;padding:11px 0;font-size:14px;margin-top:14px}
+.receipt-item{padding:6px 0;border-bottom:1px dotted #bbb}
+.receipt-item .ri-main{display:flex;justify-content:space-between;gap:10px}
+.receipt-item small{display:block;color:#555;font-size:10px;margin-top:2px}
+.thanks{text-align:center;margin:18px 0 0}
+.receipt-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:17px}
+.receipt-actions .primary{grid-column:1/-1}
+.receipt-paper.w58{width:58mm;padding:3mm;font-size:9px}
+.receipt-paper.w80{width:80mm;padding:5mm}
+
+/* ---------- responsive ---------- */
+@media(max-width:1199px){
+  .workspace{margin-left:72px}
+  .side-nav{width:72px;padding-left:9px;padding-right:9px}
+  .side-nav .brand>div:last-child,.side-nav nav span,.side-foot small{display:none}
+  .side-nav .brand{justify-content:center}
+  .side-nav nav button{justify-content:center;padding:0}
+  .side-foot{display:grid;place-items:center}
+  .pos-page{grid-template-columns:minmax(0,1fr) 350px}
+  .page{padding:30px 28px}
+  .metric-strip{grid-template-columns:repeat(2,1fr)}
+  .dash-grid{grid-template-columns:1fr}
+  .category-row{flex-wrap:nowrap;overflow-x:auto}
+}
+@media(max-width:767px){
+  .side-nav{display:none}
+  .workspace{margin-left:0}
+  .mobile-top{height:calc(58px + env(safe-area-inset-top));padding:calc(8px + env(safe-area-inset-top)) 14px 8px;display:flex;align-items:center;justify-content:space-between;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:25}
+  .mobile-top .brand strong{font-size:13px}
+  .page{padding:20px 14px calc(20px + var(--bottom-nav-h) + 70px)}
+  .page-head h1{font-size:25px}
+  .bottom-nav{position:fixed;z-index:50;left:0;right:0;bottom:0;height:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));padding:5px 4px env(safe-area-inset-bottom);display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border-top:1px solid var(--border)}
+  .bottom-nav button{border:0;background:transparent;min-height:54px;padding:3px 2px;display:flex;flex-direction:column;gap:2px;border-radius:7px;color:var(--dim);font-size:10px;font-weight:700;align-items:center;justify-content:center}
+  .bottom-nav button.active{color:var(--accent-strong);background:#e9f7ef}
+  .bottom-nav button .ico{font-size:18px}
+  .more-sheet{position:fixed;z-index:49;left:8px;right:8px;bottom:calc(70px + env(safe-area-inset-bottom));background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 -12px 40px rgba(0,0,0,.16);padding:10px}
+  .more-sheet .lang-toggle{margin:4px 0 8px;max-width:none}
+  .more-sheet>button{width:100%;display:flex;gap:12px;text-align:left;border:0;border-bottom:1px solid var(--border);border-radius:0;background:transparent;min-height:48px;align-items:center;font-size:13px;font-weight:650}
+  .more-sheet>button:last-child{border-bottom:0}
+  .pos-page{display:block;min-height:0}
+  .catalog-pane{padding:0 12px calc(20px + var(--bottom-nav-h) + 70px);overflow:visible}
+  .cart-panel{display:none}
+  .pos-toolbar{position:sticky;z-index:25;top:0;margin:0 -12px 12px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .pos-toolbar h1{font-size:17px}
+  .searchbar{position:sticky;top:calc(70px + env(safe-area-inset-top));z-index:20;box-shadow:0 5px 14px rgba(0,0,0,.04)}
+  .product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .mobile-cartbar{position:fixed;z-index:24;left:10px;right:10px;bottom:calc(var(--bottom-nav-h) + 7px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:center;min-height:54px;border:0;background:#101511;color:#fff;box-shadow:0 10px 28px rgba(0,0,0,.22)}
+  .mobile-cartbar span{color:#c3ccc6;font-size:12px}
+  .modal-wrap{padding:0;place-items:end center}
+  .modal{width:100%;max-height:92vh;border-radius:16px 16px 0 0;padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+  .metric-strip{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .toast{bottom:calc(79px + env(safe-area-inset-bottom))}
+  .receipt-actions{position:sticky;bottom:0;background:var(--surface);padding-top:10px}
+}
+@media(max-width:360px){
+  .metric-strip{grid-template-columns:1fr}
+  .payment-methods{grid-template-columns:1fr 1fr}
+}
+
+/* ---------- login ---------- */
+body.logged-out .side-nav, body.logged-out .mobile-top, body.logged-out .workspace,
+body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
+.login-screen{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;box-shadow:var(--shadow)}
+.login-card .brand-mark{width:52px;height:52px;font-size:19px;border-radius:14px;margin-bottom:16px}
+.login-card h1{font-size:22px;margin-bottom:6px}
+.login-sub{color:var(--dim);font-size:13px;margin:0 0 20px}
+.login-error{color:var(--danger);font-size:13px;font-weight:650;margin:0 0 14px}
+.login-card .lang-toggle{margin-top:18px}
+
+/* ---------- print: receipt only ---------- */
+@media print{
+  body{background:#fff}
+  body *{visibility:hidden}
+  #printArea,#printArea *{visibility:visible}
+  #printArea{position:absolute;left:0;top:0;width:100%;display:block!important}
+  #printArea .receipt-paper{box-shadow:none;border:0;margin:0}
+}
+#printArea{display:none}
+</style>
+</head>
+<body>
+
+<!-- ======== login ======== -->
+<div class="login-screen hidden" id="loginScreen">
+  <div class="login-card">
+    <div class="brand-mark" id="loginMark">M</div>
+    <h1 id="loginStoreName">Mercury Mobile Accessories</h1>
+    <p class="login-sub" data-t="login.subtitle">Sign in to open the register.</p>
+    <div class="field"><span data-t="login.email">Email</span><input type="email" id="loginEmail" autocomplete="username" autocapitalize="off" spellcheck="false"></div>
+    <div class="field"><span data-t="login.password">Password</span><input type="password" id="loginPassword" autocomplete="current-password"></div>
+    <p class="login-error hidden" id="loginError"></p>
+    <button class="btn primary block big" type="button" id="loginBtn" data-t="login.button">Log in</button>
+    <div class="lang-toggle" id="loginLangToggle">
+      <button type="button" data-lang="my">မြန်မာ</button>
+      <button type="button" data-lang="en">English</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== side nav (desktop) ======== -->
+<aside class="side-nav" id="sideNav">
+  <div class="brand"><div class="brand-mark" id="brandMark">M</div><div><strong id="brandName">Mercury Mobile Accessories</strong><small id="brandSub">POS System</small></div></div>
+  <nav id="sideNavBtns"></nav>
+  <div class="side-foot">
+    <div class="lang-toggle" id="sideLangToggle">
+      <button type="button" data-lang="my">မြန်မာ</button>
+      <button type="button" data-lang="en">English</button>
+    </div>
+    <small id="sideFootNote">POS System · v1.0</small>
+  </div>
+</aside>
+
+<!-- ======== mobile top bar ======== -->
+<div class="mobile-top">
+  <div class="brand"><div class="brand-mark">M</div><div><strong id="mobileBrandName">Mercury Mobile Accessories</strong></div></div>
+  <button class="btn icon-btn" type="button" id="mobileMenuBtn" aria-label="Menu">⋯</button>
+</div>
+
+<div class="workspace" id="workspace">
+
+  <!-- ======== DASHBOARD ======== -->
+  <section class="page" id="view-dashboard">
+    <div class="page-head">
+      <div><p class="eyebrow" data-t="dashboard.eyebrow">Business pulse</p><h1 data-t="dashboard.title">Today at a glance</h1><p data-t="dashboard.detail">Live totals from this register's ledger.</p></div>
+    </div>
+    <div class="metric-strip">
+      <div class="metric"><span data-t="dashboard.todaySales">Today's sales</span><strong id="mToday">—</strong><small id="mTodayOrders">—</small></div>
+      <div class="metric"><span data-t="dashboard.monthSales">This month's sales</span><strong id="mMonth">—</strong><small id="mMonthOrders">—</small></div>
+      <div class="metric"><span data-t="dashboard.expenses">Expenses (this month)</span><strong id="mExp">—</strong><small id="mExpCount">—</small></div>
+      <div class="metric"><span data-t="dashboard.netProfit">Net profit (this month)</span><strong id="mNet">—</strong><small data-t="dashboard.netDetail">Sales minus cost &amp; expenses</small></div>
+    </div>
+    <div class="dash-grid">
+      <div class="panel">
+        <div class="panel-head"><div><h2 data-t="dashboard.topProducts">Top products</h2><p data-t="dashboard.topDetail">Best sellers this month</p></div></div>
+        <div class="top-list" id="topProducts"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h2 data-t="dashboard.stockAttention">Stock attention</h2><p id="lowStockNote">—</p></div><button class="btn ghost" type="button" id="openInventoryBtn" data-t="dashboard.openInventory">Open inventory</button></div>
+        <div class="top-list" id="lowStockList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== POS ======== -->
+  <section class="page pos-page hidden" id="view-pos" style="padding:0;max-width:none">
+    <div class="catalog-pane">
+      <div class="pos-toolbar">
+        <button class="btn icon-btn" type="button" id="posBackBtn" aria-label="Back">‹</button>
+        <div class="pos-title"><h1 data-t="pos.title">New sale</h1><small id="posSubtitle">Register 02 · Morning shift</small></div>
+        <div class="menu-wrap">
+          <button class="btn icon-btn" type="button" id="posMenuBtn" aria-label="Menu">⋯</button>
+          <div class="menu-pop hidden" id="posMenu">
+            <div class="lang-toggle" id="posLangToggle">
+              <button type="button" data-lang="my">မြန်မာ</button>
+              <button type="button" data-lang="en">English</button>
+            </div>
+            <button type="button" data-nav="dashboard">🏠 <span data-t="nav.dashboard">Dashboard</span></button>
+            <button type="button" data-nav="orders">🧾 <span data-t="nav.orders">Orders</span></button>
+            <button type="button" data-nav="settings">⚙️ <span data-t="nav.settings">Settings</span></button>
+            <button type="button" id="posSignOutBtn">🚪 <span data-t="login.signOut">Sign out</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="searchbar"><span aria-hidden="true">🔍</span><input type="search" id="posSearch" data-tp="pos.search" placeholder="Search products, SKU, barcode, or category" autocomplete="off"></div>
+      <div class="category-row" id="posCategories"></div>
+      <div class="product-grid" id="productGrid"></div>
+      <div class="empty hidden" id="posEmpty"><h3 data-t="pos.noProduct">No product found</h3><p data-t="pos.noProductDetail">Try a product name, SKU, barcode, or another category.</p></div>
+    </div>
+    <aside class="cart-panel" id="cartPanel"></aside>
+    <button class="btn mobile-cartbar hidden" type="button" id="mobileCartBar"><span id="mobileCartInfo">0 items</span><strong id="mobileCartTotal">—</strong></button>
+  </section>
+
+  <!-- ======== PRODUCTS ======== -->
+  <section class="page hidden" id="view-products">
+    <div class="page-head">
+      <div><p class="eyebrow" data-t="products.eyebrow">Catalog</p><h1 data-t="products.title">Products</h1><p id="productsDetail">—</p></div>
+      <div class="head-actions"><button class="btn primary" type="button" id="addProductBtn">＋ <span data-t="products.add">Add product</span></button></div>
+    </div>
+    <div class="panel">
+      <div class="row wrap" style="margin-bottom:14px">
+        <div class="searchbar" style="flex:1;min-width:200px"><span aria-hidden="true">🔍</span><input type="search" id="productSearch" data-tp="products.search" placeholder="Search product or SKU"></div>
+        <select id="productFilter" style="width:auto;min-width:150px">
+          <option value="all" data-t="products.all">All products</option>
+          <option value="low" data-t="products.low">Low stock</option>
+        </select>
+        <select id="productSort" style="width:auto;min-width:160px">
+          <option value="name" data-t="products.sortName">Name A–Z</option>
+          <option value="stock" data-t="products.sortStock">Stock low to high</option>
+          <option value="price" data-t="products.sortPrice">Price high to low</option>
+        </select>
+      </div>
+      <div id="productList"></div>
+    </div>
+  </section>
+
+  <!-- ======== INVENTORY ======== -->
+  <section class="page hidden" id="view-inventory">
+    <div class="page-head">
+      <div><p class="eyebrow" data-t="inventory.eyebrow">Stock control</p><h1 data-t="inventory.title">Inventory</h1><p data-t="inventory.detail">Every sale and adjustment leaves an auditable movement.</p></div>
+    </div>
+    <div class="metric-strip" style="grid-template-columns:repeat(3,1fr)">
+      <div class="metric"><span data-t="inventory.products">Products</span><strong id="invCount">—</strong></div>
+      <div class="metric"><span data-t="inventory.stockValue">Stock value</span><strong id="invValue">—</strong><small data-t="inventory.atCost">At cost</small></div>
+      <div class="metric"><span data-t="inventory.needsAttention">Needs attention</span><strong id="invLow">—</strong></div>
+    </div>
+    <div class="dash-grid" style="grid-template-columns:minmax(320px,.8fr) minmax(420px,1.2fr)">
+      <div class="panel">
+        <div class="panel-head"><div><h2 data-t="inventory.levels">Stock levels</h2><p data-t="inventory.tap">Tap an item to record movement</p></div></div>
+        <div id="stockList"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h2 data-t="inventory.history">Movement history</h2><p data-t="inventory.newest">Newest first</p></div></div>
+        <div id="moveForm" class="hidden">
+          <div class="row" style="background:var(--surface-2);padding:11px;border-radius:9px;margin-bottom:16px">
+            <strong id="moveProductName" style="font-size:13px">—</strong>
+            <small id="moveProductStock" class="muted">—</small>
+          </div>
+          <div class="form-grid">
+            <div class="field"><span data-t="inventory.type">Movement</span>
+              <select id="moveType">
+                <option value="stock_in" data-t="inventory.stockIn">Stock in</option>
+                <option value="stock_out" data-t="inventory.stockOut">Stock out</option>
+                <option value="adjustment" data-t="inventory.adjustment">Adjustment (+ / −)</option>
+              </select>
+            </div>
+            <div class="field"><span data-t="inventory.quantity">Quantity</span><input type="number" id="moveQty" min="1" step="1" value="1"></div>
+          </div>
+          <div class="field"><span data-t="inventory.reason">Reason / note</span><input type="text" id="moveNote" data-tp="inventory.reasonPlaceholder" placeholder="Supplier delivery, damaged unit, count correction…"></div>
+          <div class="form-actions"><button class="btn" type="button" id="moveCancelBtn" data-t="common.cancel">Cancel</button><button class="btn primary" type="button" id="moveSaveBtn" data-t="inventory.update">Update stock</button></div>
+        </div>
+        <div id="moveHistory"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== ORDERS ======== -->
+  <section class="page hidden" id="view-orders">
+    <div class="page-head">
+      <div><p class="eyebrow" data-t="orders.eyebrow">Sales ledger</p><h1 data-t="orders.title">Orders</h1><p id="ordersDetail">—</p></div>
+    </div>
+    <div class="panel">
+      <div class="row wrap" style="margin-bottom:14px">
+        <div class="searchbar" style="flex:1;min-width:200px"><span aria-hidden="true">🔍</span><input type="search" id="orderSearch" data-tp="orders.search" placeholder="Order, customer or payment"></div>
+        <select id="orderStatusFilter" style="width:auto;min-width:150px">
+          <option value="all" data-t="orders.all">All statuses</option>
+          <option value="Completed" data-t="orders.completed">Completed</option>
+          <option value="Refunded" data-t="orders.refunded">Refunded</option>
+          <option value="Cancelled" data-t="orders.cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div id="orderList"></div>
+    </div>
+  </section>
+
+  <!-- ======== CUSTOMERS ======== -->
+  <section class="page hidden" id="view-customers">
+    <div class="page-head">
+      <div><p class="eyebrow" data-t="customers.eyebrow">Relationships</p><h1 data-t="customers.title">Customers</h1><p data-t="customers.detail">Profiles, contact details, and purchase history.</p></div>
+      <div class="head-actions"><button class="btn primary" type="button" id="addCustomerBtn">＋ <span data-t="customers.add">Add customer</span></button></div>
+    </div>
+    <div class="panel"><div id="customerList"></div></div>
+  </section>
+
+  <!-- ======== EXPENSES ======== -->
+  <section class="page hidden" id="view-expenses">
+    <div class="page-head">
+      <div><p class="eyebrow" data-t="expenses.eyebrow">Operating costs</p><h1 data-t="expenses.title">Expenses</h1><p id="expensesDetail">—</p></div>
+      <div class="head-actions"><button class="btn primary" type="button" id="addExpenseBtn">＋ <span data-t="expenses.add">Add expense</span></button></div>
+    </div>
+    <div class="panel"><div id="expenseList"></div></div>
+  </section>
+
+  <!-- ======== SETTINGS ======== -->
+  <section class="page hidden" id="view-settings">
+    <div class="page-head">
+      <div><p class="eyebrow" data-t="settings.eyebrow">Store configuration</p><h1 data-t="settings.title">Settings</h1><p data-t="settings.detail">Receipt, tax, language, currency, and appearance.</p></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h2 data-t="settings.storeProfile">Store profile</h2></div></div>
+      <div class="field"><span data-t="settings.storeName">Store name</span><input type="text" id="setStoreName"></div>
+      <div class="form-grid">
+        <div class="field"><span data-t="common.address">Address</span><input type="text" id="setAddress"></div>
+        <div class="field"><span data-t="common.phone">Phone</span><input type="tel" id="setPhone"></div>
+      </div>
+      <div class="form-grid">
+        <div class="field"><span data-t="settings.currency">Currency</span>
+          <select id="setCurrency">
+            <option value="THB" data-t="settings.thb">THB — Thai Baht</option>
+            <option value="MMK" data-t="settings.mmk">MMK — Myanmar Kyat</option>
+            <option value="USD" data-t="settings.usd">USD — US Dollar</option>
+            <option value="SGD" data-t="settings.sgd">SGD — Singapore Dollar</option>
+          </select>
+        </div>
+        <div class="field"><span data-t="settings.taxRate">Tax rate (%)</span><input type="number" id="setTaxRate" min="0" max="30" step="0.5"></div>
+      </div>
+      <div class="field"><span data-t="settings.receiptFormat">Receipt format</span>
+        <select id="setReceiptSize">
+          <option value="58mm">58mm</option>
+          <option value="80mm">80mm</option>
+        </select>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h2 data-t="settings.languageAppearance">Language &amp; appearance</h2><p data-t="settings.languageHelp">Changes immediately and is saved on this device.</p></div></div>
+      <div class="field"><span data-t="common.language">Language</span>
+        <div class="lang-toggle" id="setLangToggle">
+          <button type="button" data-lang="my">မြန်မာ</button>
+          <button type="button" data-lang="en">English</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h2 data-t="staff.title">Staff &amp; permissions</h2><p data-t="staff.detail">Role-based access for register and back-office work.</p></div>
+      <button class="btn" type="button" id="addStaffBtn">＋ <span data-t="staff.add">Add staff</span></button></div>
+      <div id="staffList"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h2 data-t="settings.data">Data</h2><p data-t="settings.dataDetail">Everything is saved on this device.</p></div></div>
+      <div class="row wrap">
+        <button class="btn" type="button" id="exportDataBtn">⬇ <span data-t="settings.exportBackup">Download backup (JSON)</span></button>
+        <button class="btn" type="button" id="resetDemoBtn">↺ <span data-t="settings.resetDemo">Restore demo data</span></button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h2 data-t="settings.sync">Cloud sync</h2></div></div>
+      <p class="muted" id="syncStatus">—</p>
+      <div class="row between" style="margin-top:14px">
+        <span class="muted" id="signedInAs">—</span>
+        <button class="btn" type="button" id="signOutBtn">🚪 <span data-t="login.signOut">Sign out</span></button>
+      </div>
+    </div>
+    <div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" id="saveSettingsBtn" style="min-width:170px" data-t="settings.save">Save settings</button></div>
+  </section>
+</div>
+
+<!-- ======== bottom nav (mobile) ======== -->
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+<!-- ======== more sheet (mobile) ======== -->
+<div class="more-sheet hidden" id="moreSheet">
+  <div class="lang-toggle" id="moreLangToggle">
+    <button type="button" data-lang="my">မြန်မာ</button>
+    <button type="button" data-lang="en">English</button>
+  </div>
+  <button type="button" data-nav="inventory">📦 <span data-t="nav.inventory">Inventory</span></button>
+  <button type="button" data-nav="customers">👥 <span data-t="nav.customers">Customers</span></button>
+  <button type="button" data-nav="expenses">💸 <span data-t="nav.expenses">Expenses</span></button>
+  <button type="button" data-nav="settings">⚙️ <span data-t="nav.settings">Settings</span></button>
+</div>
+
+<!-- ======== modal root ======== -->
+<div class="modal-wrap hidden" id="modalWrap">
+  <button class="modal-backdrop" type="button" id="modalBackdrop" aria-label="Close"></button>
+  <div class="modal" id="modalBox" role="dialog" aria-modal="true"></div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+<div id="printArea"></div>
+
+<script>
+'use strict';
+/* ================= I18N (Myanmar default, English only) ================= */
+const I18N = {
+en: {
+  "nav.dashboard":"Dashboard","nav.pos":"New sale","nav.products":"Products","nav.inventory":"Inventory","nav.orders":"Orders","nav.customers":"Customers","nav.expenses":"Expenses","nav.settings":"Settings","nav.more":"More",
+  "common.search":"Search","common.back":"Back","common.save":"Save","common.cancel":"Cancel","common.delete":"Delete","common.edit":"Edit","common.close":"Close","common.clear":"Clear","common.all":"All","common.name":"Name","common.phone":"Phone","common.address":"Address","common.category":"Category","common.price":"Price","common.stock":"Stock","common.date":"Date","common.amount":"Amount","common.language":"Language","common.walkIn":"Walk-in customer","common.noPhone":"No phone","common.today":"Today","common.thisMonth":"This month","common.qty":"Qty","common.confirmDelete":"Delete this item?","common.required":"Please fill in all required fields.","common.note":"Note",
+  "pos.title":"New sale","pos.search":"Search products, SKU, barcode, or category","pos.noProduct":"No product found","pos.noProductDetail":"Try a product name, SKU, barcode, or another category.","pos.outOfStock":"Out of stock","pos.inStock":"{count} in stock","pos.items":"{count} item(s)","pos.shift":"Register 02 · Morning shift",
+  "cart.title":"Current order","cart.clear":"Clear","cart.ready":"Cart is ready","cart.readyDetail":"Tap a product to begin.","cart.each":"{price} each","cart.subtotal":"Subtotal","cart.discount":"Discount","cart.tax":"Tax ({rate}%)","cart.total":"Total","cart.charge":"Charge",
+  "checkout.title":"Checkout","checkout.paymentMethod":"Payment method","checkout.customer":"Customer","checkout.orderDiscount":"Order discount","checkout.amountReceived":"Amount received","checkout.change":"Change","checkout.amountDue":"Amount due","checkout.complete":"Complete sale","checkout.saleCompleted":"Sale completed","checkout.notEnough":"Amount received is less than the total.","checkout.next100":"Exact next 100",
+  "payment.cash":"Cash","payment.bank":"Bank Transfer","payment.qr":"QR Payment","payment.card":"Card","payment.other":"Other",
+  "receipt.title":"Receipt","receipt.thanks":"Thank you for shopping with us!","receipt.print":"Print receipt","receipt.newSale":"New sale","receipt.subtotal":"Subtotal","receipt.discount":"Discount","receipt.tax":"Tax","receipt.total":"Total","receipt.payment":"Payment method","receipt.amountReceived":"Amount received","receipt.change":"Change","receipt.cashier":"Cashier","receipt.customer":"Customer","receipt.order":"Order","receipt.date":"Date",
+  "dashboard.eyebrow":"Business pulse","dashboard.title":"Today at a glance","dashboard.detail":"Live totals from this register's ledger.","dashboard.todaySales":"Today's sales","dashboard.monthSales":"This month's sales","dashboard.expenses":"Expenses (this month)","dashboard.netProfit":"Net profit (this month)","dashboard.netDetail":"Sales minus cost & expenses","dashboard.topProducts":"Top products","dashboard.topDetail":"Best sellers this month","dashboard.stockAttention":"Stock attention","dashboard.openInventory":"Open inventory","dashboard.ordersToday":"{count} order(s) today","dashboard.ordersMonth":"{count} order(s) this month","dashboard.expenseCount":"{count} recorded","dashboard.lowCount":"{count} items at or below minimum","dashboard.unitsSold":"{count} sold","dashboard.left":"{count} left","dashboard.noSales":"No sales yet in this period.",
+  "products.eyebrow":"Catalog","products.title":"Products","products.detail":"{count} active products across {categories} categories.","products.add":"Add product","products.search":"Search product or SKU","products.all":"All products","products.low":"Low stock","products.sortName":"Name A–Z","products.sortStock":"Stock low to high","products.sortPrice":"Price high to low","products.edit":"Edit product","products.productName":"Product name","products.sku":"SKU","products.costPrice":"Cost price","products.sellingPrice":"Selling price","products.discountPrice":"Discount price (optional)","products.stockQty":"Stock quantity","products.minStock":"Minimum stock","products.category":"Category","products.brand":"Brand","products.saved":"Product saved","products.deleted":"Product deleted","products.sale":"Sale",
+  "category.Phones":"Phones","category.Accessories":"Accessories","category.Chargers":"Chargers","category.Cables":"Cables","category.Earphones":"Earphones","category.Power Banks":"Power Banks","category.Cases":"Cases","category.Screen Protectors":"Screen Protectors",
+  "inventory.eyebrow":"Stock control","inventory.title":"Inventory","inventory.detail":"Every sale and adjustment leaves an auditable movement.","inventory.products":"Products","inventory.stockValue":"Stock value","inventory.atCost":"At cost","inventory.needsAttention":"Needs attention","inventory.levels":"Stock levels","inventory.tap":"Tap an item to record movement","inventory.history":"Movement history","inventory.newest":"Newest first","inventory.type":"Movement","inventory.stockIn":"Stock in","inventory.stockOut":"Stock out","inventory.adjustment":"Adjustment (+ / −)","inventory.quantity":"Quantity","inventory.reason":"Reason / note","inventory.reasonPlaceholder":"Supplier delivery, damaged unit, count correction…","inventory.update":"Update stock","inventory.updated":"Inventory updated","inventory.current":"Current stock: {count}","inventory.low":"Low stock","inventory.out":"Out of stock","inventory.sale":"Sale","inventory.noHistory":"No movements yet.",
+  "orders.eyebrow":"Sales ledger","orders.title":"Orders","orders.detail":"{count} sales records with receipts and stock history.","orders.search":"Order, customer or payment","orders.all":"All statuses","orders.order":"Order","orders.customer":"Customer","orders.payment":"Payment","orders.total":"Total","orders.completed":"Completed","orders.refunded":"Refunded","orders.cancelled":"Cancelled","orders.refund":"Refund","orders.refundedMsg":"Order refunded — stock returned.","orders.noOrders":"No orders yet.",
+  "customers.eyebrow":"Relationships","customers.title":"Customers","customers.detail":"Profiles, contact details, and purchase history.","customers.add":"Add customer","customers.saved":"Customer saved","customers.name":"Name","customers.phone":"Phone","customers.totalPurchases":"Total purchases","customers.orders":"Orders","customers.deleted":"Customer deleted",
+  "expenses.eyebrow":"Operating costs","expenses.title":"Expenses","expenses.detail":"{amount} recorded in the current period.","expenses.add":"Add expense","expenses.recorded":"Expense recorded","expenses.name":"Expense name","expenses.save":"Save expense","expenses.deleted":"Expense deleted",
+  "expenseCategory.Rent":"Rent","expenseCategory.Electricity":"Electricity","expenseCategory.Water":"Water","expenseCategory.Salary":"Salary","expenseCategory.Transportation":"Transportation","expenseCategory.Supplies":"Supplies","expenseCategory.Marketing":"Marketing","expenseCategory.Other":"Other",
+  "staff.title":"Staff & permissions","staff.detail":"Role-based access for register and back-office work.","staff.add":"Add staff","staff.admin":"Admin","staff.manager":"Manager","staff.cashier":"Cashier","staff.role":"Role","staff.saved":"Staff saved","staff.deleted":"Staff deleted",
+  "settings.eyebrow":"Store configuration","settings.title":"Settings","settings.detail":"Receipt, tax, language, currency, and appearance.","settings.storeProfile":"Store profile","settings.storeName":"Store name","settings.currency":"Currency","settings.taxRate":"Tax rate (%)","settings.receiptFormat":"Receipt format","settings.languageAppearance":"Language & appearance","settings.languageHelp":"Changes immediately and is saved on this device.","settings.save":"Save settings","settings.saved":"Settings saved","settings.thb":"THB — Thai Baht","settings.mmk":"MMK — Myanmar Kyat","settings.usd":"USD — US Dollar","settings.sgd":"SGD — Singapore Dollar","settings.data":"Data","settings.dataDetail":"Everything is saved on this device.","settings.exportBackup":"Download backup (JSON)","settings.resetDemo":"Restore demo data","settings.resetDone":"Demo data restored","settings.resetConfirm":"Restore the demo data? Current data will be replaced.","settings.sync":"Cloud sync","sync.syncing":"Syncing…","sync.synced":"Synced • {time}","sync.offline":"Offline — changes saved on this device","sync.failed":"Sync failed — will retry on next change","login.subtitle":"Sign in to open the register.","login.email":"Email","login.password":"Password","login.button":"Log in","login.signingIn":"Signing in…","login.signOut":"Sign out","login.signedInAs":"Signed in as {email}","login.invalid":"Email or password is incorrect. Please try again.","login.failed":"Could not sign in. Check your connection and try again."
+},
+my: {
+  "nav.dashboard":"ဒက်ရှ်ဘုတ်","nav.pos":"အရောင်းအသစ်","nav.products":"ကုန်ပစ္စည်းများ","nav.inventory":"စတော့စာရင်း","nav.orders":"အရောင်းစာရင်း","nav.customers":"ဖောက်သည်များ","nav.expenses":"အသုံးစရိတ်များ","nav.settings":"ဆက်တင်များ","nav.more":"နောက်ထပ်",
+  "common.search":"ရှာဖွေရန်","common.back":"နောက်သို့","common.save":"သိမ်းရန်","common.cancel":"ပယ်ဖျက်ရန်","common.delete":"ဖျက်ရန်","common.edit":"ပြင်ဆင်ရန်","common.close":"ပိတ်ရန်","common.clear":"ရှင်းရန်","common.all":"အားလုံး","common.name":"အမည်","common.phone":"ဖုန်း","common.address":"လိပ်စာ","common.category":"အမျိုးအစား","common.price":"စျေးနှုန်း","common.stock":"စတော့","common.date":"ရက်စွဲ","common.amount":"ငွေပမာဏ","common.language":"ဘာသာစကား","common.walkIn":"ဧည့်ဖောက်သည်","common.noPhone":"ဖုန်းမရှိ","common.today":"ယနေ့","common.thisMonth":"ယခုလ","common.qty":"အရေအတွက်","common.confirmDelete":"ဤအရာကို ဖျက်မည်လား?","common.required":"လိုအပ်သောအချက်အလက်များ ဖြည့်ပါ။","common.note":"မှတ်ချက်",
+  "pos.title":"အရောင်းအသစ်","pos.search":"ကုန်ပစ္စည်း၊ SKU၊ ဘားကုဒ် သို့ အမျိုးအစား ရှာပါ","pos.noProduct":"ကုန်ပစ္စည်း မတွေ့ပါ","pos.noProductDetail":"အမည်၊ SKU၊ ဘားကုဒ် သို့ အခြားအမျိုးအစားဖြင့် ရှာပါ။","pos.outOfStock":"စတော့ကုန်","pos.inStock":"စတော့ {count} ခု","pos.items":"ပစ္စည်း {count} ခု","pos.shift":"ကောင်တာ ၀၂ · မနက်ပိုင်း",
+  "cart.title":"လက်ရှိအရောင်း","cart.clear":"ရှင်းရန်","cart.ready":"စျေးခြင်းအသင့်ဖြစ်ပါပြီ","cart.readyDetail":"စတင်ရန် ကုန်ပစ္စည်းကို နှိပ်ပါ။","cart.each":"တစ်ခုလျှင် {price}","cart.subtotal":"စုစုပေါင်းခွဲ","cart.discount":"လျှော့စျေး","cart.tax":"အခွန် ({rate}%)","cart.total":"စုစုပေါင်း","cart.charge":"ငွေရှင်းရန်",
+  "checkout.title":"ငွေရှင်းရန်","checkout.paymentMethod":"ငွေပေးချေမှုနည်းလမ်း","checkout.customer":"ဖောက်သည်","checkout.orderDiscount":"အရောင်းလျှော့စျေး","checkout.amountReceived":"လက်ခံရရှိငွေ","checkout.change":"အမ်းငွေ","checkout.amountDue":"ပေးရန်ငွေ","checkout.complete":"အရောင်းပြီးမြောက်ရန်","checkout.saleCompleted":"အရောင်းပြီးမြောက်ပါပြီ","checkout.notEnough":"လက်ခံရရှိငွေသည် စုစုပေါင်းထက် နည်းနေသည်။","checkout.next100":"နောက် ၁၀၀ ပြည့်ငွေ",
+  "payment.cash":"ငွေသား","payment.bank":"ဘဏ်လွှဲ","payment.qr":"QR ငွေပေးချေမှု","payment.card":"ကတ်","payment.other":"အခြား",
+  "receipt.title":"ပြေစာ","receipt.thanks":"အားပေးမှုအတွက် ကျေးဇူးတင်ပါသည်။","receipt.print":"ပြေစာထုတ်ရန်","receipt.newSale":"အရောင်းအသစ်","receipt.subtotal":"စုစုပေါင်းခွဲ","receipt.discount":"လျှော့စျေး","receipt.tax":"အခွန်","receipt.total":"စုစုပေါင်း","receipt.payment":"ငွေပေးချေမှုနည်းလမ်း","receipt.amountReceived":"ရရှိငွေ","receipt.change":"အမ်းငွေ","receipt.cashier":"ငွေကိုင်","receipt.customer":"ဖောက်သည်","receipt.order":"အရောင်း","receipt.date":"ရက်စွဲ",
+  "dashboard.eyebrow":"လုပ်ငန်းအခြေအနေ","dashboard.title":"ယနေ့လုပ်ငန်းအကျဉ်း","dashboard.detail":"ဤကောင်တာ၏ အရောင်းမှတ်တမ်းများမှ နောက်ဆုံးစာရင်း။","dashboard.todaySales":"ယနေ့အရောင်း","dashboard.monthSales":"ယခုလအရောင်း","dashboard.expenses":"အသုံးစရိတ် (ယခုလ)","dashboard.netProfit":"အသားတင်အမြတ် (ယခုလ)","dashboard.netDetail":"အရောင်းမှ ကုန်ကျစရိတ်နှင့် အသုံးစရိတ် နုတ်ပြီး","dashboard.topProducts":"အရောင်းရဆုံးပစ္စည်းများ","dashboard.topDetail":"ယခုလ အရောင်းရဆုံး","dashboard.stockAttention":"စတော့သတိပေးချက်","dashboard.openInventory":"စတော့စာရင်းဖွင့်ရန်","dashboard.ordersToday":"ယနေ့အရောင်း {count} ခု","dashboard.ordersMonth":"ယခုလအရောင်း {count} ခု","dashboard.expenseCount":"မှတ်တမ်း {count} ခု","dashboard.lowCount":"အနည်းဆုံးပမာဏနှင့်အောက် {count} မျိုး","dashboard.unitsSold":"{count} ခု ရောင်းပြီး","dashboard.left":"{count} ခုကျန်","dashboard.noSales":"ဤကာလတွင် အရောင်းမရှိသေးပါ။",
+  "products.eyebrow":"ကုန်ပစ္စည်းစာရင်း","products.title":"ကုန်ပစ္စည်းများ","products.detail":"အမျိုးအစား {categories} ခုတွင် အသုံးပြုနေသောပစ္စည်း {count} မျိုး။","products.add":"ကုန်ပစ္စည်းထည့်ရန်","products.search":"ကုန်ပစ္စည်း သို့ SKU ရှာရန်","products.all":"ကုန်ပစ္စည်းအားလုံး","products.low":"စတော့နည်း","products.sortName":"အမည် က မှ အ","products.sortStock":"စတော့နည်းမှ များသို့","products.sortPrice":"စျေးမြင့်မှ နိမ့်သို့","products.edit":"ကုန်ပစ္စည်းပြင်ဆင်ရန်","products.productName":"ကုန်ပစ္စည်းအမည်","products.sku":"SKU","products.costPrice":"အရင်းစျေး","products.sellingPrice":"ရောင်းစျေး","products.discountPrice":"လျှော့စျေး (မရှိလျှင် ထားခဲ့ပါ)","products.stockQty":"စတော့အရေအတွက်","products.minStock":"အနည်းဆုံးစတော့","products.category":"အမျိုးအစား","products.brand":"အမှတ်တံဆိပ်","products.saved":"ကုန်ပစ္စည်း သိမ်းပြီးပါပြီ","products.deleted":"ကုန်ပစ္စည်း ဖျက်ပြီးပါပြီ","products.sale":"လျှော့စျေး",
+  "category.Phones":"ဖုန်းများ","category.Accessories":"ဖုန်းအပိုပစ္စည်းများ","category.Chargers":"အားသွင်းခေါင်းများ","category.Cables":"ကြိုးများ","category.Earphones":"နားကြပ်များ","category.Power Banks":"ပါဝါဘဏ်များ","category.Cases":"ဖုန်းကာဗာများ","category.Screen Protectors":"မှန်ကာများ",
+  "inventory.eyebrow":"စတော့ထိန်းချုပ်မှု","inventory.title":"စတော့စာရင်း","inventory.detail":"အရောင်းနှင့် စတော့ပြင်ဆင်မှုတိုင်းကို စစ်ဆေးနိုင်ရန် မှတ်တမ်းတင်ထားသည်။","inventory.products":"ကုန်ပစ္စည်းများ","inventory.stockValue":"စတော့တန်ဖိုး","inventory.atCost":"အရင်းတန်ဖိုး","inventory.needsAttention":"စစ်ဆေးရန်လို","inventory.levels":"စတော့လက်ကျန်","inventory.tap":"အဝင်အထွက်မှတ်ရန် ပစ္စည်းကို နှိပ်ပါ","inventory.history":"အဝင်အထွက်မှတ်တမ်း","inventory.newest":"နောက်ဆုံးမှတ်တမ်း ဦးစွာ","inventory.type":"လုပ်ဆောင်ချက်","inventory.stockIn":"စတော့ဝင်","inventory.stockOut":"စတော့ထွက်","inventory.adjustment":"စတော့ပြင်ဆင်မှု (+ / −)","inventory.quantity":"အရေအတွက်","inventory.reason":"အကြောင်းရင်း / မှတ်ချက်","inventory.reasonPlaceholder":"ကုန်ဝင်၊ ပျက်စီး၊ စာရင်းပြင်ဆင်မှု…","inventory.update":"စတော့ပြင်ဆင်ရန်","inventory.updated":"စတော့စာရင်း ပြင်ဆင်ပြီးပါပြီ","inventory.current":"လက်ရှိစတော့: {count}","inventory.low":"စတော့နည်း","inventory.out":"စတော့ကုန်","inventory.sale":"အရောင်း","inventory.noHistory":"အဝင်အထွက်မှတ်တမ်း မရှိသေးပါ။",
+  "orders.eyebrow":"အရောင်းမှတ်တမ်း","orders.title":"အရောင်းစာရင်း","orders.detail":"ပြေစာနှင့် စတော့မှတ်တမ်းပါ အရောင်း {count} ခု။","orders.search":"အရောင်းအမှတ်၊ ဖောက်သည် သို့ ငွေပေးချေမှု ရှာရန်","orders.all":"အခြေအနေအားလုံး","orders.order":"အရောင်း","orders.customer":"ဖောက်သည်","orders.payment":"ငွေပေးချေမှု","orders.total":"စုစုပေါင်း","orders.completed":"ပြီးမြောက်","orders.refunded":"ငွေပြန်အမ်းပြီး","orders.cancelled":"ပယ်ဖျက်ပြီး","orders.refund":"ငွေပြန်အမ်းရန်","orders.refundedMsg":"ငွေပြန်အမ်းပြီးပါပြီ — စတော့ထဲ ပြန်ထည့်ထားသည်။","orders.noOrders":"အရောင်းမှတ်တမ်း မရှိသေးပါ။",
+  "customers.eyebrow":"ဖောက်သည်ဆက်ဆံရေး","customers.title":"ဖောက်သည်များ","customers.detail":"ဖောက်သည်အချက်အလက်နှင့် ဝယ်ယူမှုမှတ်တမ်းများ။","customers.add":"ဖောက်သည်ထည့်ရန်","customers.saved":"ဖောက်သည်အချက်အလက် သိမ်းပြီးပါပြီ","customers.name":"အမည်","customers.phone":"ဖုန်း","customers.totalPurchases":"စုစုပေါင်းဝယ်ယူမှု","customers.orders":"အရောင်းအရေအတွက်","customers.deleted":"ဖောက်သည် ဖျက်ပြီးပါပြီ",
+  "expenses.eyebrow":"လုပ်ငန်းကုန်ကျစရိတ်","expenses.title":"အသုံးစရိတ်များ","expenses.detail":"ယခုကာလတွင် {amount} မှတ်တမ်းတင်ထားသည်။","expenses.add":"အသုံးစရိတ်ထည့်ရန်","expenses.recorded":"အသုံးစရိတ် မှတ်တမ်းတင်ပြီးပါပြီ","expenses.name":"အသုံးစရိတ်အမည်","expenses.save":"အသုံးစရိတ်သိမ်းရန်","expenses.deleted":"အသုံးစရိတ် ဖျက်ပြီးပါပြီ",
+  "expenseCategory.Rent":"အိမ်ငှားခ","expenseCategory.Electricity":"မီတာခ","expenseCategory.Water":"ရေဖိုး","expenseCategory.Salary":"လစာ","expenseCategory.Transportation":"သယ်ယူပို့ဆောင်ခ","expenseCategory.Supplies":"အသုံးအဆောင်","expenseCategory.Marketing":"ကြော်ငြာစရိတ်","expenseCategory.Other":"အခြား",
+  "staff.title":"ဝန်ထမ်းနှင့် လုပ်ပိုင်ခွင့်များ","staff.detail":"ကောင်တာနှင့် စီမံခန့်ခွဲမှုအလုပ်များအတွက် ရာထူးအလိုက် အသုံးပြုခွင့်။","staff.add":"ဝန်ထမ်းထည့်ရန်","staff.admin":"စီမံခန့်ခွဲသူ","staff.manager":"မန်နေဂျာ","staff.cashier":"ငွေကိုင်","staff.role":"ရာထူး","staff.saved":"ဝန်ထမ်းအသုံးပြုခွင့် သိမ်းပြီးပါပြီ","staff.deleted":"ဝန်ထမ်း ဖျက်ပြီးပါပြီ",
+  "settings.eyebrow":"ဆိုင်ဆက်တင်","settings.title":"ဆက်တင်များ","settings.detail":"ပြေစာ၊ အခွန်၊ ဘာသာစကား၊ ငွေကြေးနှင့် မျက်နှာပြင်ပုံစံ။","settings.storeProfile":"ဆိုင်အချက်အလက်","settings.storeName":"ဆိုင်အမည်","settings.currency":"ငွေကြေး","settings.taxRate":"အခွန်နှုန်း (%)","settings.receiptFormat":"ပြေစာပုံစံ","settings.languageAppearance":"ဘာသာစကားနှင့် မျက်နှာပြင်","settings.languageHelp":"ချက်ချင်းပြောင်းလဲပြီး ဤစက်တွင် မှတ်ထားမည်။","settings.save":"ဆက်တင်သိမ်းရန်","settings.saved":"ဆက်တင်များ သိမ်းပြီးပါပြီ","settings.thb":"THB — ထိုင်းဘတ်","settings.mmk":"MMK — မြန်မာကျပ်","settings.usd":"USD — အမေရိကန်ဒေါ်လာ","settings.sgd":"SGD — စင်ကာပူဒေါ်လာ","settings.data":"ဒေတာ","settings.dataDetail":"အချက်အလက်အားလုံးကို ဤစက်တွင် သိမ်းထားသည်။","settings.exportBackup":"အရန်သိမ်းဆည်းဖိုင် ဒေါင်းလုဒ်လုပ်ရန် (JSON)","settings.resetDemo":"Demo ဒေတာ ပြန်ထည့်ရန်","settings.resetDone":"Demo ဒေတာ ပြန်ထည့်ပြီးပါပြီ","settings.resetConfirm":"Demo ဒေတာ ပြန်ထည့်မည်လား? လက်ရှိဒေတာ အစားထိုးသွားမည်။","settings.sync":"Cloud ချိတ်ဆက်မှု","sync.syncing":"စင့်ခ်လုပ်နေသည်…","sync.synced":"စင့်ခ်ပြီးပြီ • {time}","sync.offline":"အင်တာနက်မရှိ — ဒီစက်မှာပဲ သိမ်းထားသည်","sync.failed":"စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်","login.subtitle":"ကောင်တာဖွင့်ရန် ဝင်ရောက်ပါ။","login.email":"အီးမေးလ်","login.password":"စကားဝှက်","login.button":"ဝင်ရောက်ရန်","login.signingIn":"ဝင်ရောက်နေသည်…","login.signOut":"ထွက်ရန်","login.signedInAs":"ဝင်ရောက်ထားသည်: {email}","login.invalid":"အီးမေးလ် သို့မဟုတ် စကားဝှက်မှားနေပါသည်။ ထပ်ကြိုးစားပါ။","login.failed":"ဝင်ရောက်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။"
+}};
+function t(k, vars){
+  let s = (I18N[DB.settings.lang] && I18N[DB.settings.lang][k]) || I18N.en[k] || k;
+  if(vars) for(const n in vars) s = s.split('{'+n+'}').join(String(vars[n]));
+  return s;
+}
+function tCat(c){ return t('category.' + c, {}) || c; }
+function tPay(m){ const map = {Cash:'payment.cash','Bank Transfer':'payment.bank','QR Payment':'payment.qr',Card:'payment.card',Other:'payment.other'}; return t(map[m] || 'payment.other'); }
+function tExpCat(c){ return t('expenseCategory.' + c) || c; }
+function tStatus(s){ return s === 'Completed' ? t('orders.completed') : s === 'Refunded' ? t('orders.refunded') : t('orders.cancelled'); }
+function tRole(r){ return r === 'Admin' ? t('staff.admin') : r === 'Manager' ? t('staff.manager') : t('staff.cashier'); }
+
+/* ================= state ================= */
+const KEY = 'posHtml.v1';
+const CUR = { THB:{sym:'฿',dec:2}, MMK:{sym:'Ks',dec:0}, USD:{sym:'$',dec:2}, SGD:{sym:'S$',dec:2} };
+const CATEGORIES = ['Phones','Accessories','Chargers','Cables','Earphones','Power Banks','Cases','Screen Protectors'];
+const EXP_CATS = ['Rent','Electricity','Water','Salary','Transportation','Supplies','Marketing','Other'];
+const PAY_METHODS = ['Cash','Bank Transfer','QR Payment','Card','Other'];
+const PROD_ICON = { Phones:'📱', Chargers:'🔌', Earphones:'🎧', 'Power Banks':'🔋', Cables:'🔌', Cases:'📱', 'Screen Protectors':'🛡️', Accessories:'🧩' };
+
+let DB = null;
+let cart = [];            // {productId, qty}
+let curView = 'dashboard';
+let posCat = 'all';
+let posQuery = '';
+let moveProductId = null;
+let lastOrderId = null;
+
+function uid(p){ return p + Date.now().toString(36) + Math.floor(Math.random()*1296).toString(36); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function round2(n){ return Math.round((n + Number.EPSILON) * 100) / 100; }
+function money(n){
+  const c = CUR[DB.settings.currency] || CUR.THB;
+  return c.sym + Number(n || 0).toLocaleString('en-US', {minimumFractionDigits: c.dec, maximumFractionDigits: c.dec});
+}
+function moneyPlain(n){
+  const c = CUR[DB.settings.currency] || CUR.THB;
+  return Number(n || 0).toLocaleString('en-US', {minimumFractionDigits: c.dec, maximumFractionDigits: c.dec});
+}
+function effPrice(p){ return (p.discountPrice != null && p.discountPrice > 0 && p.discountPrice < p.sellingPrice) ? p.discountPrice : p.sellingPrice; }
+function prodById(id){ return DB.products.find(function(p){ return p.id === id; }); }
+function custById(id){ return DB.customers.find(function(c){ return c.id === id; }); }
+function fmtDate(ts){
+  const d = new Date(ts);
+  const pad = function(n){ return String(n).padStart(2,'0'); };
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+function fmtDay(ts){
+  const d = new Date(ts);
+  const pad = function(n){ return String(n).padStart(2,'0'); };
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+}
+function isToday(ts){ const a = new Date(ts), b = new Date(); return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+function isThisMonth(ts){ const a = new Date(ts), b = new Date(); return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth(); }
+function atDay(offset, h, m){
+  const d = new Date(); d.setDate(d.getDate() - offset); d.setHours(h, m, 0, 0); return d.getTime();
+}
+
+/* ================= seed demo data (mirrors hosted POS demo) ================= */
+function seedData(){
+  const products = [
+    {id:'p1', name:'Nova X1 128GB', sku:'PH-NX1-128', barcode:'885001000001', category:'Phones', brand:'Nova', costPrice:12900, sellingPrice:15900, discountPrice:14900, stock:8, minStock:3, unit:'pc', description:'OLED smartphone, 128GB, dual SIM', supplier:'Bangkok Mobile Supply', active:true},
+    {id:'p2', name:'GaN Fast Charger 30W', sku:'CH-GAN-30', barcode:'885001000002', category:'Chargers', brand:'Volt', costPrice:380, sellingPrice:690, discountPrice:null, stock:24, minStock:8, unit:'pc', description:'Compact 30W USB-C fast charger', supplier:'Volt Distribution', active:true},
+    {id:'p3', name:'AirBeat TWS Earbuds', sku:'EP-AB-TWS', barcode:'885001000003', category:'Earphones', brand:'AirBeat', costPrice:720, sellingPrice:1290, discountPrice:1090, stock:6, minStock:5, unit:'pc', description:'Wireless earbuds with charging case', supplier:'Audio Lane', active:true},
+    {id:'p4', name:'PowerGo 10K', sku:'PB-PG-10K', barcode:'885001000004', category:'Power Banks', brand:'PowerGo', costPrice:590, sellingPrice:990, discountPrice:null, stock:4, minStock:5, unit:'pc', description:'10,000mAh fast-charge power bank', supplier:'PowerGo Thailand', active:true},
+    {id:'p5', name:'Braided USB-C Cable 1m', sku:'CB-USBC-1M', barcode:'885001000005', category:'Cables', brand:'Loop', costPrice:95, sellingPrice:249, discountPrice:null, stock:38, minStock:10, unit:'pc', description:'Durable USB-C to USB-C cable', supplier:'Loop Accessories', active:true},
+    {id:'p6', name:'Shield Case — White', sku:'CS-SH-WHT', barcode:'885001000006', category:'Cases', brand:'Shield', costPrice:180, sellingPrice:490, discountPrice:390, stock:12, minStock:5, unit:'pc', description:'Shock-resistant protective phone case', supplier:'Shield Works', active:true},
+    {id:'p7', name:'Clear Glass Protector', sku:'SP-GL-CLR', barcode:'885001000007', category:'Screen Protectors', brand:'ClearGuard', costPrice:80, sellingPrice:290, discountPrice:null, stock:0, minStock:8, unit:'pc', description:'Clear hybrid glass screen protector', supplier:'ClearGuard', active:true},
+    {id:'p8', name:'Fold Phone Stand', sku:'AC-ST-FLD', barcode:'885001000008', category:'Accessories', brand:'DeskMate', costPrice:140, sellingPrice:390, discountPrice:null, stock:17, minStock:5, unit:'pc', description:'Compact folding phone stand', supplier:'DeskMate', active:true}
+  ];
+  const customers = [
+    {id:'c1', name:'Mali K.', phone:'081-234-6789', email:'mali@example.com', address:'Bangkok', notes:'Prefers digital receipt'},
+    {id:'c2', name:'Narin P.', phone:'089-144-2380', email:'narin@example.com', address:'Nonthaburi', notes:''},
+    {id:'c3', name:'Suda T.', phone:'086-552-0103', email:'suda@example.com', address:'Bangkok', notes:'Business customer'},
+    {id:'c4', name:'Walk-in customer', phone:'', email:'', address:'', notes:'Default counter sale'}
+  ];
+  const staff = [
+    {id:'s1', name:'Araya S.', role:'Admin', email:'araya@northstar.demo', active:true},
+    {id:'s2', name:'Kiet W.', role:'Manager', email:'kiet@northstar.demo', active:true},
+    {id:'s3', name:'Mina R.', role:'Cashier', email:'mina@northstar.demo', active:true}
+  ];
+  const orders = [
+    {id:'o1', orderNumber:'NS-2601001', customerId:'c1', cashier:'Mina R.', subtotal:1788, discount:0, tax:125.16, total:1913.16, paymentMethod:'QR Payment', amountReceived:1913.16, changeAmount:0, status:'Completed', createdAt:atDay(0,10,30),
+     items:[{productId:'p2', productName:'GaN Fast Charger 30W', sku:'CH-GAN-30', quantity:1, unitPrice:690, discount:0, lineTotal:690},
+            {productId:'p3', productName:'AirBeat TWS Earbuds', sku:'EP-AB-TWS', quantity:1, unitPrice:1098, discount:0, lineTotal:1098}]},
+    {id:'o2', orderNumber:'NS-2601002', customerId:'c4', cashier:'Mina R.', subtotal:1249, discount:100, tax:80.43, total:1229.43, paymentMethod:'Cash', amountReceived:1500, changeAmount:270.57, status:'Completed', createdAt:atDay(0,11,45),
+     items:[{productId:'p5', productName:'Braided USB-C Cable 1m', sku:'CB-USBC-1M', quantity:2, unitPrice:249, discount:0, lineTotal:498},
+            {productId:'p8', productName:'Fold Phone Stand', sku:'AC-ST-FLD', quantity:1, unitPrice:390, discount:0, lineTotal:390},
+            {productId:'p6', productName:'Shield Case — White', sku:'CS-SH-WHT', quantity:1, unitPrice:361, discount:0, lineTotal:361}]},
+    {id:'o3', orderNumber:'NS-2601003', customerId:'c2', cashier:'Kiet W.', subtotal:15880, discount:500, tax:1076.60, total:16456.60, paymentMethod:'Card', amountReceived:16456.60, changeAmount:0, status:'Completed', createdAt:atDay(1,15,20),
+     items:[{productId:'p1', productName:'Nova X1 128GB', sku:'PH-NX1-128', quantity:1, unitPrice:14900, discount:0, lineTotal:14900},
+            {productId:'p4', productName:'PowerGo 10K', sku:'PB-PG-10K', quantity:1, unitPrice:980, discount:0, lineTotal:980}]},
+    {id:'o4', orderNumber:'NS-2601004', customerId:'c3', cashier:'Mina R.', subtotal:1280, discount:0, tax:89.60, total:1369.60, paymentMethod:'Bank Transfer', amountReceived:1369.60, changeAmount:0, status:'Completed', createdAt:atDay(2,13,10),
+     items:[{productId:'p3', productName:'AirBeat TWS Earbuds', sku:'EP-AB-TWS', quantity:1, unitPrice:1090, discount:100, lineTotal:990},
+            {productId:'p7', productName:'Clear Glass Protector', sku:'SP-GL-CLR', quantity:1, unitPrice:290, discount:0, lineTotal:290}]}
+  ];
+  const expenses = [
+    {id:'e1', name:'Store supplies', category:'Supplies', amount:840, paymentMethod:'Cash', note:'Packaging and receipt rolls', date:atDay(1,9,0)},
+    {id:'e2', name:'Electricity', category:'Electricity', amount:3200, paymentMethod:'Bank Transfer', note:'Monthly utility bill', date:atDay(3,9,0)},
+    {id:'e3', name:'Local delivery', category:'Transportation', amount:460, paymentMethod:'Cash', note:'Same-day stock pickup', date:atDay(0,9,0)},
+    {id:'e4', name:'Social ads', category:'Marketing', amount:1500, paymentMethod:'Card', note:'Weekend campaign', date:atDay(4,9,0)}
+  ];
+  const movements = [
+    {id:'m1', productId:'p1', type:'sale', quantity:-1, previousStock:9, newStock:8, reference:'NS-2601003', note:'Sale completed', createdAt:atDay(1,15,20)},
+    {id:'m2', productId:'p4', type:'sale', quantity:-1, previousStock:5, newStock:4, reference:'NS-2601003', note:'Sale completed', createdAt:atDay(1,15,20)},
+    {id:'m3', productId:'p7', type:'sale', quantity:-1, previousStock:1, newStock:0, reference:'NS-2601004', note:'Sale completed', createdAt:atDay(2,13,10)},
+    {id:'m4', productId:'p5', type:'stock_in', quantity:20, previousStock:18, newStock:38, reference:'STK-26041', note:'Supplier delivery', createdAt:atDay(5,10,0)},
+    {id:'m5', productId:'p3', type:'adjustment', quantity:1, previousStock:5, newStock:6, reference:'ADJ-26009', note:'Count correction', createdAt:atDay(4,10,0)}
+  ];
+  return {
+    settings: { storeName:'Mercury Mobile Accessories', address:'Central Bangkok', phone:'02-555-0188', currency:'THB', lang:'my', taxRate:7, receiptSize:'80mm' },
+    products: products, customers: customers, staff: staff, orders: orders, expenses: expenses, movements: movements,
+    nextOrderSeq: 5
+  };
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){}
+  schedulePush();
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){ const d = JSON.parse(raw); if(d && d.products && d.settings) return d; }
+  }catch(e){}
+  return null;
+}
+
+/* ================= Supabase cloud sync (plain fetch, no libraries) ================= */
+/* Offline-first: localStorage is the source of truth on this device; the cloud is
+   a shared copy. If Supabase is unreachable, everything keeps working locally
+   and the next save retries the push. */
+const SB_URL = 'https://lvvulqjawnowqhiulmow.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2dnVscWphd25vd3FoaXVsbW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1MzU2MDksImV4cCI6MjExMTExMTYwOX0.nB-3sc9m938ZC6tex0xUsOB69hQyj3dwmb9v2deavFA';
+const SB_TABLES = ['products','customers','staff','orders','expenses','movements','settings'];
+let cloudReady = false;   /* false until the first pull finishes, so we never push stale local data over the cloud */
+let pendingWipe = false;  /* true when Restore demo data asked for a clean cloud before the next push */
+let syncTimer = null;
+let syncState = 'offline';
+
+/* ================= Supabase Auth (plain fetch, no libraries) ================= */
+/* No sign-up in the app: users are created only in the Supabase dashboard.
+   The session (user access token) is stored in localStorage; data calls use
+   the user token, never the anon key, for Authorization. */
+const AUTH_KEY = 'posHtmlAuth.v1';
+let authSession = null;   /* {access_token, refresh_token, expires_at (epoch seconds), email} */
+
+function loadAuth(){
+  try{ const s = JSON.parse(localStorage.getItem(AUTH_KEY)); return (s && s.access_token) ? s : null; }catch(e){ return null; }
+}
+function saveAuth(s){ try{ localStorage.setItem(AUTH_KEY, JSON.stringify(s)); }catch(e){} }
+function clearAuth(){ try{ localStorage.removeItem(AUTH_KEY); }catch(e){} authSession = null; }
+function authValid(s){ return !!(s && s.access_token && s.expires_at && (s.expires_at - 60) * 1000 > Date.now()); }
+
+function authLogin(email, password){
+  return fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, password: password })
+  }).then(function(r){
+    return r.json().then(function(j){
+      if(!r.ok){ const e = new Error((j && (j.error_description || j.msg || j.error)) || 'login failed'); e.status = r.status; throw e; }
+      return j;
+    });
+  }).then(function(j){
+    authSession = { access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Math.floor(Date.now() / 1000) + (j.expires_in || 3600), email: (j.user && j.user.email) || email };
+    saveAuth(authSession);
+    return authSession;
+  });
+}
+function authRefresh(){
+  if(!authSession || !authSession.refresh_token) return Promise.resolve(null);
+  return fetch(SB_URL + '/auth/v1/token?grant_type=refresh_token', {
+    method: 'POST',
+    headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh_token: authSession.refresh_token })
+  }).then(function(r){
+    if(!r.ok) throw new Error('refresh ' + r.status);
+    return r.json();
+  }).then(function(j){
+    authSession = { access_token: j.access_token, refresh_token: j.refresh_token || authSession.refresh_token, expires_at: Math.floor(Date.now() / 1000) + (j.expires_in || 3600), email: authSession.email };
+    saveAuth(authSession);
+    return authSession;
+  }).catch(function(){ clearAuth(); return null; });
+}
+function updateAuthUI(){
+  const el = document.getElementById('signedInAs');
+  if(el) el.textContent = (authSession && authSession.email) ? t('login.signedInAs', {email: authSession.email}) : '';
+}
+function showLoginScreen(){
+  document.body.classList.add('logged-out');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  updateAuthUI();
+  applyLang();
+}
+function enterApp(){
+  document.body.classList.remove('logged-out');
+  document.getElementById('loginScreen').classList.add('hidden');
+  updateAuthUI();
+  applyLang();
+  showView('dashboard');
+  initialSync();
+}
+function signOut(){
+  clearAuth();
+  cloudReady = false;
+  pendingWipe = false;
+  const pw = document.getElementById('loginPassword');
+  if(pw) pw.value = '';
+  showLoginScreen();
+}
+function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const err = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  err.classList.add('hidden');
+  if(!email || !password){ err.textContent = t('common.required'); err.classList.remove('hidden'); return; }
+  btn.disabled = true;
+  btn.textContent = t('login.signingIn');
+  authLogin(email, password).then(function(){
+    document.getElementById('loginPassword').value = '';
+    enterApp();
+  }).catch(function(e){
+    err.textContent = (e && e.status === 400) ? t('login.invalid') : t('login.failed');
+    err.classList.remove('hidden');
+  }).then(function(){
+    btn.disabled = false;
+    btn.textContent = t('login.button');
+  });
+}
+function bindAuthUI(){
+  document.getElementById('loginBtn').addEventListener('click', doLogin);
+  document.getElementById('loginPassword').addEventListener('keydown', function(e){ if(e.key === 'Enter') doLogin(); });
+  document.getElementById('loginEmail').addEventListener('keydown', function(e){ if(e.key === 'Enter') doLogin(); });
+  document.getElementById('signOutBtn').addEventListener('click', signOut);
+  document.getElementById('posSignOutBtn').addEventListener('click', signOut);
+}
+
+function sbHeaders(json){
+  const h = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + (authSession ? authSession.access_token : SB_KEY) };
+  if(json) h['Content-Type'] = 'application/json';
+  return h;
+}
+function sbGet(table){
+  if(!authSession) return Promise.reject(new Error('no session'));
+  return fetch(SB_URL + '/rest/v1/' + table + '?select=*&order=id&limit=1000', { headers: sbHeaders(false) })
+    .then(function(r){ if(!r.ok) throw new Error('sb ' + r.status); return r.json(); });
+}
+function sbUpsert(table, rows){
+  if(!authSession) return Promise.resolve();
+  if(!rows.length) return Promise.resolve();
+  return fetch(SB_URL + '/rest/v1/' + table + '?on_conflict=id', {
+    method: 'POST',
+    headers: Object.assign(sbHeaders(true), { 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
+    body: JSON.stringify(rows)
+  }).then(function(r){ if(!r.ok) throw new Error('sb ' + r.status); });
+}
+function sbDelete(table, id){
+  if(!authSession) return;
+  fetch(SB_URL + '/rest/v1/' + table + '?id=eq.' + encodeURIComponent(id), {
+    method: 'DELETE',
+    headers: Object.assign(sbHeaders(false), { 'Prefer': 'return=minimal' })
+  }).catch(function(){});
+}
+function toISO(ms){ return new Date(ms || Date.now()).toISOString(); }
+function fromTS(s){ return s ? new Date(s).getTime() : 0; }
+
+/* local (camelCase) -> Supabase row (snake_case) */
+function toProductRow(p){ return { id:p.id, name:p.name, sku:p.sku || null, barcode:p.barcode || null, category:p.category, brand:p.brand || null, cost_price:p.costPrice || 0, selling_price:p.sellingPrice || 0, discount_price:(p.discountPrice == null ? null : p.discountPrice), stock:p.stock || 0, min_stock:p.minStock || 0, unit:p.unit || 'pc', description:p.description || null, supplier:p.supplier || null, active:(p.active !== false) }; }
+function toCustomerRow(c){ return { id:c.id, name:c.name, phone:c.phone || null, email:c.email || null, address:c.address || null, notes:c.notes || null }; }
+function toStaffRow(m){ return { id:m.id, name:m.name, role:m.role, email:m.email || null, active:(m.active !== false) }; }
+function toOrderRow(o){ return { id:o.id, order_number:o.orderNumber, customer_id:o.customerId || null, cashier:o.cashier || null, subtotal:o.subtotal || 0, discount:o.discount || 0, tax:o.tax || 0, total:o.total || 0, payment_method:o.paymentMethod || null, amount_received:o.amountReceived || 0, change_amount:o.changeAmount || 0, status:o.status || 'Completed', items:o.items || [], created_at:toISO(o.createdAt) }; }
+function toExpenseRow(e){ return { id:e.id, name:e.name, category:e.category, amount:e.amount || 0, payment_method:e.paymentMethod || null, note:e.note || null, date:toISO(e.date) }; }
+function toMovementRow(m){ return { id:m.id, product_id:m.productId, type:m.type, quantity:m.quantity || 0, previous_stock:(m.previousStock == null ? null : m.previousStock), new_stock:(m.newStock == null ? null : m.newStock), reference:m.reference || null, note:m.note || null, created_at:toISO(m.createdAt) }; }
+function toSettingsRow(db){ const s = db.settings; return { id:1, store_name:s.storeName, address:s.address || null, phone:s.phone || null, currency:s.currency || 'THB', lang:s.lang || 'my', tax_rate:(s.taxRate == null ? 0 : s.taxRate), receipt_size:s.receiptSize || '80mm', next_order_seq:db.nextOrderSeq || 5 }; }
+
+/* Supabase row (snake_case) -> local (camelCase) */
+function fromProductRow(r){ return { id:r.id, name:r.name, sku:r.sku || '', barcode:r.barcode || '', category:r.category, brand:r.brand || '', costPrice:Number(r.cost_price) || 0, sellingPrice:Number(r.selling_price) || 0, discountPrice:(r.discount_price == null ? null : Number(r.discount_price)), stock:Number(r.stock) || 0, minStock:Number(r.min_stock) || 0, unit:r.unit || 'pc', description:r.description || '', supplier:r.supplier || '', active:(r.active !== false) }; }
+function fromCustomerRow(r){ return { id:r.id, name:r.name, phone:r.phone || '', email:r.email || '', address:r.address || '', notes:r.notes || '' }; }
+function fromStaffRow(r){ return { id:r.id, name:r.name, role:r.role, email:r.email || '', active:(r.active !== false) }; }
+function fromOrderRow(r){ return { id:r.id, orderNumber:r.order_number, customerId:r.customer_id || '', cashier:r.cashier || '', subtotal:Number(r.subtotal) || 0, discount:Number(r.discount) || 0, tax:Number(r.tax) || 0, total:Number(r.total) || 0, paymentMethod:r.payment_method || '', amountReceived:Number(r.amount_received) || 0, changeAmount:Number(r.change_amount) || 0, status:r.status || 'Completed', items:r.items || [], createdAt:fromTS(r.created_at) }; }
+function fromExpenseRow(r){ return { id:r.id, name:r.name, category:r.category, amount:Number(r.amount) || 0, paymentMethod:r.payment_method || '', note:r.note || '', date:fromTS(r.date) }; }
+function fromMovementRow(r){ return { id:r.id, productId:r.product_id, type:r.type, quantity:Number(r.quantity) || 0, previousStock:(r.previous_stock == null ? null : Number(r.previous_stock)), newStock:(r.new_stock == null ? null : Number(r.new_stock)), reference:r.reference || '', note:r.note || '', createdAt:fromTS(r.created_at) }; }
+
+function cloudHasRows(cloud){
+  return SB_TABLES.some(function(tb){ return cloud[tb] && cloud[tb].length > 0; });
+}
+function cloudToLocal(cloud){
+  const s = (cloud.settings && cloud.settings[0]) || null;
+  return {
+    settings: s ? { storeName:s.store_name || '', address:s.address || '', phone:s.phone || '', currency:s.currency || 'THB', lang:s.lang || 'my', taxRate:Number(s.tax_rate) || 0, receiptSize:s.receipt_size || '80mm' }
+                : { storeName:DB.settings.storeName, address:DB.settings.address, phone:DB.settings.phone, currency:DB.settings.currency, lang:DB.settings.lang, taxRate:DB.settings.taxRate, receiptSize:DB.settings.receiptSize },
+    products: cloud.products.map(fromProductRow),
+    customers: cloud.customers.map(fromCustomerRow),
+    staff: cloud.staff.map(fromStaffRow),
+    orders: cloud.orders.map(fromOrderRow),
+    expenses: cloud.expenses.map(fromExpenseRow),
+    movements: cloud.movements.map(fromMovementRow),
+    nextOrderSeq: s ? (Number(s.next_order_seq) || 5) : DB.nextOrderSeq
+  };
+}
+function pullCloud(){
+  return Promise.all(SB_TABLES.map(sbGet)).then(function(results){
+    const out = {};
+    SB_TABLES.forEach(function(tb, i){ out[tb] = results[i] || []; });
+    return out;
+  });
+}
+function pushCloud(){
+  if(!DB || !authSession) return Promise.resolve(false);
+  if(pendingWipe){
+    return wipeCloud().then(function(){ pendingWipe = false; return pushCloud(); })
+      .catch(function(){ setSyncStatus('fail'); return false; });
+  }
+  const jobs = [
+    ['settings', [toSettingsRow(DB)]],
+    ['products', DB.products.map(toProductRow)],
+    ['customers', DB.customers.map(toCustomerRow)],
+    ['staff', DB.staff.map(toStaffRow)],
+    ['orders', DB.orders.map(toOrderRow)],
+    ['expenses', DB.expenses.map(toExpenseRow)],
+    ['movements', DB.movements.map(toMovementRow)]
+  ];
+  let chain = Promise.resolve();
+  jobs.forEach(function(job){
+    chain = chain.then(function(){ return sbUpsert(job[0], job[1]); });
+  });
+  return chain.then(function(){ setSyncStatus('ok'); return true; }).catch(function(){ setSyncStatus('fail'); return false; });
+}
+function schedulePush(){
+  if(!cloudReady) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(function(){ pushCloud(); }, 800);
+}
+function syncTime(){
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function setSyncStatus(state){
+  syncState = state;
+  const el = document.getElementById('syncStatus');
+  if(!el) return;
+  if(state === 'syncing') el.textContent = t('sync.syncing');
+  else if(state === 'ok') el.textContent = t('sync.synced', {time: syncTime()});
+  else if(state === 'offline') el.textContent = t('sync.offline');
+  else el.textContent = t('sync.failed');
+}
+function initialSync(){
+  if(!authSession) return;
+  setSyncStatus('syncing');
+  pullCloud().then(function(cloud){
+    if(cloudHasRows(cloud)){
+      DB = cloudToLocal(cloud);
+      save();
+      cloudReady = true;
+      setSyncStatus('ok');
+      applyLang();
+    } else {
+      cloudReady = true;
+      pushCloud();
+    }
+  }).catch(function(){
+    cloudReady = true;
+    setSyncStatus('offline');
+  });
+}
+/* Wipe the cloud tables (used by Restore demo data) so stale rows cannot come back on the next load. */
+function wipeCloud(){
+  if(!authSession) return Promise.resolve();
+  let chain = Promise.resolve();
+  SB_TABLES.forEach(function(tb){
+    chain = chain.then(function(){
+      return fetch(SB_URL + '/rest/v1/' + tb + '?id=neq.__none__', {
+        method: 'DELETE',
+        headers: Object.assign(sbHeaders(false), { 'Prefer': 'return=minimal' })
+      }).then(function(r){ if(!r.ok) throw new Error('sb ' + r.status); });
+    });
+  });
+  return chain;
+}
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.remove('hidden');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ el.classList.add('hidden'); }, 2600);
+}
+
+/* ================= navigation & language ================= */
+const NAV = [
+  {id:'dashboard', icon:'🏠'}, {id:'pos', icon:'🧾'}, {id:'products', icon:'📱'},
+  {id:'inventory', icon:'📦'}, {id:'orders', icon:'🧾'}, {id:'customers', icon:'👥'},
+  {id:'expenses', icon:'💸'}, {id:'settings', icon:'⚙️'}
+];
+const BOTTOM_NAV = ['dashboard','pos','products','orders','more'];
+function showView(id){
+  if(id === 'more'){ document.getElementById('moreSheet').classList.toggle('hidden'); return; }
+  document.getElementById('moreSheet').classList.add('hidden');
+  document.getElementById('posMenu').classList.add('hidden');
+  curView = id;
+  document.querySelectorAll('.page').forEach(function(s){ s.classList.add('hidden'); });
+  const v = document.getElementById('view-' + id);
+  if(v) v.classList.remove('hidden');
+  document.querySelectorAll('#sideNavBtns button').forEach(function(b){ b.classList.toggle('active', b.dataset.nav === id); });
+  document.querySelectorAll('#bottomNav button').forEach(function(b){ b.classList.toggle('active', b.dataset.nav === id); });
+  renderCurrent();
+  window.scrollTo(0, 0);
+}
+function buildNav(){
+  document.getElementById('sideNavBtns').innerHTML = NAV.map(function(n){
+    return '<button type="button" data-nav="' + n.id + '"><span class="ico">' + n.icon + '</span><span data-t="nav.' + n.id + '">' + t('nav.' + n.id) + '</span></button>';
+  }).join('');
+  document.getElementById('bottomNav').innerHTML = BOTTOM_NAV.map(function(id){
+    if(id === 'more') return '<button type="button" data-nav="more"><span class="ico">⋯</span><span data-t="nav.more">' + t('nav.more') + '</span></button>';
+    const n = NAV.find(function(x){ return x.id === id; });
+    return '<button type="button" data-nav="' + id + '"><span class="ico">' + n.icon + '</span><span data-t="nav.' + id + '">' + t('nav.' + id) + '</span></button>';
+  }).join('');
+  document.querySelectorAll('#sideNavBtns [data-nav], #bottomNav [data-nav]').forEach(function(el){
+    el.addEventListener('click', function(){ showView(el.dataset.nav); });
+  });
+}
+function bindStaticNav(){
+  document.querySelectorAll('#posMenu [data-nav], #moreSheet [data-nav]').forEach(function(el){
+    el.addEventListener('click', function(){ showView(el.dataset.nav); });
+  });
+}
+function applyLang(){
+  document.documentElement.lang = DB.settings.lang;
+  document.querySelectorAll('[data-t]').forEach(function(el){ el.textContent = t(el.dataset.t); });
+  document.querySelectorAll('[data-tp]').forEach(function(el){ el.placeholder = t(el.dataset.tp); });
+  document.querySelectorAll('.lang-toggle').forEach(function(tg){
+    tg.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === DB.settings.lang); });
+  });
+  document.getElementById('brandName').textContent = DB.settings.storeName;
+  document.getElementById('mobileBrandName').textContent = DB.settings.storeName;
+  document.getElementById('brandMark').textContent = (DB.settings.storeName || 'P').trim().charAt(0).toUpperCase();
+  document.getElementById('loginStoreName').textContent = DB.settings.storeName;
+  document.getElementById('loginMark').textContent = (DB.settings.storeName || 'P').trim().charAt(0).toUpperCase();
+  buildNav();
+  renderCurrent();
+  setSyncStatus(syncState);
+  updateAuthUI();
+}
+function setLang(lang){
+  if(lang !== 'my' && lang !== 'en') return;
+  DB.settings.lang = lang; save(); applyLang();
+}
+
+/* ================= dashboard ================= */
+function renderDashboard(){
+  const done = DB.orders.filter(function(o){ return o.status === 'Completed'; });
+  const today = done.filter(function(o){ return isToday(o.createdAt); });
+  const month = done.filter(function(o){ return isThisMonth(o.createdAt); });
+  const expMonth = DB.expenses.filter(function(e){ return isThisMonth(e.date); });
+  const expTotal = expMonth.reduce(function(s,e){ return s + e.amount; }, 0);
+  const monthSales = month.reduce(function(s,o){ return s + o.total; }, 0);
+  const costMonth = month.reduce(function(s,o){
+    return s + o.items.reduce(function(a,it){
+      const p = prodById(it.productId); return a + (p ? p.costPrice * it.quantity : 0);
+    }, 0);
+  }, 0);
+  document.getElementById('mToday').textContent = money(today.reduce(function(s,o){ return s + o.total; }, 0));
+  document.getElementById('mTodayOrders').textContent = t('dashboard.ordersToday', {count: today.length});
+  document.getElementById('mMonth').textContent = money(monthSales);
+  document.getElementById('mMonthOrders').textContent = t('dashboard.ordersMonth', {count: month.length});
+  document.getElementById('mExp').textContent = money(expTotal);
+  document.getElementById('mExpCount').textContent = t('dashboard.expenseCount', {count: expMonth.length});
+  document.getElementById('mNet').textContent = money(monthSales - costMonth - expTotal);
+  // top products this month
+  const qty = {};
+  month.forEach(function(o){ o.items.forEach(function(it){ qty[it.productId] = (qty[it.productId] || 0) + it.quantity; }); });
+  const top = Object.keys(qty).map(function(pid){ return {p: prodById(pid), q: qty[pid]}; })
+    .filter(function(x){ return x.p; }).sort(function(a,b){ return b.q - a.q; }).slice(0, 5);
+  document.getElementById('topProducts').innerHTML = top.length ? top.map(function(x){
+    return '<div><div><strong>' + esc(x.p.name) + '</strong><small>' + esc(x.p.sku) + '</small></div><strong>' + t('dashboard.unitsSold', {count: x.q}) + '</strong></div>';
+  }).join('') : '<div class="empty"><p>' + esc(t('dashboard.noSales')) + '</p></div>';
+  // low stock
+  const low = DB.products.filter(function(p){ return p.active && p.stock <= p.minStock; }).sort(function(a,b){ return a.stock - b.stock; });
+  document.getElementById('lowStockNote').textContent = t('dashboard.lowCount', {count: low.length});
+  document.getElementById('lowStockList').innerHTML = low.length ? low.slice(0, 6).map(function(p){
+    return '<div><div><strong>' + esc(p.name) + '</strong><small>' + esc(p.sku) + '</small></div><span class="badge ' + (p.stock === 0 ? 'bad' : 'warn') + '">' + t('dashboard.left', {count: p.stock}) + '</span></div>';
+  }).join('') : '<div class="empty"><p>✓</p></div>';
+}
+
+/* ================= POS ================= */
+function cartQty(pid){
+  const line = cart.find(function(l){ return l.productId === pid; });
+  return line ? line.qty : 0;
+}
+function cartTotals(){
+  let sub = 0;
+  cart.forEach(function(l){
+    const p = prodById(l.productId); if(p) sub += effPrice(p) * l.qty;
+  });
+  sub = round2(sub);
+  return { subtotal: sub };
+}
+function addToCart(pid){
+  const p = prodById(pid);
+  if(!p || !p.active) return;
+  if(p.stock <= 0){ toast(t('pos.outOfStock')); return; }
+  const line = cart.find(function(l){ return l.productId === pid; });
+  const cur = line ? line.qty : 0;
+  if(cur + 1 > p.stock){ toast(t('pos.inStock', {count: p.stock})); return; }
+  if(line) line.qty++;
+  else cart.push({productId: pid, qty: 1});
+  renderCart();
+}
+function setQty(pid, qty){
+  const p = prodById(pid); if(!p) return;
+  qty = Math.max(0, Math.min(p.stock, Math.floor(qty) || 0));
+  const line = cart.find(function(l){ return l.productId === pid; });
+  if(!line) return;
+  if(qty === 0) cart = cart.filter(function(l){ return l.productId !== pid; });
+  else line.qty = qty;
+  renderCart();
+}
+function renderPos(){
+  // categories
+  const cats = ['all'].concat(CATEGORIES.filter(function(c){ return DB.products.some(function(p){ return p.active && p.category === c; }); }));
+  document.getElementById('posCategories').innerHTML = cats.map(function(c){
+    const label = c === 'all' ? t('common.all') : tCat(c);
+    return '<button type="button" class="btn' + (posCat === c ? ' active' : '') + '" data-cat="' + esc(c) + '">' + esc(label) + '</button>';
+  }).join('');
+  document.querySelectorAll('#posCategories button').forEach(function(b){
+    b.addEventListener('click', function(){ posCat = b.dataset.cat; renderPos(); });
+  });
+  // grid
+  const q = posQuery.trim().toLowerCase();
+  const list = DB.products.filter(function(p){
+    if(!p.active) return false;
+    if(posCat !== 'all' && p.category !== posCat) return false;
+    if(q && (p.name + ' ' + p.sku + ' ' + (p.barcode || '') + ' ' + p.category).toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  });
+  const grid = document.getElementById('productGrid');
+  document.getElementById('posEmpty').classList.toggle('hidden', list.length > 0);
+  grid.innerHTML = list.map(function(p){
+    const price = effPrice(p), onSale = price < p.sellingPrice;
+    const inCart = cartQty(p.id);
+    const stockTxt = p.stock === 0 ? '<em class="low">' + esc(t('pos.outOfStock')) + '</em>'
+      : p.stock <= p.minStock ? '<em class="low">' + esc(t('pos.inStock', {count: p.stock})) + '</em>'
+      : '<em>' + esc(t('pos.inStock', {count: p.stock})) + '</em>';
+    return '<button type="button" class="product-card' + (p.stock === 0 ? ' sold-out' : '') + '" data-pid="' + p.id + '"' + (p.stock === 0 ? ' disabled' : '') + '>' +
+      (onSale ? '<span class="sale-badge">' + esc(t('products.sale')) + '</span>' : '') +
+      (inCart > 0 ? '<span class="cart-count">' + inCart + '</span>' : '') +
+      '<div class="product-photo">' + (PROD_ICON[p.category] || '📦') + '</div>' +
+      '<div class="product-copy"><small>' + esc(p.sku) + '</small><strong>' + esc(p.name) + '</strong>' +
+      '<div class="p-price">' + money(price) + (onSale ? '<del>' + money(p.sellingPrice) + '</del>' : '') + '</div>' +
+      stockTxt + '</div></button>';
+  }).join('');
+  grid.querySelectorAll('.product-card').forEach(function(card){
+    card.addEventListener('click', function(){ addToCart(card.dataset.pid); });
+  });
+  renderCart();
+}
+function renderCart(){
+  const panel = document.getElementById('cartPanel');
+  const count = cart.reduce(function(s,l){ return s + l.qty; }, 0);
+  const tot = cartTotals();
+  let itemsHtml = '';
+  if(cart.length === 0){
+    itemsHtml = '<div class="empty"><div class="empty-mark">🧾</div><h3>' + esc(t('cart.ready')) + '</h3><p>' + esc(t('cart.readyDetail')) + '</p></div>';
+  } else {
+    itemsHtml = cart.map(function(l){
+      const p = prodById(l.productId); if(!p) return '';
+      const price = effPrice(p);
+      return '<div class="cart-item"><div class="cart-info"><strong>' + esc(p.name) + '</strong><small>' + esc(t('cart.each', {price: money(price)})) + '</small>' +
+        '<span class="stepper"><button type="button" data-dec="' + p.id + '" aria-label="−">−</button>' +
+        '<input type="number" value="' + l.qty + '" min="0" max="' + p.stock + '" data-qty="' + p.id + '" aria-label="Qty">' +
+        '<button type="button" data-inc="' + p.id + '" aria-label="+">＋</button></span></div>' +
+        '<div class="line-total"><strong>' + money(price * l.qty) + '</strong><button type="button" data-rm="' + p.id + '" aria-label="Remove">✕</button></div></div>';
+    }).join('');
+  }
+  panel.innerHTML =
+    '<div class="cart-head"><h2>' + esc(t('cart.title')) + '</h2>' +
+    (cart.length ? '<button class="btn ghost" type="button" id="cartClearBtn">' + esc(t('cart.clear')) + '</button>' : '') + '</div>' +
+    '<div class="cart-items">' + itemsHtml + '</div>' +
+    '<div class="totals"><div><span>' + esc(t('cart.subtotal')) + '</span><strong>' + money(tot.subtotal) + '</strong></div>' +
+    '<div><span>' + esc(t('cart.tax', {rate: DB.settings.taxRate})) + '</span><strong>' + money(round2(tot.subtotal * DB.settings.taxRate / 100)) + '</strong></div>' +
+    '<div class="grand"><span>' + esc(t('cart.total')) + '</span><strong>' + money(round2(tot.subtotal * (1 + DB.settings.taxRate / 100))) + '</strong></div></div>' +
+    '<button class="charge-btn" type="button" id="chargeBtn"' + (cart.length === 0 ? ' disabled' : '') + '><span>' + esc(t('cart.charge')) + '</span><span>' + money(round2(tot.subtotal * (1 + DB.settings.taxRate / 100))) + '</span></button>';
+  const clearBtn = document.getElementById('cartClearBtn');
+  if(clearBtn) clearBtn.addEventListener('click', function(){ cart = []; renderCart(); });
+  const chargeBtn = document.getElementById('chargeBtn');
+  if(chargeBtn) chargeBtn.addEventListener('click', openCheckout);
+  panel.querySelectorAll('[data-inc]').forEach(function(b){ b.addEventListener('click', function(){ addToCart(b.dataset.inc); }); });
+  panel.querySelectorAll('[data-dec]').forEach(function(b){ b.addEventListener('click', function(){ setQty(b.dataset.dec, cartQty(b.dataset.dec) - 1); }); });
+  panel.querySelectorAll('[data-rm]').forEach(function(b){ b.addEventListener('click', function(){ setQty(b.dataset.rm, 0); }); });
+  panel.querySelectorAll('[data-qty]').forEach(function(inp){
+    inp.addEventListener('change', function(){ setQty(inp.dataset.qty, parseInt(inp.value, 10)); });
+  });
+  // mobile cart bar
+  const bar = document.getElementById('mobileCartBar');
+  if(count > 0){
+    bar.classList.remove('hidden');
+    document.getElementById('mobileCartInfo').textContent = t('pos.items', {count: count});
+    document.getElementById('mobileCartTotal').textContent = money(round2(tot.subtotal * (1 + DB.settings.taxRate / 100)));
+  } else bar.classList.add('hidden');
+}
+
+/* ================= checkout & receipt ================= */
+function openCheckout(){
+  if(cart.length === 0) return;
+  const tot = cartTotals();
+  const tax = round2(tot.subtotal * DB.settings.taxRate / 100);
+  const total = round2(tot.subtotal + tax);
+  const custOpts = DB.customers.map(function(c){
+    return '<option value="' + c.id + '">' + esc(c.name) + (c.phone ? ' · ' + esc(c.phone) : '') + '</option>';
+  }).join('');
+  const payBtns = PAY_METHODS.map(function(m, i){
+    return '<button type="button" data-pay="' + esc(m) + '"' + (i === 0 ? ' class="active"' : '') + '>' + esc(tPay(m)) + '</button>';
+  }).join('');
+  openModal(
+    '<header><h2>' + esc(t('checkout.title')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    '<div class="field"><span>' + esc(t('checkout.customer')) + '</span><select id="coCustomer">' + custOpts + '</select></div>' +
+    '<div class="field"><span>' + esc(t('checkout.paymentMethod')) + '</span><div class="payment-methods">' + payBtns + '</div></div>' +
+    '<div class="field"><span>' + esc(t('checkout.orderDiscount')) + '</span><input type="number" id="coDiscount" min="0" step="any" value="0"></div>' +
+    '<div class="summary-box"><div><span>' + esc(t('cart.subtotal')) + '</span><strong id="coSub">' + money(tot.subtotal) + '</strong></div>' +
+    '<div><span>' + esc(t('checkout.orderDiscount')) + '</span><strong id="coDiscVal">' + money(0) + '</strong></div>' +
+    '<div><span>' + esc(t('cart.tax', {rate: DB.settings.taxRate})) + '</span><strong id="coTax">' + money(tax) + '</strong></div>' +
+    '<div><span>' + esc(t('checkout.amountDue')) + '</span></div><div class="due" id="coTotal">' + money(total) + '</div>' +
+    '<div><span>' + esc(t('checkout.change')) + '</span><strong id="coChange">' + money(0) + '</strong></div></div>' +
+    '<div id="coCashBox"><div class="cash-readout"><span>' + esc(t('checkout.amountReceived')) + '</span>' +
+    '<div class="cash-entry"><b>' + esc(CUR[DB.settings.currency].sym) + '</b><input type="number" id="coReceived" min="0" step="any" inputmode="decimal" placeholder="0"></div></div>' +
+    '<div class="keypad">' +
+    ['1','2','3','4','5','6','7','8','9','00','0','.'].map(function(k){ return '<button type="button" data-key="' + k + '">' + k + '</button>'; }).join('') +
+    '<button type="button" class="quick-cash" data-key="exact">' + esc(t('checkout.next100')) + '</button>' +
+    '<button type="button" data-key="clear">C</button></div></div>' +
+    '<div class="form-actions split" style="margin-top:16px"><button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
+    '<button class="btn primary" type="button" id="coComplete">' + esc(t('checkout.complete')) + '</button></div>'
+  );
+  let payMethod = 'Cash';
+  let discount = 0;
+  function recalc(){
+    discount = Math.max(0, Math.min(tot.subtotal, parseFloat(document.getElementById('coDiscount').value) || 0));
+    const taxable = round2(tot.subtotal - discount);
+    const tx = round2(taxable * DB.settings.taxRate / 100);
+    const tt = round2(taxable + tx);
+    document.getElementById('coDiscVal').textContent = money(discount);
+    document.getElementById('coTax').textContent = money(tx);
+    document.getElementById('coTotal').textContent = money(tt);
+    const recv = payMethod === 'Cash' ? (parseFloat(document.getElementById('coReceived').value) || 0) : tt;
+    document.getElementById('coChange').textContent = money(Math.max(0, round2(recv - tt)));
+    return { taxable: taxable, tax: tx, total: tt, received: recv };
+  }
+  document.getElementById('coDiscount').addEventListener('input', recalc);
+  document.getElementById('coReceived').addEventListener('input', recalc);
+  document.querySelectorAll('[data-pay]').forEach(function(b){
+    b.addEventListener('click', function(){
+      payMethod = b.dataset.pay;
+      document.querySelectorAll('[data-pay]').forEach(function(x){ x.classList.toggle('active', x === b); });
+      document.getElementById('coCashBox').classList.toggle('hidden', payMethod !== 'Cash');
+      recalc();
+    });
+  });
+  document.querySelectorAll('[data-key]').forEach(function(b){
+    b.addEventListener('click', function(){
+      const inp = document.getElementById('coReceived');
+      const k = b.dataset.key;
+      if(k === 'clear') inp.value = '';
+      else if(k === 'exact'){
+        const r = recalc();
+        const step = DB.settings.currency === 'MMK' ? 1000 : 100;
+        inp.value = String(Math.ceil(r.total / step) * step);
+      }
+      else inp.value = (inp.value || '') + k;
+      recalc();
+    });
+  });
+  document.getElementById('coComplete').addEventListener('click', function(){
+    const r = recalc();
+    if(payMethod === 'Cash' && r.received < r.total){ toast(t('checkout.notEnough')); return; }
+    completeSale(payMethod, document.getElementById('coCustomer').value, discount, r);
+  });
+  recalc();
+}
+function completeSale(payMethod, customerId, discount, r){
+  const tot = cartTotals();
+  const orderNum = 'NS-2601' + String(1000 + DB.nextOrderSeq).slice(1);
+  DB.nextOrderSeq++;
+  const cashier = (DB.staff.find(function(s){ return s.role === 'Cashier' && s.active; }) || DB.staff[0] || {name: 'Admin'}).name;
+  const items = cart.map(function(l){
+    const p = prodById(l.productId);
+    const price = effPrice(p);
+    return { productId: p.id, productName: p.name, sku: p.sku, quantity: l.qty, unitPrice: price, discount: 0, lineTotal: round2(price * l.qty) };
+  });
+  const order = {
+    id: uid('o'), orderNumber: orderNum, customerId: customerId || 'c4', cashier: cashier,
+    subtotal: tot.subtotal, discount: discount, tax: r.tax, total: r.total,
+    paymentMethod: payMethod, amountReceived: r.received, changeAmount: round2(Math.max(0, r.received - r.total)),
+    status: 'Completed', createdAt: Date.now(), items: items
+  };
+  DB.orders.unshift(order);
+  // decrement stock + movements
+  cart.forEach(function(l){
+    const p = prodById(l.productId);
+    if(!p) return;
+    const prev = p.stock;
+    p.stock = Math.max(0, p.stock - l.qty);
+    DB.movements.unshift({ id: uid('m'), productId: p.id, type: 'sale', quantity: -l.qty, previousStock: prev, newStock: p.stock, reference: orderNum, note: t('inventory.sale'), createdAt: Date.now() });
+  });
+  save();
+  cart = [];
+  lastOrderId = order.id;
+  closeModal();
+  showReceipt(order.id, true);
+  toast(t('checkout.saleCompleted'));
+}
+function receiptHtml(order){
+  const s = DB.settings;
+  const cust = custById(order.customerId);
+  const cls = s.receiptSize === '58mm' ? 'w58' : 'w80';
+  const lines = order.items.map(function(it){
+    return '<div class="receipt-item"><div class="ri-main"><span>' + esc(it.productName) + ' × ' + it.quantity + '</span><strong>' + money(it.lineTotal) + '</strong></div>' +
+      '<small>' + money(it.unitPrice) + ' × ' + it.quantity + (it.discount > 0 ? ' · −' + money(it.discount) : '') + '</small></div>';
+  }).join('');
+  return '<div class="receipt-paper ' + cls + '">' +
+    '<h3>' + esc(s.storeName) + '</h3><p>' + esc(s.address) + '<br>' + esc(s.phone) + '</p>' +
+    '<div class="receipt-meta"><span>' + esc(t('receipt.order')) + ': ' + esc(order.orderNumber) + '</span>' +
+    '<span>' + esc(t('receipt.date')) + ': ' + fmtDate(order.createdAt) + '</span>' +
+    '<span>' + esc(t('receipt.cashier')) + ': ' + esc(order.cashier) + '</span>' +
+    '<span>' + esc(t('receipt.customer')) + ': ' + esc(cust ? cust.name : t('common.walkIn')) + '</span></div>' +
+    lines +
+    '<div class="receipt-summary">' +
+    '<div class="receipt-line"><span>' + esc(t('receipt.subtotal')) + '</span><span>' + money(order.subtotal) + '</span></div>' +
+    (order.discount > 0 ? '<div class="receipt-line"><span>' + esc(t('receipt.discount')) + '</span><span>−' + money(order.discount) + '</span></div>' : '') +
+    '<div class="receipt-line"><span>' + esc(t('receipt.tax')) + '</span><span>' + money(order.tax) + '</span></div>' +
+    '<div class="receipt-total"><span>' + esc(t('receipt.total')) + '</span><strong>' + money(order.total) + '</strong></div>' +
+    '<div class="receipt-line"><span>' + esc(t('receipt.payment')) + '</span><span>' + esc(tPay(order.paymentMethod)) + '</span></div>' +
+    '<div class="receipt-line"><span>' + esc(t('receipt.amountReceived')) + '</span><span>' + money(order.amountReceived) + '</span></div>' +
+    '<div class="receipt-line"><span>' + esc(t('receipt.change')) + '</span><span>' + money(order.changeAmount) + '</span></div></div>' +
+    '<p class="thanks">' + esc(t('receipt.thanks')) + '</p></div>';
+}
+function showReceipt(orderId, justCompleted){
+  const order = DB.orders.find(function(o){ return o.id === orderId; });
+  if(!order) return;
+  openModal(
+    (justCompleted ? '<div class="success-mark">✓</div><h2 style="text-align:center;margin:0 0 14px">' + esc(t('checkout.saleCompleted')) + '</h2>' : '<header><h2>' + esc(t('receipt.title')) + ' · ' + esc(order.orderNumber) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>') +
+    '<div id="receiptView">' + receiptHtml(order) + '</div>' +
+    '<div class="receipt-actions"><button class="btn" type="button" id="rcPrint">🖨 ' + esc(t('receipt.print')) + '</button>' +
+    '<button class="btn" type="button" data-close>' + esc(t('common.close')) + '</button>' +
+    '<button class="btn primary" type="button" id="rcNew">' + esc(t('receipt.newSale')) + '</button></div>'
+  );
+  document.getElementById('rcPrint').addEventListener('click', function(){
+    document.getElementById('printArea').innerHTML = receiptHtml(order);
+    window.print();
+  });
+  document.getElementById('rcNew').addEventListener('click', function(){
+    closeModal(); showView('pos');
+  });
+}
+
+/* ================= modal helpers ================= */
+function openModal(html){
+  document.getElementById('modalBox').innerHTML = html;
+  document.getElementById('modalWrap').classList.remove('hidden');
+  document.querySelectorAll('#modalBox [data-close]').forEach(function(b){
+    b.addEventListener('click', closeModal);
+  });
+}
+function closeModal(){
+  document.getElementById('modalWrap').classList.add('hidden');
+  document.getElementById('modalBox').innerHTML = '';
+}
+function fieldHtml(label, inner){
+  return '<div class="field"><span>' + esc(label) + '</span>' + inner + '</div>';
+}
+function renderCurrent(){
+  if(!DB) return;
+  if(curView === 'dashboard') renderDashboard();
+  else if(curView === 'pos') renderPos();
+  else if(curView === 'products') renderProducts();
+  else if(curView === 'inventory') renderInventory();
+  else if(curView === 'orders') renderOrders();
+  else if(curView === 'customers') renderCustomers();
+  else if(curView === 'expenses') renderExpenses();
+  else if(curView === 'settings') renderSettingsForm();
+}
+
+/* ================= products ================= */
+function renderProducts(){
+  const q = (document.getElementById('productSearch').value || '').trim().toLowerCase();
+  const f = document.getElementById('productFilter').value;
+  const sort = document.getElementById('productSort').value;
+  let list = DB.products.filter(function(p){
+    if(q && (p.name + ' ' + p.sku + ' ' + (p.barcode || '')).toLowerCase().indexOf(q) < 0) return false;
+    if(f === 'low' && !(p.stock <= p.minStock)) return false;
+    return true;
+  });
+  if(sort === 'name') list.sort(function(a,b){ return a.name.localeCompare(b.name); });
+  else if(sort === 'stock') list.sort(function(a,b){ return a.stock - b.stock; });
+  else if(sort === 'price') list.sort(function(a,b){ return effPrice(b) - effPrice(a); });
+  const cats = new Set(DB.products.filter(function(p){ return p.active; }).map(function(p){ return p.category; }));
+  document.getElementById('productsDetail').textContent = t('products.detail', {count: DB.products.filter(function(p){ return p.active; }).length, categories: cats.size});
+  document.getElementById('productList').innerHTML = list.length ? list.map(function(p){
+    const badge = !p.active ? '<span class="badge">Inactive</span>'
+      : p.stock === 0 ? '<span class="badge bad">' + esc(t('inventory.out')) + '</span>'
+      : p.stock <= p.minStock ? '<span class="badge warn">' + esc(t('inventory.low')) + '</span>'
+      : '<span class="badge good">' + esc(t('pos.inStock', {count: p.stock})) + '</span>';
+    return '<div class="list-row"><div class="avatar" style="border-radius:8px">' + (PROD_ICON[p.category] || '📦') + '</div>' +
+      '<div class="grow"><strong>' + esc(p.name) + '</strong><small>' + esc(p.sku) + ' · ' + esc(tCat(p.category)) + (p.brand ? ' · ' + esc(p.brand) : '') + '</small></div>' +
+      '<div class="amt">' + money(effPrice(p)) + '<small style="display:block;color:var(--dim);font-weight:400">' + esc(t('common.stock')) + ': ' + p.stock + '</small></div>' +
+      badge +
+      '<button class="btn icon-btn" type="button" data-edit-product="' + p.id + '" aria-label="Edit">✎</button></div>';
+  }).join('') : '<div class="empty"><h3>' + esc(t('pos.noProduct')) + '</h3></div>';
+  document.querySelectorAll('[data-edit-product]').forEach(function(b){
+    b.addEventListener('click', function(){ openProductForm(b.dataset.editProduct); });
+  });
+}
+function openProductForm(id){
+  const p = id ? prodById(id) : null;
+  const catOpts = CATEGORIES.map(function(c){
+    return '<option value="' + esc(c) + '"' + (p && p.category === c ? ' selected' : '') + '>' + esc(tCat(c)) + '</option>';
+  }).join('');
+  openModal(
+    '<header><h2>' + esc(p ? t('products.edit') : t('products.add')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    fieldHtml(t('products.productName'), '<input type="text" id="pfName" value="' + esc(p ? p.name : '') + '">') +
+    '<div class="form-grid">' +
+    fieldHtml(t('products.sku'), '<input type="text" id="pfSku" value="' + esc(p ? p.sku : '') + '">') +
+    fieldHtml(t('products.category'), '<select id="pfCat">' + catOpts + '</select>') +
+    fieldHtml(t('products.brand'), '<input type="text" id="pfBrand" value="' + esc(p ? p.brand : '') + '">') +
+    fieldHtml(t('products.costPrice'), '<input type="number" id="pfCost" min="0" step="any" value="' + (p ? p.costPrice : '') + '">') +
+    fieldHtml(t('products.sellingPrice'), '<input type="number" id="pfPrice" min="0" step="any" value="' + (p ? p.sellingPrice : '') + '">') +
+    fieldHtml(t('products.discountPrice'), '<input type="number" id="pfDisc" min="0" step="any" value="' + (p && p.discountPrice != null ? p.discountPrice : '') + '">') +
+    fieldHtml(t('products.stockQty'), '<input type="number" id="pfStock" min="0" step="1" value="' + (p ? p.stock : 0) + '">') +
+    fieldHtml(t('products.minStock'), '<input type="number" id="pfMin" min="0" step="1" value="' + (p ? p.minStock : 5) + '">') +
+    '</div>' +
+    '<div class="form-actions">' +
+    (p ? '<button class="btn danger" type="button" id="pfDelete" style="margin-right:auto">' + esc(t('common.delete')) + '</button>' : '') +
+    '<button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
+    '<button class="btn primary" type="button" id="pfSave">' + esc(t('common.save')) + '</button></div>'
+  );
+  document.getElementById('pfSave').addEventListener('click', function(){
+    const name = document.getElementById('pfName').value.trim();
+    const price = parseFloat(document.getElementById('pfPrice').value);
+    if(!name || !(price >= 0)){ toast(t('common.required')); return; }
+    const disc = parseFloat(document.getElementById('pfDisc').value);
+    const data = {
+      name: name,
+      sku: document.getElementById('pfSku').value.trim() || ('SKU-' + Date.now().toString(36).toUpperCase()),
+      category: document.getElementById('pfCat').value,
+      brand: document.getElementById('pfBrand').value.trim(),
+      costPrice: parseFloat(document.getElementById('pfCost').value) || 0,
+      sellingPrice: price,
+      discountPrice: (isFinite(disc) && disc > 0) ? disc : null,
+      stock: Math.max(0, parseInt(document.getElementById('pfStock').value, 10) || 0),
+      minStock: Math.max(0, parseInt(document.getElementById('pfMin').value, 10) || 0)
+    };
+    if(p) Object.assign(p, data);
+    else DB.products.push(Object.assign({ id: uid('p'), barcode: '', unit: 'pc', description: '', supplier: '', active: true }, data));
+    save(); closeModal(); renderProducts(); toast(t('products.saved'));
+  });
+  const del = document.getElementById('pfDelete');
+  if(del) del.addEventListener('click', function(){
+    if(!confirm(t('common.confirmDelete'))) return;
+    DB.products = DB.products.filter(function(x){ return x.id !== p.id; });
+    sbDelete('products', p.id);
+    save(); closeModal(); renderProducts(); toast(t('products.deleted'));
+  });
+}
+
+/* ================= inventory ================= */
+function renderInventory(){
+  document.getElementById('invCount').textContent = DB.products.filter(function(p){ return p.active; }).length;
+  document.getElementById('invValue').textContent = money(DB.products.reduce(function(s,p){ return s + p.costPrice * p.stock; }, 0));
+  const low = DB.products.filter(function(p){ return p.active && p.stock <= p.minStock; });
+  document.getElementById('invLow').textContent = low.length;
+  document.getElementById('stockList').innerHTML = DB.products.map(function(p){
+    const cls = p.stock === 0 ? 'low' : p.stock <= p.minStock ? 'low' : '';
+    const tag = p.stock === 0 ? t('inventory.out') : p.stock <= p.minStock ? t('inventory.low') : '';
+    return '<button type="button" data-stock="' + p.id + '" style="display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid var(--border);background:transparent;text-align:left;padding:9px 2px">' +
+      '<span class="avatar" style="border-radius:8px">' + (PROD_ICON[p.category] || '📦') + '</span>' +
+      '<span><strong style="font-size:12px;display:block">' + esc(p.name) + '</strong><small style="font-size:10px;color:var(--dim)">' + esc(p.sku) + (tag ? ' · ' + esc(tag) : '') + '</small></span>' +
+      '<b style="font-size:16px" class="' + cls + '"' + (cls ? ' style="color:var(--danger)"' : '') + '>' + p.stock + '</b></button>';
+  }).join('');
+  document.querySelectorAll('[data-stock]').forEach(function(b){
+    b.addEventListener('click', function(){
+      moveProductId = b.dataset.stock;
+      const p = prodById(moveProductId);
+      document.getElementById('moveForm').classList.remove('hidden');
+      document.getElementById('moveProductName').textContent = p.name;
+      document.getElementById('moveProductStock').textContent = t('inventory.current', {count: p.stock});
+      document.getElementById('moveQty').value = '1';
+      document.getElementById('moveNote').value = '';
+    });
+  });
+  const typeLabel = { sale: t('inventory.sale'), stock_in: t('inventory.stockIn'), stock_out: t('inventory.stockOut'), adjustment: t('inventory.adjustment'), refund: t('orders.refund') };
+  const hist = DB.movements.slice(0, 30);
+  document.getElementById('moveHistory').innerHTML = hist.length ? hist.map(function(m){
+    const p = prodById(m.productId);
+    const sign = m.quantity > 0 ? '+' : '';
+    return '<div class="list-row"><div class="avatar" style="border-radius:8px">' + (PROD_ICON[p ? p.category : ''] || '📦') + '</div>' +
+      '<div class="grow"><strong>' + esc(p ? p.name : '—') + '</strong><small>' + esc(typeLabel[m.type] || m.type) + ' · ' + esc(m.reference || '') + (m.note ? ' · ' + esc(m.note) : '') + '<br>' + fmtDate(m.createdAt) + '</small></div>' +
+      '<div class="amt" style="color:' + (m.quantity > 0 ? 'var(--accent-strong)' : 'var(--danger)') + '">' + sign + m.quantity + '<small style="display:block;color:var(--dim);font-weight:400">' + m.previousStock + ' → ' + m.newStock + '</small></div></div>';
+  }).join('') : '<div class="empty"><p>' + esc(t('inventory.noHistory')) + '</p></div>';
+}
+function saveMovement(){
+  const p = prodById(moveProductId); if(!p) return;
+  const type = document.getElementById('moveType').value;
+  const qty = Math.max(1, parseInt(document.getElementById('moveQty').value, 10) || 1);
+  const note = document.getElementById('moveNote').value.trim();
+  const prev = p.stock;
+  let delta = 0, newStock = prev;
+  if(type === 'stock_in'){ delta = qty; newStock = prev + qty; }
+  else if(type === 'stock_out'){ delta = -qty; newStock = Math.max(0, prev - qty); }
+  else { delta = qty; newStock = Math.max(0, prev + qty); }
+  if(type === 'stock_out' && prev - qty < 0){ delta = -prev; newStock = 0; }
+  p.stock = newStock;
+  DB.movements.unshift({ id: uid('m'), productId: p.id, type: type, quantity: delta, previousStock: prev, newStock: newStock, reference: 'ADJ-' + Date.now().toString(36).toUpperCase(), note: note, createdAt: Date.now() });
+  save();
+  document.getElementById('moveForm').classList.add('hidden');
+  moveProductId = null;
+  renderInventory(); toast(t('inventory.updated'));
+}
+
+/* ================= orders ================= */
+function renderOrders(){
+  const q = (document.getElementById('orderSearch').value || '').trim().toLowerCase();
+  const f = document.getElementById('orderStatusFilter').value;
+  const list = DB.orders.filter(function(o){
+    const cust = custById(o.customerId);
+    if(f !== 'all' && o.status !== f) return false;
+    if(q && (o.orderNumber + ' ' + (cust ? cust.name : '') + ' ' + o.paymentMethod).toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  });
+  document.getElementById('ordersDetail').textContent = t('orders.detail', {count: DB.orders.length});
+  document.getElementById('orderList').innerHTML = list.length ? list.map(function(o){
+    const cust = custById(o.customerId);
+    const badge = o.status === 'Completed' ? 'good' : o.status === 'Refunded' ? 'warn' : 'bad';
+    return '<button type="button" class="list-row" data-order="' + o.id + '" style="width:100%;background:transparent;border-left:0;border-right:0;border-top:0;text-align:left;cursor:pointer">' +
+      '<div class="grow"><strong>' + esc(o.orderNumber) + '</strong><small>' + fmtDate(o.createdAt) + ' · ' + esc(cust ? cust.name : t('common.walkIn')) + ' · ' + esc(tPay(o.paymentMethod)) + '</small></div>' +
+      '<span class="badge ' + badge + '">' + esc(tStatus(o.status)) + '</span>' +
+      '<div class="amt">' + money(o.total) + '</div></button>';
+  }).join('') : '<div class="empty"><h3>' + esc(t('orders.noOrders')) + '</h3></div>';
+  document.querySelectorAll('[data-order]').forEach(function(b){
+    b.addEventListener('click', function(){ showReceipt(b.dataset.order, false); });
+  });
+}
+
+/* ================= customers ================= */
+function renderCustomers(){
+  const list = DB.customers.slice().sort(function(a,b){ return a.name.localeCompare(b.name); });
+  document.getElementById('customerList').innerHTML = list.map(function(c){
+    const orders = DB.orders.filter(function(o){ return o.customerId === c.id && o.status === 'Completed'; });
+    const total = orders.reduce(function(s,o){ return s + o.total; }, 0);
+    return '<div class="list-row"><div class="avatar">' + esc(c.name.trim().charAt(0).toUpperCase()) + '</div>' +
+      '<div class="grow"><strong>' + esc(c.name) + '</strong><small>' + esc(c.phone || t('common.noPhone')) + (c.address ? ' · ' + esc(c.address) : '') + '</small></div>' +
+      '<div class="amt">' + money(total) + '<small style="display:block;color:var(--dim);font-weight:400">' + t('customers.orders') + ': ' + orders.length + '</small></div>' +
+      '<button class="btn icon-btn" type="button" data-edit-customer="' + c.id + '" aria-label="Edit">✎</button></div>';
+  }).join('');
+  document.querySelectorAll('[data-edit-customer]').forEach(function(b){
+    b.addEventListener('click', function(){ openCustomerForm(b.dataset.editCustomer); });
+  });
+}
+function openCustomerForm(id){
+  const c = id ? custById(id) : null;
+  openModal(
+    '<header><h2>' + esc(c ? c.name : t('customers.add')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    fieldHtml(t('customers.name'), '<input type="text" id="cfName" value="' + esc(c ? c.name : '') + '">') +
+    fieldHtml(t('customers.phone'), '<input type="tel" id="cfPhone" value="' + esc(c ? c.phone : '') + '">') +
+    fieldHtml(t('common.address'), '<input type="text" id="cfAddress" value="' + esc(c ? c.address : '') + '">') +
+    fieldHtml(t('common.note'), '<input type="text" id="cfNotes" value="' + esc(c ? c.notes : '') + '">') +
+    '<div class="form-actions">' +
+    (c && c.id !== 'c4' ? '<button class="btn danger" type="button" id="cfDelete" style="margin-right:auto">' + esc(t('common.delete')) + '</button>' : '') +
+    '<button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
+    '<button class="btn primary" type="button" id="cfSave">' + esc(t('common.save')) + '</button></div>'
+  );
+  document.getElementById('cfSave').addEventListener('click', function(){
+    const name = document.getElementById('cfName').value.trim();
+    if(!name){ toast(t('common.required')); return; }
+    const data = { name: name, phone: document.getElementById('cfPhone').value.trim(), address: document.getElementById('cfAddress').value.trim(), notes: document.getElementById('cfNotes').value.trim() };
+    if(c) Object.assign(c, data);
+    else DB.customers.push(Object.assign({ id: uid('c'), email: '' }, data));
+    save(); closeModal(); renderCustomers(); toast(t('customers.saved'));
+  });
+  const del = document.getElementById('cfDelete');
+  if(del) del.addEventListener('click', function(){
+    if(!confirm(t('common.confirmDelete'))) return;
+    DB.customers = DB.customers.filter(function(x){ return x.id !== c.id; });
+    sbDelete('customers', c.id);
+    save(); closeModal(); renderCustomers(); toast(t('customers.deleted'));
+  });
+}
+
+/* ================= expenses ================= */
+function renderExpenses(){
+  const month = DB.expenses.filter(function(e){ return isThisMonth(e.date); });
+  const total = month.reduce(function(s,e){ return s + e.amount; }, 0);
+  document.getElementById('expensesDetail').textContent = t('expenses.detail', {amount: money(total)});
+  const list = DB.expenses.slice().sort(function(a,b){ return b.date - a.date; });
+  document.getElementById('expenseList').innerHTML = list.map(function(e){
+    return '<div class="list-row"><div class="avatar" style="border-radius:8px;background:#fdf0d3;color:var(--warn)">💸</div>' +
+      '<div class="grow"><strong>' + esc(e.name) + '</strong><small>' + esc(tExpCat(e.category)) + ' · ' + fmtDay(e.date) + (e.note ? ' · ' + esc(e.note) : '') + '</small></div>' +
+      '<div class="amt">' + money(e.amount) + '</div>' +
+      '<button class="btn icon-btn" type="button" data-del-expense="' + e.id + '" aria-label="Delete">✕</button></div>';
+  }).join('');
+  document.querySelectorAll('[data-del-expense]').forEach(function(b){
+    b.addEventListener('click', function(){
+      if(!confirm(t('common.confirmDelete'))) return;
+      DB.expenses = DB.expenses.filter(function(x){ return x.id !== b.dataset.delExpense; });
+      sbDelete('expenses', b.dataset.delExpense);
+      save(); renderExpenses(); toast(t('expenses.deleted'));
+    });
+  });
+}
+function openExpenseForm(){
+  const catOpts = EXP_CATS.map(function(c){ return '<option value="' + esc(c) + '">' + esc(tExpCat(c)) + '</option>'; }).join('');
+  const payOpts = PAY_METHODS.map(function(m){ return '<option value="' + esc(m) + '">' + esc(tPay(m)) + '</option>'; }).join('');
+  const today = fmtDay(Date.now());
+  openModal(
+    '<header><h2>' + esc(t('expenses.add')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    fieldHtml(t('expenses.name'), '<input type="text" id="efName">') +
+    '<div class="form-grid">' +
+    fieldHtml(t('common.category'), '<select id="efCat">' + catOpts + '</select>') +
+    fieldHtml(t('common.amount'), '<input type="number" id="efAmount" min="0" step="any">') +
+    fieldHtml(t('common.date'), '<input type="date" id="efDate" value="' + today + '">') +
+    fieldHtml(t('checkout.paymentMethod'), '<select id="efPay">' + payOpts + '</select>') +
+    '</div>' +
+    fieldHtml(t('common.note'), '<input type="text" id="efNote">') +
+    '<div class="form-actions"><button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
+    '<button class="btn primary" type="button" id="efSave">' + esc(t('expenses.save')) + '</button></div>'
+  );
+  document.getElementById('efSave').addEventListener('click', function(){
+    const name = document.getElementById('efName').value.trim();
+    const amount = parseFloat(document.getElementById('efAmount').value);
+    if(!name || !(amount > 0)){ toast(t('common.required')); return; }
+    const dv = document.getElementById('efDate').value;
+    DB.expenses.push({
+      id: uid('e'), name: name, category: document.getElementById('efCat').value,
+      amount: round2(amount), paymentMethod: document.getElementById('efPay').value,
+      note: document.getElementById('efNote').value.trim(),
+      date: dv ? new Date(dv + 'T12:00:00').getTime() : Date.now()
+    });
+    save(); closeModal(); renderExpenses(); toast(t('expenses.recorded'));
+  });
+}
+
+/* ================= settings & staff ================= */
+function renderSettingsForm(){
+  const s = DB.settings;
+  document.getElementById('setStoreName').value = s.storeName;
+  document.getElementById('setAddress').value = s.address;
+  document.getElementById('setPhone').value = s.phone;
+  document.getElementById('setCurrency').value = s.currency;
+  document.getElementById('setTaxRate').value = s.taxRate;
+  document.getElementById('setReceiptSize').value = s.receiptSize;
+  document.querySelectorAll('#setLangToggle button').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === s.lang); });
+  document.getElementById('staffList').innerHTML = DB.staff.map(function(m){
+    return '<div class="list-row"><div class="avatar">' + esc(m.name.trim().charAt(0).toUpperCase()) + '</div>' +
+      '<div class="grow"><strong>' + esc(m.name) + '</strong><small>' + esc(tRole(m.role)) + (m.email ? ' · ' + esc(m.email) : '') + '</small></div>' +
+      '<span class="badge ' + (m.active ? 'good' : '') + '">' + esc(m.active ? 'Active' : 'Inactive') + '</span>' +
+      '<button class="btn icon-btn" type="button" data-del-staff="' + m.id + '" aria-label="Delete">✕</button></div>';
+  }).join('');
+  document.querySelectorAll('[data-del-staff]').forEach(function(b){
+    b.addEventListener('click', function(){
+      if(!confirm(t('common.confirmDelete'))) return;
+      DB.staff = DB.staff.filter(function(x){ return x.id !== b.dataset.delStaff; });
+      sbDelete('staff', b.dataset.delStaff);
+      save(); renderSettingsForm(); toast(t('staff.deleted'));
+    });
+  });
+}
+function openStaffForm(){
+  openModal(
+    '<header><h2>' + esc(t('staff.add')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    fieldHtml(t('common.name'), '<input type="text" id="sfName">') +
+    fieldHtml(t('staff.role'), '<select id="sfRole"><option value="Admin">' + esc(t('staff.admin')) + '</option><option value="Manager">' + esc(t('staff.manager')) + '</option><option value="Cashier" selected>' + esc(t('staff.cashier')) + '</option></select>') +
+    fieldHtml('Email', '<input type="email" id="sfEmail">') +
+    '<div class="form-actions"><button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
+    '<button class="btn primary" type="button" id="sfSave">' + esc(t('common.save')) + '</button></div>'
+  );
+  document.getElementById('sfSave').addEventListener('click', function(){
+    const name = document.getElementById('sfName').value.trim();
+    if(!name){ toast(t('common.required')); return; }
+    DB.staff.push({ id: uid('s'), name: name, role: document.getElementById('sfRole').value, email: document.getElementById('sfEmail').value.trim(), active: true });
+    save(); closeModal(); renderSettingsForm(); toast(t('staff.saved'));
+  });
+}
+function saveSettings(){
+  DB.settings.storeName = document.getElementById('setStoreName').value.trim() || DB.settings.storeName;
+  DB.settings.address = document.getElementById('setAddress').value.trim();
+  DB.settings.phone = document.getElementById('setPhone').value.trim();
+  DB.settings.currency = document.getElementById('setCurrency').value;
+  DB.settings.taxRate = Math.max(0, parseFloat(document.getElementById('setTaxRate').value) || 0);
+  DB.settings.receiptSize = document.getElementById('setReceiptSize').value;
+  save(); applyLang(); toast(t('settings.saved'));
+}
+
+/* ================= init ================= */
+function init(){
+  DB = load() || seedData();
+  save();
+  authSession = loadAuth();
+  /* Gate the app behind login BEFORE showing anything: with no session the
+     app shell stays hidden and only the login screen is shown. */
+  if(!authValid(authSession)) document.body.classList.add('logged-out');
+  buildNav();
+  bindStaticNav();
+  bindAuthUI();
+  applyLang();
+  if(authValid(authSession)){
+    enterApp();
+  } else {
+    showLoginScreen();
+    if(authSession){
+      /* Session exists but is expired: try a silent refresh, stay on login if it fails. */
+      authRefresh().then(function(s){ if(s) enterApp(); });
+    }
+  }
+  document.getElementById('posBackBtn').addEventListener('click', function(){ showView('dashboard'); });
+  document.getElementById('posMenuBtn').addEventListener('click', function(e){
+    e.stopPropagation();
+    document.getElementById('posMenu').classList.toggle('hidden');
+  });
+  document.getElementById('mobileMenuBtn').addEventListener('click', function(){
+    document.getElementById('moreSheet').classList.toggle('hidden');
+  });
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.menu-wrap')) document.getElementById('posMenu').classList.add('hidden');
+    if(!e.target.closest('#moreSheet') && !e.target.closest('#mobileMenuBtn') && !e.target.closest('#bottomNav')) document.getElementById('moreSheet').classList.add('hidden');
+  });
+  document.querySelectorAll('.lang-toggle').forEach(function(tg){
+    tg.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click', function(){ setLang(b.dataset.lang); });
+    });
+  });
+  document.getElementById('posSearch').addEventListener('input', function(e){ posQuery = e.target.value; renderPos(); });
+  document.getElementById('mobileCartBar').addEventListener('click', function(){
+    // open the cart as a modal on mobile
+    const panel = document.getElementById('cartPanel');
+    openModal('<header><h2>' + esc(t('cart.title')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header><div id="mobileCartBody"></div>');
+    const body = document.getElementById('mobileCartBody');
+    body.appendChild(panel);
+    panel.style.display = 'flex';
+    panel.style.position = 'static';
+    panel.style.height = 'auto';
+    panel.style.maxHeight = '70vh';
+    panel.style.padding = '0';
+    panel.style.border = '0';
+    const closeBtn = document.querySelector('#modalBox [data-close]');
+    const restore = function(){
+      panel.style.display = ''; panel.style.position = ''; panel.style.height = '';
+      panel.style.maxHeight = ''; panel.style.padding = ''; panel.style.border = '';
+      document.getElementById('view-pos').appendChild(panel);
+    };
+    if(closeBtn) closeBtn.addEventListener('click', restore);
+    document.getElementById('modalBackdrop').addEventListener('click', restore, { once: true });
+  });
+  document.getElementById('productSearch').addEventListener('input', renderProducts);
+  document.getElementById('productFilter').addEventListener('change', renderProducts);
+  document.getElementById('productSort').addEventListener('change', renderProducts);
+  document.getElementById('addProductBtn').addEventListener('click', function(){ openProductForm(null); });
+  document.getElementById('orderSearch').addEventListener('input', renderOrders);
+  document.getElementById('orderStatusFilter').addEventListener('change', renderOrders);
+  document.getElementById('addCustomerBtn').addEventListener('click', function(){ openCustomerForm(null); });
+  document.getElementById('addExpenseBtn').addEventListener('click', openExpenseForm);
+  document.getElementById('addStaffBtn').addEventListener('click', openStaffForm);
+  document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+  document.getElementById('openInventoryBtn').addEventListener('click', function(){ showView('inventory'); });
+  document.getElementById('moveSaveBtn').addEventListener('click', saveMovement);
+  document.getElementById('moveCancelBtn').addEventListener('click', function(){
+    document.getElementById('moveForm').classList.add('hidden'); moveProductId = null;
+  });
+  document.getElementById('modalBackdrop').addEventListener('click', closeModal);
+  document.getElementById('exportDataBtn').addEventListener('click', function(){
+    const blob = new Blob([JSON.stringify(DB, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'pos-backup-' + fmtDay(Date.now()) + '.json';
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  });
+  document.getElementById('resetDemoBtn').addEventListener('click', function(){
+    if(!confirm(t('settings.resetConfirm'))) return;
+    DB = seedData(); save(); cart = []; applyLang(); showView('dashboard');
+    pendingWipe = true; pushCloud();
+    toast(t('settings.resetDone'));
+  });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
