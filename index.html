@@ -321,7 +321,7 @@ body.logged-out .scan-wrap{display:none!important}
   .pos-toolbar h1{font-size:17px}
   .searchbar{position:sticky;top:calc(70px + env(safe-area-inset-top));z-index:20;box-shadow:0 5px 14px rgba(0,0,0,.04)}
   .product-grid{flex:1;min-height:0}
-  .pos-page-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;height:100%;grid-template-rows:repeat(2,minmax(min-content,1fr))}
+  .pos-page-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;grid-template-rows:repeat(2,minmax(min-content,1fr))}
   .product-card{display:flex;flex-direction:column}
   .product-photo{height:auto;flex:1;min-height:36px;font-size:30px}
   .product-copy{padding:7px}
@@ -942,7 +942,7 @@ function load(){
 /* Offline-first: localStorage is the source of truth on this device; the cloud is
    a shared copy. If Supabase is unreachable, everything keeps working locally
    and the next save retries the push. */
-const APP_VERSION = '1.0.0'; /* shown on the login screen and in Settings → About */
+const APP_VERSION = '1.0.1'; /* shown on the login screen and in Settings → About */
 const SB_URL = 'https://lvvulqjawnowqhiulmow.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2dnVscWphd25vd3FoaXVsbW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1MzU2MDksImV4cCI6MjExMTExMTYwOX0.nB-3sc9m938ZC6tex0xUsOB69hQyj3dwmb9v2deavFA';
 const SB_TABLES = ['products','customers','staff','orders','expenses','movements','settings'];
