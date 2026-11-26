@@ -3181,5 +3181,12 @@ function init(){
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>
+<script>
+// Service worker: makes the app update itself on the next open (network-first
+// for the page) and work offline. Only when served as the site's index page
+// (the live link) — never from a test copy or a plain file. Registration
+// failure is harmless — the app simply runs without it.
+if('serviceWorker' in navigator && (location.pathname.endsWith('/') || location.pathname.endsWith('index.html'))){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
+</script>
 </body>
 </html>
