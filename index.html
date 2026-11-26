@@ -178,16 +178,18 @@ small{color:var(--dim)}
 .cart-count{position:absolute;top:9px;right:9px;background:#6d28d9;color:#fff;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;font-size:11px;font-weight:800}
 .sale-badge{position:absolute;top:9px;left:9px;background:var(--danger);color:#fff;padding:4px 7px;border-radius:5px;font-size:9px;font-weight:900}
 .cart-panel{background:var(--surface);border-left:1px solid var(--border);height:100vh;height:100dvh;display:flex;flex-direction:column;padding:24px 22px;overflow:hidden;position:sticky;top:0}
-.cart-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.cart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .cart-head h2{font-size:19px}
-#mobileCartBody .cart-head h2{display:none}
+.cart-head .icon-btn{color:var(--dim)}
+#mobileCartBody .cart-head{display:none}
 .cart-items{overflow-y:auto;flex:1}
-.cart-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:13px 0;border-bottom:1px solid var(--border)}
+.cart-item{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;padding:13px 0;border-bottom:1px solid var(--border);align-items:start}
+.cart-thumb{width:56px;height:56px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;font-size:26px}
 .cart-item strong{font-size:12px;line-height:1.25;display:block}
 .cart-item small{font-size:10px;color:var(--dim);display:block;margin:3px 0 7px}
-.stepper{display:inline-flex;align-items:center}
-.stepper button{width:40px;height:40px;min-height:40px;padding:0;background:var(--surface-2);font-size:16px;font-weight:800}
-.stepper input{width:44px;height:40px;min-height:40px;padding:0;text-align:center;border-left:0;border-right:0;border-radius:0}
+.stepper{display:inline-flex;align-items:center;background:var(--surface-2);border-radius:999px;padding:2px}
+.stepper button{width:36px;height:36px;min-height:36px;padding:0;background:transparent;border:0;color:var(--accent-strong);font-size:16px;font-weight:800;border-radius:50%}
+.stepper input{width:40px;height:36px;min-height:36px;padding:0;text-align:center;border:0;border-radius:0;background:transparent}
 .stepper input::-webkit-inner-spin-button{display:none}
 .line-total{text-align:right}
 .line-total strong{font-size:12px;display:block}
@@ -198,6 +200,9 @@ small{color:var(--dim)}
 .totals .grand{font-size:17px;color:var(--text);margin-top:14px}
 .charge-btn{border:0;border-radius:10px;background:var(--grad);color:#fff;min-height:55px;font-size:15px;font-weight:850;padding:0 17px;display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:14px;box-shadow:0 8px 20px rgba(109,40,217,.30)}
 .charge-btn:hover{background:linear-gradient(135deg,#6d28d9,#5b21b6);color:#fff}
+.cart-actions{display:flex;gap:10px;margin-top:14px}
+.cart-actions .cart-clear-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:55px;padding:0 16px;border:1.5px solid var(--accent-3);border-radius:10px;background:var(--surface);color:var(--accent-strong);font-size:14px;font-weight:800;cursor:pointer;flex:none}
+.cart-actions .charge-btn{flex:1;width:auto;margin-top:0}
 .mobile-cartbar{display:none}
 
 /* ---------- modal ---------- */
@@ -207,6 +212,8 @@ small{color:var(--dim)}
 .modal>header{display:flex;justify-content:space-between;align-items:center;margin:-20px -20px 18px;padding:16px 20px;background:var(--grad);color:#fff;border-radius:14px 14px 0 0}
 .modal>header .icon-btn{color:#fff;border-color:rgba(255,255,255,.45);background:rgba(255,255,255,.12)}
 .modal>header h2{font-size:18px}
+.modal>header.cart-sheet-head{background:var(--surface);color:var(--text);border-bottom:1px solid var(--border)}
+.modal>header.cart-sheet-head .icon-btn{color:var(--text);border-color:var(--border);background:transparent}
 
 /* ---------- barcode scanner ---------- */
 .scan-wrap{position:fixed;z-index:90;inset:0;background:#000;overflow:hidden}
@@ -730,7 +737,7 @@ en: {
   "nav.dashboard":"Dashboard","nav.pos":"New sale","nav.products":"Products","nav.inventory":"Inventory","nav.orders":"Orders","nav.customers":"Customers","nav.expenses":"Expenses","nav.settings":"Settings","nav.more":"More",
   "common.search":"Search","common.back":"Back","common.save":"Save","common.cancel":"Cancel","common.delete":"Delete","common.edit":"Edit","common.close":"Close","common.clear":"Clear","common.all":"All","common.name":"Name","common.phone":"Phone","common.address":"Address","common.category":"Category","common.price":"Price","common.stock":"Stock","common.date":"Date","common.amount":"Amount","common.language":"Language","common.walkIn":"Walk-in customer","common.noPhone":"No phone","common.today":"Today","common.thisMonth":"This month","common.qty":"Qty","common.confirmDelete":"Delete this item?","common.required":"Please fill in all required fields.","common.note":"Note",
   "pos.title":"New sale","pos.search":"Search products, SKU, barcode, or category","pos.noProduct":"No product found","pos.noProductDetail":"Try a product name, SKU, barcode, or another category.","pos.outOfStock":"Out of stock","pos.inStock":"{count} in stock","pos.items":"{count} item(s)","pos.shift":"Register 02 · Morning shift",
-  "cart.title":"Current order","cart.clear":"Clear","cart.ready":"Cart is ready","cart.readyDetail":"Tap a product to begin.","cart.each":"{price} each","cart.subtotal":"Subtotal","cart.discount":"Discount","cart.tax":"Tax ({rate}%)","cart.total":"Total","cart.charge":"Charge",
+  "cart.title":"Cart","cart.clear":"Clear","cart.ready":"Cart is ready","cart.readyDetail":"Tap a product to begin.","cart.each":"{price} each","cart.subtotal":"Subtotal","cart.discount":"Discount","cart.tax":"Tax ({rate}%)","cart.total":"Total","cart.charge":"Charge",
   "checkout.title":"Checkout","checkout.paymentMethod":"Payment method","checkout.customer":"Customer","checkout.orderDiscount":"Order discount","checkout.amountReceived":"Amount received","checkout.change":"Change","checkout.amountDue":"Amount due","checkout.complete":"Complete sale","checkout.saleCompleted":"Sale completed","checkout.notEnough":"Amount received is less than the total.","checkout.next100":"Next 100",
   "payment.cash":"Cash","payment.bank":"Bank Transfer","payment.qr":"QR Payment","payment.card":"Card","payment.other":"Other",
   "receipt.title":"Receipt","receipt.thanks":"Thank you for shopping with us!","receipt.print":"Print receipt","receipt.newSale":"New sale","receipt.subtotal":"Subtotal","receipt.discount":"Discount","receipt.tax":"Tax","receipt.total":"Total","receipt.payment":"Payment method","receipt.amountReceived":"Amount received","receipt.change":"Change","receipt.cashier":"Cashier","receipt.customer":"Customer","receipt.order":"Order","receipt.date":"Date",
@@ -749,7 +756,7 @@ my: {
   "nav.dashboard":"ဒက်ရှ်ဘုတ်","nav.pos":"အရောင်းအသစ်","nav.products":"ကုန်ပစ္စည်းများ","nav.inventory":"စတော့စာရင်း","nav.orders":"အရောင်းစာရင်း","nav.customers":"ဖောက်သည်များ","nav.expenses":"အသုံးစရိတ်များ","nav.settings":"ဆက်တင်များ","nav.more":"နောက်ထပ်",
   "common.search":"ရှာဖွေရန်","common.back":"နောက်သို့","common.save":"သိမ်းရန်","common.cancel":"ပယ်ဖျက်ရန်","common.delete":"ဖျက်ရန်","common.edit":"ပြင်ဆင်ရန်","common.close":"ပိတ်ရန်","common.clear":"ရှင်းရန်","common.all":"အားလုံး","common.name":"အမည်","common.phone":"ဖုန်း","common.address":"လိပ်စာ","common.category":"အမျိုးအစား","common.price":"စျေးနှုန်း","common.stock":"စတော့","common.date":"ရက်စွဲ","common.amount":"ငွေပမာဏ","common.language":"ဘာသာစကား","common.walkIn":"ဧည့်ဖောက်သည်","common.noPhone":"ဖုန်းမရှိ","common.today":"ယနေ့","common.thisMonth":"ယခုလ","common.qty":"အရေအတွက်","common.confirmDelete":"ဤအရာကို ဖျက်မည်လား?","common.required":"လိုအပ်သောအချက်အလက်များ ဖြည့်ပါ။","common.note":"မှတ်ချက်",
   "pos.title":"အရောင်းအသစ်","pos.search":"ကုန်ပစ္စည်း၊ SKU၊ ဘားကုဒ် သို့ အမျိုးအစား ရှာပါ","pos.noProduct":"ကုန်ပစ္စည်း မတွေ့ပါ","pos.noProductDetail":"အမည်၊ SKU၊ ဘားကုဒ် သို့ အခြားအမျိုးအစားဖြင့် ရှာပါ။","pos.outOfStock":"စတော့ကုန်","pos.inStock":"စတော့ {count} ခု","pos.items":"ပစ္စည်း {count} ခု","pos.shift":"ကောင်တာ ၀၂ · မနက်ပိုင်း",
-  "cart.title":"လက်ရှိအရောင်း","cart.clear":"ရှင်းရန်","cart.ready":"စျေးခြင်းအသင့်ဖြစ်ပါပြီ","cart.readyDetail":"စတင်ရန် ကုန်ပစ္စည်းကို နှိပ်ပါ။","cart.each":"တစ်ခုလျှင် {price}","cart.subtotal":"စုစုပေါင်းခွဲ","cart.discount":"လျှော့စျေး","cart.tax":"အခွန် ({rate}%)","cart.total":"စုစုပေါင်း","cart.charge":"ငွေရှင်းရန်",
+  "cart.title":"စျေးခြင်း","cart.clear":"ရှင်းရန်","cart.ready":"စျေးခြင်းအသင့်ဖြစ်ပါပြီ","cart.readyDetail":"စတင်ရန် ကုန်ပစ္စည်းကို နှိပ်ပါ။","cart.each":"တစ်ခုလျှင် {price}","cart.subtotal":"စုစုပေါင်းခွဲ","cart.discount":"လျှော့စျေး","cart.tax":"အခွန် ({rate}%)","cart.total":"စုစုပေါင်း","cart.charge":"ငွေရှင်းရန်",
   "checkout.title":"ငွေရှင်းရန်","checkout.paymentMethod":"ငွေပေးချေမှုနည်းလမ်း","checkout.customer":"ဖောက်သည်","checkout.orderDiscount":"အရောင်းလျှော့စျေး","checkout.amountReceived":"လက်ခံရရှိငွေ","checkout.change":"အမ်းငွေ","checkout.amountDue":"ပေးရန်ငွေ","checkout.complete":"အရောင်းပြီးမြောက်ရန်","checkout.saleCompleted":"အရောင်းပြီးမြောက်ပါပြီ","checkout.notEnough":"လက်ခံရရှိငွေသည် စုစုပေါင်းထက် နည်းနေသည်။","checkout.next100":"နောက် ၁၀၀",
   "payment.cash":"ငွေသား","payment.bank":"ဘဏ်လွှဲ","payment.qr":"QR ငွေပေးချေမှု","payment.card":"ကတ်","payment.other":"အခြား",
   "receipt.title":"ပြေစာ","receipt.thanks":"အားပေးမှုအတွက် ကျေးဇူးတင်ပါသည်။","receipt.print":"ပြေစာထုတ်ရန်","receipt.newSale":"အရောင်းအသစ်","receipt.subtotal":"စုစုပေါင်းခွဲ","receipt.discount":"လျှော့စျေး","receipt.tax":"အခွန်","receipt.total":"စုစုပေါင်း","receipt.payment":"ငွေပေးချေမှုနည်းလမ်း","receipt.amountReceived":"ရရှိငွေ","receipt.change":"အမ်းငွေ","receipt.cashier":"ငွေကိုင်","receipt.customer":"ဖောက်သည်","receipt.order":"အရောင်း","receipt.date":"ရက်စွဲ",
@@ -2051,6 +2058,8 @@ function renderPos(){
   });
   renderCart();
 }
+const TRASH_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>';
+const BACK_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>';
 function renderCart(){
   const panel = document.getElementById('cartPanel');
   const count = cart.reduce(function(s,l){ return s + l.qty; }, 0);
@@ -2063,7 +2072,7 @@ function renderCart(){
     itemsHtml = cart.map(function(l){
       const p = prodById(l.productId); if(!p) return '';
       const price = effPrice(p);
-      return '<div class="cart-item"><div class="cart-info"><strong>' + esc(p.name) + '</strong><small>' + esc(t('cart.each', {price: money(price)})) + '</small>' +
+      return '<div class="cart-item"><div class="cart-thumb">' + (PROD_ICON[p.category] || '📦') + '</div><div class="cart-info"><strong>' + esc(p.name) + '</strong><small>' + esc(t('cart.each', {price: money(price)})) + '</small>' +
         '<span class="stepper"><button type="button" data-dec="' + p.id + '" aria-label="−">−</button>' +
         '<input type="number" value="' + l.qty + '" min="0" max="' + p.stock + '" data-qty="' + p.id + '" aria-label="Qty">' +
         '<button type="button" data-inc="' + p.id + '" aria-label="+">＋</button></span></div>' +
@@ -2072,14 +2081,15 @@ function renderCart(){
   }
   panel.innerHTML =
     '<div class="cart-head"><h2>' + esc(t('cart.title')) + '</h2>' +
-    (cart.length ? '<button class="btn ghost" type="button" id="cartClearBtn">' + esc(t('cart.clear')) + '</button>' : '') + '</div>' +
+    (cart.length ? '<button class="btn icon-btn cart-clear-btn" type="button" aria-label="' + esc(t('cart.clear')) + '">' + TRASH_SVG + '</button>' : '') + '</div>' +
     '<div class="cart-items">' + itemsHtml + '</div>' +
     '<div class="totals"><div><span>' + esc(t('cart.subtotal')) + '</span><strong>' + money(tot.subtotal) + '</strong></div>' +
     '<div><span>' + esc(t('cart.tax', {rate: DB.settings.taxRate})) + '</span><strong>' + money(round2(tot.subtotal * DB.settings.taxRate / 100)) + '</strong></div>' +
     '<div class="grand"><span>' + esc(t('cart.total')) + '</span><strong>' + money(round2(tot.subtotal * (1 + DB.settings.taxRate / 100))) + '</strong></div></div>' +
-    '<button class="charge-btn" type="button" id="chargeBtn"' + (cart.length === 0 ? ' disabled' : '') + '><span>' + esc(t('cart.charge')) + '</span><span>' + money(round2(tot.subtotal * (1 + DB.settings.taxRate / 100))) + '</span></button>';
-  const clearBtn = document.getElementById('cartClearBtn');
-  if(clearBtn) clearBtn.addEventListener('click', function(){ cart = []; renderCart(); });
+    '<div class="cart-actions">' +
+    (cart.length ? '<button class="cart-clear-btn" type="button">' + TRASH_SVG + '<span>' + esc(t('cart.clear')) + '</span></button>' : '') +
+    '<button class="charge-btn" type="button" id="chargeBtn"' + (cart.length === 0 ? ' disabled' : '') + '><span>' + esc(t('cart.charge')) + '</span><span>' + money(round2(tot.subtotal * (1 + DB.settings.taxRate / 100))) + '</span></button></div>';
+  panel.querySelectorAll('.cart-clear-btn').forEach(function(b){ b.addEventListener('click', function(){ cart = []; renderCart(); }); });
   const chargeBtn = document.getElementById('chargeBtn');
   if(chargeBtn) chargeBtn.addEventListener('click', openCheckout);
   panel.querySelectorAll('[data-inc]').forEach(function(b){ b.addEventListener('click', function(){ addToCart(b.dataset.inc); }); });
@@ -2952,7 +2962,7 @@ function init(){
   document.getElementById('mobileCartBar').addEventListener('click', function(){
     // open the cart as a modal on mobile
     const panel = document.getElementById('cartPanel');
-    openModal('<header><h2>' + esc(t('cart.title')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header><div id="mobileCartBody"></div>');
+    openModal('<header class="cart-sheet-head"><button class="btn icon-btn" type="button" data-close aria-label="Back">' + BACK_SVG + '</button><h2>' + esc(t('cart.title')) + '</h2><button class="btn icon-btn" type="button" id="cartSheetTrash" aria-label="' + esc(t('cart.clear')) + '">' + TRASH_SVG + '</button></header><div id="mobileCartBody"></div>');
     const body = document.getElementById('mobileCartBody');
     body.appendChild(panel);
     panel.style.display = 'flex';
@@ -2968,6 +2978,8 @@ function init(){
       document.getElementById('view-pos').appendChild(panel);
     };
     if(closeBtn) closeBtn.addEventListener('click', restore);
+    const sheetTrash = document.getElementById('cartSheetTrash');
+    if(sheetTrash) sheetTrash.addEventListener('click', function(){ cart = []; renderCart(); });
     document.getElementById('modalBackdrop').addEventListener('click', restore, { once: true });
   });
   document.getElementById('productSearch').addEventListener('input', renderProducts);
