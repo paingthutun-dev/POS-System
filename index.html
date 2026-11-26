@@ -357,7 +357,15 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
 .login-error{color:var(--danger);font-size:13px;font-weight:650;margin:0 0 14px}
 .login-note{color:var(--accent-strong);font-size:13px;font-weight:650;margin:0 0 14px}
 .login-switch{display:block;margin:16px auto 0;background:none;border:0;color:var(--accent-strong);font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-.login-lang-select{position:fixed;right:16px;bottom:16px;z-index:5;width:auto;min-height:0;font:inherit;font-size:12px;font-weight:700;color:var(--dim);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.login-lang{position:fixed;right:16px;bottom:16px;z-index:5}
+.login-lang-btn{font:inherit;font-size:12px;font-weight:700;color:var(--dim);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;align-items:center;gap:6px}
+.login-lang-chev{font-size:10px;transition:transform .18s ease}
+.login-lang.open .login-lang-chev{transform:rotate(180deg)}
+.login-lang-sheet{position:absolute;right:0;bottom:calc(100% + 8px);min-width:140px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 -8px 30px rgba(0,0,0,.16);padding:6px;opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+.login-lang.open .login-lang-sheet{opacity:1;transform:translateY(0);pointer-events:auto}
+.login-lang-sheet button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;border:0;background:transparent;min-height:40px;padding:0 10px;border-radius:8px;font-size:13px;font-weight:650;color:var(--text);cursor:pointer;text-align:left}
+.login-lang-sheet button.active{color:var(--accent-strong);background:var(--surface-2)}
+.login-lang-sheet button.active::after{content:'✓';color:var(--accent-strong)}
 
 /* ---------- print: receipt only ---------- */
 @media print{
@@ -394,10 +402,13 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
     <button class="login-switch" type="button" id="loginSwitchBtn" data-t="login.toSignup">Don't have an account? Sign up</button>
     </div>
   </div>
-  <select class="login-lang-select" id="loginLangSelect" aria-label="Language">
-    <option value="my">မြန်မာ</option>
-    <option value="en">English</option>
-  </select>
+  <div class="login-lang" id="loginLangWrap">
+    <button class="login-lang-btn" type="button" id="loginLangBtn" aria-haspopup="true" aria-expanded="false"><span id="loginLangLabel">မြန်မာ</span><span class="login-lang-chev">⌃</span></button>
+    <div class="login-lang-sheet" id="loginLangSheet" role="menu">
+      <button type="button" data-lang="my" role="menuitem">မြန်မာ</button>
+      <button type="button" data-lang="en" role="menuitem">English</button>
+    </div>
+  </div>
 </div>
 
 <!-- ======== side nav (desktop) ======== -->
@@ -1902,8 +1913,9 @@ function applyLang(){
   document.querySelectorAll('.lang-toggle').forEach(function(tg){
     tg.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === DB.settings.lang); });
   });
-  var loginLangSelect = document.getElementById('loginLangSelect');
-  if(loginLangSelect) loginLangSelect.value = DB.settings.lang;
+  var loginLangLabel = document.getElementById('loginLangLabel');
+  if(loginLangLabel) loginLangLabel.textContent = DB.settings.lang === 'my' ? 'မြန်မာ' : 'English';
+  document.querySelectorAll('#loginLangSheet button').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === DB.settings.lang); });
   document.getElementById('brandName').textContent = DB.settings.storeName;
   document.getElementById('mobileBrandName').textContent = DB.settings.storeName;
   document.getElementById('loginStoreName').textContent = DB.settings.storeName;
@@ -2863,7 +2875,23 @@ function init(){
       b.addEventListener('click', function(){ setLang(b.dataset.lang); });
     });
   });
-  document.getElementById('loginLangSelect').addEventListener('change', function(){ setLang(this.value); });
+  var loginLangWrap = document.getElementById('loginLangWrap');
+  var loginLangBtn = document.getElementById('loginLangBtn');
+  loginLangBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    var open = loginLangWrap.classList.toggle('open');
+    loginLangBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.querySelectorAll('#loginLangSheet button').forEach(function(b){
+    b.addEventListener('click', function(){
+      setLang(b.dataset.lang);
+      loginLangWrap.classList.remove('open');
+      loginLangBtn.setAttribute('aria-expanded', 'false');
+    });
+  });
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('#loginLangWrap')) loginLangWrap.classList.remove('open');
+  });
   document.querySelectorAll('#setThemeToggle button').forEach(function(b){
     b.addEventListener('click', function(){ applyTheme(b.dataset.theme); });
   });
