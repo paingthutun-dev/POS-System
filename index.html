@@ -128,13 +128,34 @@ small{color:var(--dim)}
 .list-row strong{font-size:13px}
 .list-row small{font-size:11px;color:var(--dim);margin-top:3px}
 .list-row .amt{text-align:right;font-weight:800;font-size:13px;white-space:nowrap}
-.prod-row{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--border)}
-.prod-row:last-child{border-bottom:0}
-.prod-row .prod-thumb{width:46px;height:46px;border-radius:12px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:22px;flex:none}
-.prod-row .grow{flex:1;min-width:0}
-.prod-row .grow strong{display:block;font-size:14px;font-weight:700;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prod-row .grow small{display:block;font-size:11px;color:var(--dim);margin-top:3px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prod-row .prod-price{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none;text-align:right;font-weight:800;font-size:14px;line-height:1.45;white-space:nowrap}
+.prod-table-wrap{overflow-x:auto;margin:0 -4px;padding:0 4px}
+.prod-table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
+.prod-table th{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--dim);text-align:left;padding:10px;background:var(--surface-2);border-bottom:1px solid var(--border);white-space:nowrap}
+.prod-table th:first-child{border-radius:8px 0 0 8px}
+.prod-table th:last-child{border-radius:0 8px 8px 0}
+.prod-table td{padding:10px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.prod-table tbody tr:last-child td{border-bottom:0}
+.prod-table .c-img{width:56px}
+.prod-table .c-actions{width:104px;white-space:nowrap;text-align:right}
+.prod-table .c-price,.prod-table .c-stock{width:84px;white-space:nowrap}
+.prod-table .c-status{width:92px}
+.prod-table .prod-thumb{width:40px;height:40px;border-radius:10px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:20px;flex:none}
+.prod-table .c-name strong{display:block;font-size:13px;font-weight:700;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-table .c-name small{display:block;font-size:11px;color:var(--dim);margin-top:2px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-table .c-cat{color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-table .c-price{font-weight:800}
+.prod-table .stock-num{font-weight:800}
+.prod-table .stock-num.warn{color:var(--warn)}
+.prod-table .stock-num.bad{color:var(--danger)}
+.prod-table .c-actions .btn{width:38px;height:38px;min-height:0;margin-left:2px}
+.prod-table .c-actions .btn.del{color:var(--danger)}
+.prod-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;flex-wrap:wrap}
+.prod-pager{display:flex;gap:6px;align-items:center}
+.pager-btn{min-width:34px;height:34px;padding:0 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-weight:700;font-size:13px;color:var(--text);cursor:pointer}
+.pager-btn.active{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-color:transparent}
+.pager-btn:disabled{opacity:.4;cursor:default}
+.pager-ellipsis{color:var(--dim);padding:0 2px;font-weight:700}
+.prod-total{font-size:12px;color:var(--dim);font-weight:700}
 .avatar{width:42px;height:42px;border-radius:50%;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
 .empty{text-align:center;padding:42px 20px;color:var(--dim)}
 .empty h3{margin:0;color:var(--text);font-size:14px}
@@ -346,6 +367,9 @@ body.logged-out .scan-wrap{display:none!important}
   .form-grid{grid-template-columns:1fr}
   .toast{bottom:calc(79px + env(safe-area-inset-bottom))}
   .receipt-actions{position:sticky;bottom:0;background:var(--surface);padding-top:10px}
+  .prod-table{min-width:590px}
+  .prod-table th,.prod-table td{padding:9px 8px}
+  .prod-foot{padding-top:12px}
 }
 @media(max-width:360px){
   .metric-strip{grid-template-columns:1fr}
@@ -786,7 +810,7 @@ en: {
   "payment.cash":"Cash","payment.bank":"Bank Transfer","payment.qr":"QR Payment","payment.card":"Card","payment.other":"Other",
   "receipt.title":"Receipt","receipt.thanks":"Thank you for shopping with us!","receipt.print":"Print receipt","receipt.newSale":"New sale","receipt.subtotal":"Subtotal","receipt.discount":"Discount","receipt.tax":"Tax","receipt.total":"Total","receipt.payment":"Payment method","receipt.amountReceived":"Amount received","receipt.change":"Change","receipt.cashier":"Cashier","receipt.customer":"Customer","receipt.order":"Order","receipt.date":"Date",
   "dashboard.eyebrow":"Business pulse","dashboard.title":"Today at a glance","dashboard.detail":"Live totals from this register's ledger.","dashboard.todaySales":"Today's sales","dashboard.monthSales":"This month's sales","dashboard.expenses":"Expenses (this month)","dashboard.netProfit":"Net profit (this month)","dashboard.netDetail":"Sales minus cost & expenses","dashboard.topProducts":"Top products","dashboard.topDetail":"Best sellers this month","dashboard.stockAttention":"Stock attention","dashboard.openInventory":"Open inventory","dashboard.ordersToday":"{count} order(s) today","dashboard.ordersMonth":"{count} order(s) this month","dashboard.expenseCount":"{count} recorded","dashboard.lowCount":"{count} items at or below minimum","dashboard.unitsSold":"{count} sold","dashboard.left":"{count} left","dashboard.noSales":"No sales yet in this period.",
-  "products.eyebrow":"Catalog","products.title":"Products","products.detail":"{count} active products across {categories} categories.","products.add":"Add product","products.search":"Search product or SKU","products.all":"All products","products.low":"Low stock","products.sortName":"Name A–Z","products.sortStock":"Stock low to high","products.sortPrice":"Price high to low","products.edit":"Edit product","products.productName":"Product name","products.sku":"SKU","products.costPrice":"Cost price","products.sellingPrice":"Selling price","products.discountPrice":"Discount price (optional)","products.stockQty":"Stock quantity","products.minStock":"Minimum stock","products.category":"Category","products.brand":"Brand","products.saved":"Product saved","products.deleted":"Product deleted","products.sale":"Sale",
+  "products.eyebrow":"Catalog","products.title":"Products","products.detail":"{count} active products across {categories} categories.","products.add":"Add product","products.search":"Search product or SKU","products.all":"All products","products.low":"Low stock","products.sortName":"Name A–Z","products.sortStock":"Stock low to high","products.sortPrice":"Price high to low","products.edit":"Edit product","products.productName":"Product name","products.sku":"SKU","products.costPrice":"Cost price","products.sellingPrice":"Selling price","products.discountPrice":"Discount price (optional)","products.stockQty":"Stock quantity","products.minStock":"Minimum stock","products.category":"Category","products.brand":"Brand","products.saved":"Product saved","products.deleted":"Product deleted","products.sale":"Sale","products.colImage":"Image","products.colStatus":"Status","products.active":"Active","products.inactive":"Inactive","products.totalItems":"Total: {count} Items",
   "category.Phones":"Phones","category.Accessories":"Accessories","category.Chargers":"Chargers","category.Cables":"Cables","category.Earphones":"Earphones","category.Power Banks":"Power Banks","category.Cases":"Cases","category.Screen Protectors":"Screen Protectors",
   "inventory.eyebrow":"Stock control","inventory.title":"Inventory","inventory.detail":"Every sale and adjustment leaves an auditable movement.","inventory.products":"Products","inventory.stockValue":"Stock value","inventory.atCost":"At cost","inventory.needsAttention":"Needs attention","inventory.levels":"Stock levels","inventory.tap":"Tap an item to record movement","inventory.history":"Movement history","inventory.newest":"Newest first","inventory.type":"Movement","inventory.stockIn":"Stock in","inventory.stockOut":"Stock out","inventory.adjustment":"Adjustment (+ / −)","inventory.quantity":"Quantity","inventory.reason":"Reason / note","inventory.reasonPlaceholder":"Supplier delivery, damaged unit, count correction…","inventory.update":"Update stock","inventory.updated":"Inventory updated","inventory.current":"Current stock: {count}","inventory.low":"Low stock","inventory.out":"Out of stock","inventory.sale":"Sale","inventory.noHistory":"No movements yet.",
   "orders.eyebrow":"Sales ledger","orders.title":"Orders","orders.detail":"{count} sales records with receipts and stock history.","orders.search":"Order, customer or payment","orders.all":"All statuses","orders.order":"Order","orders.customer":"Customer","orders.payment":"Payment","orders.total":"Total","orders.completed":"Completed","orders.refunded":"Refunded","orders.cancelled":"Cancelled","orders.refund":"Refund","orders.refundedMsg":"Order refunded — stock returned.","orders.noOrders":"No orders yet.","orders.exportExcel":"Export Excel","orders.exported":"Excel file downloaded.","orders.xDate":"Date","orders.xOrderNo":"Order No.","orders.xProduct":"Product","orders.xSku":"SKU","orders.xQty":"Qty","orders.xUnitPrice":"Unit Price","orders.xDiscount":"Discount","orders.xLineTotal":"Line Total","orders.xPayment":"Payment Method","orders.xCashier":"Cashier","orders.xCustomer":"Customer","orders.xTotal":"Total","orders.xOrders":"Orders","orders.xByPayment":"By payment method","orders.xGrandTotal":"Grand total","orders.xName":"Name","orders.xCategory":"Category","orders.xAmount":"Amount","orders.xNote":"Note","orders.xSalesTotal":"Total sales","orders.xCost":"Cost of goods","orders.xExpensesTotal":"Total expenses","orders.xNetProfit":"Net profit",
@@ -805,7 +829,7 @@ my: {
   "payment.cash":"ငွေသား","payment.bank":"ဘဏ်လွှဲ","payment.qr":"QR ငွေပေးချေမှု","payment.card":"ကတ်","payment.other":"အခြား",
   "receipt.title":"ပြေစာ","receipt.thanks":"အားပေးမှုအတွက် ကျေးဇူးတင်ပါသည်။","receipt.print":"ပြေစာထုတ်ရန်","receipt.newSale":"အရောင်းအသစ်","receipt.subtotal":"စုစုပေါင်းခွဲ","receipt.discount":"လျှော့စျေး","receipt.tax":"အခွန်","receipt.total":"စုစုပေါင်း","receipt.payment":"ငွေပေးချေမှုနည်းလမ်း","receipt.amountReceived":"ရရှိငွေ","receipt.change":"အမ်းငွေ","receipt.cashier":"ငွေကိုင်","receipt.customer":"ဖောက်သည်","receipt.order":"အရောင်း","receipt.date":"ရက်စွဲ",
   "dashboard.eyebrow":"လုပ်ငန်းအခြေအနေ","dashboard.title":"ယနေ့လုပ်ငန်းအကျဉ်း","dashboard.detail":"ဤကောင်တာ၏ အရောင်းမှတ်တမ်းများမှ နောက်ဆုံးစာရင်း။","dashboard.todaySales":"ယနေ့အရောင်း","dashboard.monthSales":"ယခုလအရောင်း","dashboard.expenses":"အသုံးစရိတ် (ယခုလ)","dashboard.netProfit":"အသားတင်အမြတ် (ယခုလ)","dashboard.netDetail":"အရောင်းမှ ကုန်ကျစရိတ်နှင့် အသုံးစရိတ် နုတ်ပြီး","dashboard.topProducts":"အရောင်းရဆုံးပစ္စည်းများ","dashboard.topDetail":"ယခုလ အရောင်းရဆုံး","dashboard.stockAttention":"စတော့သတိပေးချက်","dashboard.openInventory":"စတော့စာရင်းဖွင့်ရန်","dashboard.ordersToday":"ယနေ့အရောင်း {count} ခု","dashboard.ordersMonth":"ယခုလအရောင်း {count} ခု","dashboard.expenseCount":"မှတ်တမ်း {count} ခု","dashboard.lowCount":"အနည်းဆုံးပမာဏနှင့်အောက် {count} မျိုး","dashboard.unitsSold":"{count} ခု ရောင်းပြီး","dashboard.left":"{count} ခုကျန်","dashboard.noSales":"ဤကာလတွင် အရောင်းမရှိသေးပါ။",
-  "products.eyebrow":"ကုန်ပစ္စည်းစာရင်း","products.title":"ကုန်ပစ္စည်းများ","products.detail":"အမျိုးအစား {categories} ခုတွင် အသုံးပြုနေသောပစ္စည်း {count} မျိုး။","products.add":"ကုန်ပစ္စည်းထည့်ရန်","products.search":"ကုန်ပစ္စည်း သို့ SKU ရှာရန်","products.all":"ကုန်ပစ္စည်းအားလုံး","products.low":"စတော့နည်း","products.sortName":"အမည် က မှ အ","products.sortStock":"စတော့နည်းမှ များသို့","products.sortPrice":"စျေးမြင့်မှ နိမ့်သို့","products.edit":"ကုန်ပစ္စည်းပြင်ဆင်ရန်","products.productName":"ကုန်ပစ္စည်းအမည်","products.sku":"SKU","products.costPrice":"အရင်းစျေး","products.sellingPrice":"ရောင်းစျေး","products.discountPrice":"လျှော့စျေး (မရှိလျှင် ထားခဲ့ပါ)","products.stockQty":"စတော့အရေအတွက်","products.minStock":"အနည်းဆုံးစတော့","products.category":"အမျိုးအစား","products.brand":"အမှတ်တံဆိပ်","products.saved":"ကုန်ပစ္စည်း သိမ်းပြီးပါပြီ","products.deleted":"ကုန်ပစ္စည်း ဖျက်ပြီးပါပြီ","products.sale":"လျှော့စျေး",
+  "products.eyebrow":"ကုန်ပစ္စည်းစာရင်း","products.title":"ကုန်ပစ္စည်းများ","products.detail":"အမျိုးအစား {categories} ခုတွင် အသုံးပြုနေသောပစ္စည်း {count} မျိုး။","products.add":"ကုန်ပစ္စည်းထည့်ရန်","products.search":"ကုန်ပစ္စည်း သို့ SKU ရှာရန်","products.all":"ကုန်ပစ္စည်းအားလုံး","products.low":"စတော့နည်း","products.sortName":"အမည် က မှ အ","products.sortStock":"စတော့နည်းမှ များသို့","products.sortPrice":"စျေးမြင့်မှ နိမ့်သို့","products.edit":"ကုန်ပစ္စည်းပြင်ဆင်ရန်","products.productName":"ကုန်ပစ္စည်းအမည်","products.sku":"SKU","products.costPrice":"အရင်းစျေး","products.sellingPrice":"ရောင်းစျေး","products.discountPrice":"လျှော့စျေး (မရှိလျှင် ထားခဲ့ပါ)","products.stockQty":"စတော့အရေအတွက်","products.minStock":"အနည်းဆုံးစတော့","products.category":"အမျိုးအစား","products.brand":"အမှတ်တံဆိပ်","products.saved":"ကုန်ပစ္စည်း သိမ်းပြီးပါပြီ","products.deleted":"ကုန်ပစ္စည်း ဖျက်ပြီးပါပြီ","products.sale":"လျှော့စျေး","products.colImage":"ပုံ","products.colStatus":"အခြေအနေ","products.active":"အသုံးပြုနေသည်","products.inactive":"ပိတ်ထားသည်","products.totalItems":"စုစုပေါင်း {count} မျိုး",
   "category.Phones":"ဖုန်းများ","category.Accessories":"ဖုန်းအပိုပစ္စည်းများ","category.Chargers":"အားသွင်းခေါင်းများ","category.Cables":"ကြိုးများ","category.Earphones":"နားကြပ်များ","category.Power Banks":"ပါဝါဘဏ်များ","category.Cases":"ဖုန်းကာဗာများ","category.Screen Protectors":"မှန်ကာများ",
   "inventory.eyebrow":"စတော့ထိန်းချုပ်မှု","inventory.title":"စတော့စာရင်း","inventory.detail":"အရောင်းနှင့် စတော့ပြင်ဆင်မှုတိုင်းကို စစ်ဆေးနိုင်ရန် မှတ်တမ်းတင်ထားသည်။","inventory.products":"ကုန်ပစ္စည်းများ","inventory.stockValue":"စတော့တန်ဖိုး","inventory.atCost":"အရင်းတန်ဖိုး","inventory.needsAttention":"စစ်ဆေးရန်လို","inventory.levels":"စတော့လက်ကျန်","inventory.tap":"အဝင်အထွက်မှတ်ရန် ပစ္စည်းကို နှိပ်ပါ","inventory.history":"အဝင်အထွက်မှတ်တမ်း","inventory.newest":"နောက်ဆုံးမှတ်တမ်း ဦးစွာ","inventory.type":"လုပ်ဆောင်ချက်","inventory.stockIn":"စတော့ဝင်","inventory.stockOut":"စတော့ထွက်","inventory.adjustment":"စတော့ပြင်ဆင်မှု (+ / −)","inventory.quantity":"အရေအတွက်","inventory.reason":"အကြောင်းရင်း / မှတ်ချက်","inventory.reasonPlaceholder":"ကုန်ဝင်၊ ပျက်စီး၊ စာရင်းပြင်ဆင်မှု…","inventory.update":"စတော့ပြင်ဆင်ရန်","inventory.updated":"စတော့စာရင်း ပြင်ဆင်ပြီးပါပြီ","inventory.current":"လက်ရှိစတော့: {count}","inventory.low":"စတော့နည်း","inventory.out":"စတော့ကုန်","inventory.sale":"အရောင်း","inventory.noHistory":"အဝင်အထွက်မှတ်တမ်း မရှိသေးပါ။",
   "orders.eyebrow":"အရောင်းမှတ်တမ်း","orders.title":"အရောင်းစာရင်း","orders.detail":"ပြေစာနှင့် စတော့မှတ်တမ်းပါ အရောင်း {count} ခု။","orders.search":"အရောင်းအမှတ်၊ ဖောက်သည် သို့ ငွေပေးချေမှု ရှာရန်","orders.all":"အခြေအနေအားလုံး","orders.order":"အရောင်း","orders.customer":"ဖောက်သည်","orders.payment":"ငွေပေးချေမှု","orders.total":"စုစုပေါင်း","orders.completed":"ပြီးမြောက်","orders.refunded":"ငွေပြန်အမ်းပြီး","orders.cancelled":"ပယ်ဖျက်ပြီး","orders.refund":"ငွေပြန်အမ်းရန်","orders.refundedMsg":"ငွေပြန်အမ်းပြီးပါပြီ — စတော့ထဲ ပြန်ထည့်ထားသည်။","orders.noOrders":"အရောင်းမှတ်တမ်း မရှိသေးပါ။","orders.exportExcel":"Excel ထုတ်ရန်","orders.exported":"Excel ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ။","orders.xDate":"ရက်စွဲ","orders.xOrderNo":"အရောင်းအမှတ်","orders.xProduct":"ကုန်ပစ္စည်း","orders.xSku":"SKU","orders.xQty":"အရေအတွက်","orders.xUnitPrice":"တစ်ခုဈေး","orders.xDiscount":"လျှော့ဈေး","orders.xLineTotal":"စုစုပေါင်း","orders.xPayment":"ငွေပေးချေမှု","orders.xCashier":"ငွေကိုင်","orders.xCustomer":"ဖောက်သည်","orders.xTotal":"စုစုပေါင်း","orders.xOrders":"အရောင်း","orders.xByPayment":"ငွေပေးချေမှုအလိုက်","orders.xGrandTotal":"စုစုပေါင်းချုပ်","orders.xName":"အမည်","orders.xCategory":"အမျိုးအစား","orders.xAmount":"ပမာဏ","orders.xNote":"မှတ်ချက်","orders.xSalesTotal":"အရောင်းစုစုပေါင်း","orders.xCost":"ပစ္စည်းကုန်ကျစရိတ်","orders.xExpensesTotal":"အသုံးစရိတ်စုစုပေါင်း","orders.xNetProfit":"အသားတင်အမြတ်",
@@ -950,7 +974,7 @@ function load(){
 /* Offline-first: localStorage is the source of truth on this device; the cloud is
    a shared copy. If Supabase is unreachable, everything keeps working locally
    and the next save retries the push. */
-const APP_VERSION = '1.0.2'; /* shown on the login screen and in Settings → About */
+const APP_VERSION = '1.0.3'; /* shown on the login screen and in Settings → About */
 const SB_URL = 'https://lvvulqjawnowqhiulmow.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2dnVscWphd25vd3FoaXVsbW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1MzU2MDksImV4cCI6MjExMTExMTYwOX0.nB-3sc9m938ZC6tex0xUsOB69hQyj3dwmb9v2deavFA';
 const SB_TABLES = ['products','customers','staff','orders','expenses','movements','settings'];
@@ -2519,6 +2543,8 @@ function closeScanner(){
 }
 
 /* ================= products ================= */
+const PROD_PAGE_SIZE = 8;
+let prodPage = 1;
 function renderProducts(){
   const q = (document.getElementById('productSearch').value || '').trim().toLowerCase();
   const f = document.getElementById('productFilter').value;
@@ -2533,18 +2559,78 @@ function renderProducts(){
   else if(sort === 'price') list.sort(function(a,b){ return effPrice(b) - effPrice(a); });
   const cats = new Set(DB.products.filter(function(p){ return p.active; }).map(function(p){ return p.category; }));
   document.getElementById('productsDetail').textContent = t('products.detail', {count: DB.products.filter(function(p){ return p.active; }).length, categories: cats.size});
-  document.getElementById('productList').innerHTML = list.length ? list.map(function(p){
-    const badge = !p.active ? '<span class="badge">Inactive</span>'
-      : p.stock === 0 ? '<span class="badge bad">' + esc(t('inventory.out')) + '</span>'
-      : p.stock <= p.minStock ? '<span class="badge warn">' + esc(t('inventory.low')) + '</span>'
-      : '<span class="badge good">' + esc(t('pos.inStock', {count: p.stock})) + '</span>';
-    return '<div class="prod-row"><div class="prod-thumb">' + (PROD_ICON[p.category] || '📦') + '</div>' +
-      '<div class="grow"><strong>' + esc(p.name) + '</strong><small>' + esc(p.sku) + ' · ' + esc(tCat(p.category)) + (p.brand ? ' · ' + esc(p.brand) : '') + '</small></div>' +
-      '<div class="prod-price">' + money(effPrice(p)) + badge + '</div>' +
-      '<button class="btn icon-btn" type="button" data-edit-product="' + p.id + '" aria-label="Edit">✎</button></div>';
-  }).join('') : '<div class="empty"><h3>' + esc(t('pos.noProduct')) + '</h3></div>';
+  const total = list.length;
+  const totalPages = Math.max(1, Math.ceil(total / PROD_PAGE_SIZE));
+  if(prodPage > totalPages) prodPage = totalPages;
+  if(!total){
+    document.getElementById('productList').innerHTML = '<div class="empty"><h3>' + esc(t('pos.noProduct')) + '</h3></div>';
+    return;
+  }
+  const pageList = list.slice((prodPage - 1) * PROD_PAGE_SIZE, prodPage * PROD_PAGE_SIZE);
+  const rows = pageList.map(function(p){
+    const stockCls = p.stock === 0 ? ' bad' : (p.stock <= p.minStock ? ' warn' : '');
+    const status = p.active
+      ? '<span class="badge good">' + esc(t('products.active')) + '</span>'
+      : '<span class="badge">' + esc(t('products.inactive')) + '</span>';
+    return '<tr><td class="c-img"><div class="prod-thumb">' + (PROD_ICON[p.category] || '📦') + '</div></td>' +
+      '<td class="c-name"><strong>' + esc(p.name) + '</strong><small>' + esc(p.sku) + '</small></td>' +
+      '<td class="c-cat">' + esc(tCat(p.category)) + '</td>' +
+      '<td class="c-price">' + money(effPrice(p)) + '</td>' +
+      '<td class="c-stock"><span class="stock-num' + stockCls + '">' + p.stock + '</span></td>' +
+      '<td class="c-status">' + status + '</td>' +
+      '<td class="c-actions"><button class="btn icon-btn" type="button" data-edit-product="' + p.id + '" aria-label="Edit">✎</button>' +
+      '<button class="btn icon-btn del" type="button" data-delete-product="' + p.id + '" aria-label="Delete">' + TRASH_SVG + '</button></td></tr>';
+  }).join('');
+  let foot = '';
+  if(totalPages > 1){
+    let nums = [];
+    if(totalPages <= 7){ for(let i = 1; i <= totalPages; i++) nums.push(i); }
+    else {
+      nums = [1];
+      if(prodPage > 3) nums.push('…');
+      for(let i = Math.max(2, prodPage - 1); i <= Math.min(totalPages - 1, prodPage + 1); i++) nums.push(i);
+      if(prodPage < totalPages - 2) nums.push('…');
+      nums.push(totalPages);
+    }
+    const btns = nums.map(function(n){
+      if(n === '…') return '<span class="pager-ellipsis">…</span>';
+      return '<button type="button" class="pager-btn' + (n === prodPage ? ' active' : '') + '" data-prod-page="' + n + '">' + n + '</button>';
+    }).join('');
+    foot = '<div class="prod-foot"><div class="prod-pager">' +
+      '<button type="button" class="pager-btn" data-prod-page="prev"' + (prodPage === 1 ? ' disabled' : '') + '>‹</button>' + btns +
+      '<button type="button" class="pager-btn" data-prod-page="next"' + (prodPage === totalPages ? ' disabled' : '') + '>›</button></div>' +
+      '<span class="prod-total">' + esc(t('products.totalItems', {count: total})) + '</span></div>';
+  }
+  document.getElementById('productList').innerHTML =
+    '<div class="prod-table-wrap"><table class="prod-table"><thead><tr>' +
+    '<th class="c-img">' + esc(t('products.colImage')) + '</th>' +
+    '<th class="c-name">' + esc(t('common.name')) + '</th>' +
+    '<th class="c-cat">' + esc(t('common.category')) + '</th>' +
+    '<th class="c-price">' + esc(t('common.price')) + '</th>' +
+    '<th class="c-stock">' + esc(t('common.stock')) + '</th>' +
+    '<th class="c-status">' + esc(t('products.colStatus')) + '</th>' +
+    '<th class="c-actions"></th></tr></thead><tbody>' + rows + '</tbody></table></div>' + foot;
   document.querySelectorAll('[data-edit-product]').forEach(function(b){
     b.addEventListener('click', function(){ openProductForm(b.dataset.editProduct); });
+  });
+  document.querySelectorAll('[data-delete-product]').forEach(function(b){
+    b.addEventListener('click', function(){
+      const p = prodById(b.dataset.deleteProduct);
+      if(!p) return;
+      if(!confirm(t('common.confirmDelete'))) return;
+      DB.products = DB.products.filter(function(x){ return x.id !== p.id; });
+      sbDelete('products', p.id);
+      save(); renderProducts(); toast(t('products.deleted'));
+    });
+  });
+  document.querySelectorAll('[data-prod-page]').forEach(function(b){
+    b.addEventListener('click', function(){
+      const v = b.dataset.prodPage;
+      if(v === 'prev') prodPage = Math.max(1, prodPage - 1);
+      else if(v === 'next') prodPage = Math.min(totalPages, prodPage + 1);
+      else prodPage = parseInt(v, 10);
+      renderProducts();
+    });
   });
 }
 function openProductForm(id){
@@ -3148,9 +3234,9 @@ function init(){
     if(sheetTrash) sheetTrash.addEventListener('click', function(){ cart = []; renderCart(); });
     document.getElementById('modalBackdrop').addEventListener('click', restore, { once: true });
   });
-  document.getElementById('productSearch').addEventListener('input', renderProducts);
-  document.getElementById('productFilter').addEventListener('change', renderProducts);
-  document.getElementById('productSort').addEventListener('change', renderProducts);
+  document.getElementById('productSearch').addEventListener('input', function(){ prodPage = 1; renderProducts(); });
+  document.getElementById('productFilter').addEventListener('change', function(){ prodPage = 1; renderProducts(); });
+  document.getElementById('productSort').addEventListener('change', function(){ prodPage = 1; renderProducts(); });
   document.getElementById('addProductBtn').addEventListener('click', function(){ openProductForm(null); });
   document.getElementById('templateCsvBtn').addEventListener('click', function(){
     downloadBlob('pos-products-template.csv', new Blob([CSV_TEMPLATE], {type:'text/csv'}));
