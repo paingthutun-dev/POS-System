@@ -128,34 +128,38 @@ small{color:var(--dim)}
 .list-row strong{font-size:13px}
 .list-row small{font-size:11px;color:var(--dim);margin-top:3px}
 .list-row .amt{text-align:right;font-weight:800;font-size:13px;white-space:nowrap}
-.prod-table-wrap{overflow-x:auto;margin:0 -4px;padding:0 4px}
-.prod-table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed}
-.prod-table th{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--dim);text-align:left;padding:10px;background:var(--surface-2);border-bottom:1px solid var(--border);white-space:nowrap}
-.prod-table th:first-child{border-radius:8px 0 0 8px}
-.prod-table th:last-child{border-radius:0 8px 8px 0}
-.prod-table td{padding:10px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
-.prod-table tbody tr:last-child td{border-bottom:0}
-.prod-table .c-img{width:56px}
-.prod-table .c-actions{width:104px;white-space:nowrap;text-align:right}
-.prod-table .c-price,.prod-table .c-stock{width:84px;white-space:nowrap}
-.prod-table .c-status{width:92px}
-.prod-table .prod-thumb{width:40px;height:40px;border-radius:10px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:20px;flex:none}
-.prod-table .c-name strong{display:block;font-size:13px;font-weight:700;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prod-table .c-name small{display:block;font-size:11px;color:var(--dim);margin-top:2px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prod-table .c-cat{color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prod-table .c-price{font-weight:800}
-.prod-table .stock-num{font-weight:800}
-.prod-table .stock-num.warn{color:var(--warn)}
-.prod-table .stock-num.bad{color:var(--danger)}
-.prod-table .c-actions .btn{width:38px;height:38px;min-height:0;margin-left:2px}
-.prod-table .c-actions .btn.del{color:var(--danger)}
-.prod-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;flex-wrap:wrap}
-.prod-pager{display:flex;gap:6px;align-items:center}
-.pager-btn{min-width:34px;height:34px;padding:0 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-weight:700;font-size:13px;color:var(--text);cursor:pointer}
-.pager-btn.active{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border-color:transparent}
-.pager-btn:disabled{opacity:.4;cursor:default}
-.pager-ellipsis{color:var(--dim);padding:0 2px;font-weight:700}
-.prod-total{font-size:12px;color:var(--dim);font-weight:700}
+/* ---------- products: swipe pages, one screen per page (like New Sale) ---------- */
+#view-products{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;padding:36px 42px}
+#view-products .panel{flex:1;min-height:0;display:flex;flex-direction:column;margin-bottom:0}
+#productList{flex:1;min-height:0;display:flex;flex-direction:column}
+.prod-swipe{flex:1;min-height:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;touch-action:pan-x;user-select:none;-webkit-user-select:none}
+.prod-swipe::-webkit-scrollbar{display:none}
+.prod-page{flex:0 0 100%;scroll-snap-align:start;display:flex;flex-direction:column;min-height:0;min-width:0}
+.prod-thead,.prod-trow{display:flex;align-items:center;gap:10px;min-width:0}
+.prod-thead{flex:none;background:var(--surface-2);border-radius:8px;padding:0 8px}
+.prod-thead>span{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--dim);text-align:left;padding:10px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-tbody{flex:1;min-height:0;min-width:0;display:flex;flex-direction:column}
+.prod-trow{flex:1;max-height:72px;padding:5px 8px;border-bottom:1px solid var(--border)}
+.prod-trow:last-child{border-bottom:0}
+.prod-thead .c-img,.prod-trow .c-img{flex:0 0 56px}
+.prod-thead .c-name,.prod-trow .c-name{flex:1 1 0;min-width:0}
+.prod-thead .c-cat,.prod-trow .c-cat{flex:0 0 120px;min-width:0}
+.prod-thead .c-price,.prod-trow .c-price{flex:0 0 84px}
+.prod-thead .c-stock,.prod-trow .c-stock{flex:0 0 84px}
+.prod-thead .c-status,.prod-trow .c-status{flex:0 0 92px}
+.prod-thead .c-actions,.prod-trow .c-actions{flex:0 0 104px;text-align:right}
+.prod-trow .prod-thumb{width:40px;height:40px;border-radius:10px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:20px;flex:none}
+.prod-trow .c-name strong{display:block;font-size:13px;font-weight:700;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-trow .c-name small{display:block;font-size:11px;color:var(--dim);margin-top:2px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-trow .c-name small .m-cat{display:none}
+.prod-trow .c-cat{color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-trow .c-price{font-weight:800}
+.prod-trow .stock-num{font-weight:800}
+.prod-trow .stock-num.warn{color:var(--warn)}
+.prod-trow .stock-num.bad{color:var(--danger)}
+.prod-trow .c-actions .btn{width:38px;height:38px;min-height:0;margin-left:2px}
+.prod-trow .c-actions .btn.del{color:var(--danger)}
+.prod-total{font-size:12px;color:var(--dim);font-weight:700;text-align:center;margin-top:6px}
 .avatar{width:42px;height:42px;border-radius:50%;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
 .empty{text-align:center;padding:42px 20px;color:var(--dim)}
 .empty h3{margin:0;color:var(--text);font-size:14px}
@@ -367,9 +371,35 @@ body.logged-out .scan-wrap{display:none!important}
   .form-grid{grid-template-columns:1fr}
   .toast{bottom:calc(79px + env(safe-area-inset-bottom))}
   .receipt-actions{position:sticky;bottom:0;background:var(--surface);padding-top:10px}
-  .prod-table{min-width:590px}
-  .prod-table th,.prod-table td{padding:9px 8px}
-  .prod-foot{padding-top:12px}
+  /* products: fit one screen, condensed phone table (category joins the name line) */
+  #view-products{padding:12px 14px calc(10px + var(--bottom-nav-h));min-height:calc(100vh - 58px - env(safe-area-inset-top));min-height:calc(100dvh - 58px - env(safe-area-inset-top))}
+  #view-products .page-head{gap:8px;margin-bottom:8px}
+  #view-products .page-head h1{font-size:20px}
+  #view-products .page-head p{line-height:1.45}
+  #view-products .head-actions .btn{min-height:36px;padding:0 8px;font-size:12px}
+  #view-products .panel{padding:10px}
+  #view-products .searchbar{min-height:44px}
+  #view-products .searchbar input{min-height:40px}
+  #view-products select{min-height:40px;flex:1;min-width:0}
+  #view-products .prod-total{margin-top:2px}
+  #productList .pager-dots{margin-top:8px}
+  .prod-thead,.prod-trow{gap:6px}
+  .prod-thead{padding:0 4px}
+  .prod-thead>span{font-size:10px;padding:6px 0}
+  .prod-thead .c-img{font-size:0}
+  .prod-trow{padding:3px 4px}
+  .prod-thead .c-img,.prod-trow .c-img{flex-basis:32px}
+  .prod-trow .prod-thumb{width:28px;height:28px;border-radius:8px;font-size:15px}
+  .prod-thead .c-cat,.prod-trow .c-cat{display:none}
+  .prod-trow .c-name small .m-cat{display:inline}
+  .prod-thead .c-price,.prod-trow .c-price{flex-basis:52px;font-size:11px}
+  .prod-thead .c-stock,.prod-trow .c-stock{flex-basis:28px;font-size:12px}
+  .prod-thead .c-status,.prod-trow .c-status{flex-basis:78px}
+  .prod-trow .c-status .badge{white-space:nowrap;min-height:20px;padding:2px 5px;font-size:9px}
+  .prod-thead .c-actions,.prod-trow .c-actions{flex-basis:56px}
+  .prod-trow .c-actions .btn{width:26px;height:26px}
+  .prod-trow .c-name strong{font-size:12px}
+  .prod-trow .c-name small{font-size:10px}
 }
 @media(max-width:360px){
   .metric-strip{grid-template-columns:1fr}
@@ -563,13 +593,13 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
       <input type="file" id="importCsvInput" accept=".csv,text/csv" class="hidden">
     </div>
     <div class="panel">
-      <div class="row wrap" style="margin-bottom:14px">
+      <div class="row wrap" style="margin-bottom:10px">
         <div class="searchbar" style="flex:1;min-width:200px"><span aria-hidden="true">🔍</span><input type="search" id="productSearch" data-tp="products.search" placeholder="Search product or SKU"></div>
-        <select id="productFilter" style="width:auto;min-width:150px">
+        <select id="productFilter" style="width:auto;min-width:0">
           <option value="all" data-t="products.all">All products</option>
           <option value="low" data-t="products.low">Low stock</option>
         </select>
-        <select id="productSort" style="width:auto;min-width:160px">
+        <select id="productSort" style="width:auto;min-width:0">
           <option value="name" data-t="products.sortName">Name A–Z</option>
           <option value="stock" data-t="products.sortStock">Stock low to high</option>
           <option value="price" data-t="products.sortPrice">Price high to low</option>
@@ -974,7 +1004,7 @@ function load(){
 /* Offline-first: localStorage is the source of truth on this device; the cloud is
    a shared copy. If Supabase is unreachable, everything keeps working locally
    and the next save retries the push. */
-const APP_VERSION = '1.0.3'; /* shown on the login screen and in Settings → About */
+const APP_VERSION = '1.0.4'; /* shown on the login screen and in Settings → About */
 const SB_URL = 'https://lvvulqjawnowqhiulmow.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2dnVscWphd25vd3FoaXVsbW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1MzU2MDksImV4cCI6MjExMTExMTYwOX0.nB-3sc9m938ZC6tex0xUsOB69hQyj3dwmb9v2deavFA';
 const SB_TABLES = ['products','customers','staff','orders','expenses','movements','settings'];
@@ -2545,6 +2575,62 @@ function closeScanner(){
 /* ================= products ================= */
 const PROD_PAGE_SIZE = 8;
 let prodPage = 1;
+let prodDragged = false; // set while a swipe/drag moved, so the tap does not open edit/delete
+function prodTotalPages(){
+  const sw = document.getElementById('prodSwipe');
+  return (sw ? sw.querySelectorAll('.prod-page').length : 1) || 1;
+}
+function updateProdDots(){
+  const dots = document.getElementById('prodPagerDots');
+  if(!dots) return;
+  dots.querySelectorAll('.dot').forEach(function(d, i){
+    d.classList.toggle('on', i + 1 === prodPage);
+  });
+}
+function gotoProdPage(p){
+  const sw = document.getElementById('prodSwipe');
+  if(!sw) return;
+  p = Math.max(1, Math.min(prodTotalPages(), p));
+  prodPage = p;
+  sw.scrollTo({left: (p - 1) * sw.clientWidth, behavior: 'smooth'});
+  updateProdDots();
+}
+function snapProdPage(){
+  const sw = document.getElementById('prodSwipe');
+  if(!sw || !sw.clientWidth) return;
+  gotoProdPage(Math.round(sw.scrollLeft / sw.clientWidth) + 1);
+}
+function bindProdSwipe(){
+  const sw = document.getElementById('prodSwipe');
+  if(!sw) return;
+  let dragX = null, dragLeft = 0, dragMoved = 0;
+  sw.addEventListener('scroll', function(){
+    const w = sw.clientWidth;
+    if(!w) return;
+    const p = Math.round(sw.scrollLeft / w) + 1;
+    if(p !== prodPage && p >= 1 && p <= prodTotalPages()){ prodPage = p; updateProdDots(); }
+  }, {passive: true});
+  sw.addEventListener('pointerdown', function(e){
+    if(e.pointerType !== 'mouse') return;
+    dragX = e.clientX; dragLeft = sw.scrollLeft; dragMoved = 0;
+  });
+  sw.addEventListener('pointermove', function(e){
+    if(dragX === null) return;
+    const dx = e.clientX - dragX;
+    if(Math.abs(dx) > 4){ dragMoved = Math.abs(dx); sw.scrollLeft = dragLeft - dx; }
+  });
+  const endDrag = function(){
+    if(dragX === null) return;
+    dragX = null;
+    if(dragMoved > 8){
+      prodDragged = true;
+      setTimeout(function(){ prodDragged = false; }, 0);
+      snapProdPage();
+    }
+  };
+  sw.addEventListener('pointerup', endDrag);
+  sw.addEventListener('pointercancel', function(){ dragX = null; });
+}
 function renderProducts(){
   const q = (document.getElementById('productSearch').value || '').trim().toLowerCase();
   const f = document.getElementById('productFilter').value;
@@ -2562,74 +2648,59 @@ function renderProducts(){
   const total = list.length;
   const totalPages = Math.max(1, Math.ceil(total / PROD_PAGE_SIZE));
   if(prodPage > totalPages) prodPage = totalPages;
+  if(prodPage < 1) prodPage = 1;
   if(!total){
     document.getElementById('productList').innerHTML = '<div class="empty"><h3>' + esc(t('pos.noProduct')) + '</h3></div>';
     return;
   }
-  const pageList = list.slice((prodPage - 1) * PROD_PAGE_SIZE, prodPage * PROD_PAGE_SIZE);
-  const rows = pageList.map(function(p){
+  const headHtml = '<div class="prod-thead">' +
+    '<span class="c-img">' + esc(t('products.colImage')) + '</span>' +
+    '<span class="c-name">' + esc(t('common.name')) + '</span>' +
+    '<span class="c-cat">' + esc(t('common.category')) + '</span>' +
+    '<span class="c-price">' + esc(t('common.price')) + '</span>' +
+    '<span class="c-stock">' + esc(t('common.stock')) + '</span>' +
+    '<span class="c-status">' + esc(t('products.colStatus')) + '</span>' +
+    '<span class="c-actions"></span></div>';
+  const rowHtml = function(p){
     const stockCls = p.stock === 0 ? ' bad' : (p.stock <= p.minStock ? ' warn' : '');
     const status = p.active
       ? '<span class="badge good">' + esc(t('products.active')) + '</span>'
       : '<span class="badge">' + esc(t('products.inactive')) + '</span>';
-    return '<tr><td class="c-img"><div class="prod-thumb">' + (PROD_ICON[p.category] || '📦') + '</div></td>' +
-      '<td class="c-name"><strong>' + esc(p.name) + '</strong><small>' + esc(p.sku) + '</small></td>' +
-      '<td class="c-cat">' + esc(tCat(p.category)) + '</td>' +
-      '<td class="c-price">' + money(effPrice(p)) + '</td>' +
-      '<td class="c-stock"><span class="stock-num' + stockCls + '">' + p.stock + '</span></td>' +
-      '<td class="c-status">' + status + '</td>' +
-      '<td class="c-actions"><button class="btn icon-btn" type="button" data-edit-product="' + p.id + '" aria-label="Edit">✎</button>' +
-      '<button class="btn icon-btn del" type="button" data-delete-product="' + p.id + '" aria-label="Delete">' + TRASH_SVG + '</button></td></tr>';
-  }).join('');
-  let foot = '';
-  if(totalPages > 1){
-    let nums = [];
-    if(totalPages <= 7){ for(let i = 1; i <= totalPages; i++) nums.push(i); }
-    else {
-      nums = [1];
-      if(prodPage > 3) nums.push('…');
-      for(let i = Math.max(2, prodPage - 1); i <= Math.min(totalPages - 1, prodPage + 1); i++) nums.push(i);
-      if(prodPage < totalPages - 2) nums.push('…');
-      nums.push(totalPages);
-    }
-    const btns = nums.map(function(n){
-      if(n === '…') return '<span class="pager-ellipsis">…</span>';
-      return '<button type="button" class="pager-btn' + (n === prodPage ? ' active' : '') + '" data-prod-page="' + n + '">' + n + '</button>';
-    }).join('');
-    foot = '<div class="prod-foot"><div class="prod-pager">' +
-      '<button type="button" class="pager-btn" data-prod-page="prev"' + (prodPage === 1 ? ' disabled' : '') + '>‹</button>' + btns +
-      '<button type="button" class="pager-btn" data-prod-page="next"' + (prodPage === totalPages ? ' disabled' : '') + '>›</button></div>' +
-      '<span class="prod-total">' + esc(t('products.totalItems', {count: total})) + '</span></div>';
+    return '<div class="prod-trow"><div class="c-img"><div class="prod-thumb">' + (PROD_ICON[p.category] || '📦') + '</div></div>' +
+      '<div class="c-name"><strong>' + esc(p.name) + '</strong><small><span class="m-sku">' + esc(p.sku) + '</span><span class="m-cat"> · ' + esc(tCat(p.category)) + '</span></small></div>' +
+      '<div class="c-cat">' + esc(tCat(p.category)) + '</div>' +
+      '<div class="c-price">' + money(effPrice(p)) + '</div>' +
+      '<div class="c-stock"><span class="stock-num' + stockCls + '">' + p.stock + '</span></div>' +
+      '<div class="c-status">' + status + '</div>' +
+      '<div class="c-actions"><button class="btn icon-btn" type="button" data-edit-product="' + p.id + '" aria-label="Edit">✎</button>' +
+      '<button class="btn icon-btn del" type="button" data-delete-product="' + p.id + '" aria-label="Delete">' + TRASH_SVG + '</button></div></div>';
+  };
+  let pagesHtml = '';
+  for(let pi = 0; pi < totalPages; pi++){
+    pagesHtml += '<div class="prod-page" data-page="' + (pi + 1) + '">' + headHtml +
+      '<div class="prod-tbody">' + list.slice(pi * PROD_PAGE_SIZE, (pi + 1) * PROD_PAGE_SIZE).map(rowHtml).join('') + '</div></div>';
   }
+  let dotsHtml = '';
+  for(let di = 1; di <= totalPages; di++) dotsHtml += '<span class="dot' + (di === prodPage ? ' on' : '') + '"></span>';
   document.getElementById('productList').innerHTML =
-    '<div class="prod-table-wrap"><table class="prod-table"><thead><tr>' +
-    '<th class="c-img">' + esc(t('products.colImage')) + '</th>' +
-    '<th class="c-name">' + esc(t('common.name')) + '</th>' +
-    '<th class="c-cat">' + esc(t('common.category')) + '</th>' +
-    '<th class="c-price">' + esc(t('common.price')) + '</th>' +
-    '<th class="c-stock">' + esc(t('common.stock')) + '</th>' +
-    '<th class="c-status">' + esc(t('products.colStatus')) + '</th>' +
-    '<th class="c-actions"></th></tr></thead><tbody>' + rows + '</tbody></table></div>' + foot;
+    '<div class="prod-swipe" id="prodSwipe">' + pagesHtml + '</div>' +
+    '<div class="prod-total">' + esc(t('products.totalItems', {count: total})) + '</div>' +
+    '<div class="pager-dots' + (totalPages <= 1 ? ' hidden' : '') + '" id="prodPagerDots">' + dotsHtml + '</div>';
+  const sw = document.getElementById('prodSwipe');
+  sw.scrollTo({left: (prodPage - 1) * sw.clientWidth, behavior: 'instant'});
+  bindProdSwipe();
   document.querySelectorAll('[data-edit-product]').forEach(function(b){
-    b.addEventListener('click', function(){ openProductForm(b.dataset.editProduct); });
+    b.addEventListener('click', function(){ if(prodDragged) return; openProductForm(b.dataset.editProduct); });
   });
   document.querySelectorAll('[data-delete-product]').forEach(function(b){
     b.addEventListener('click', function(){
+      if(prodDragged) return;
       const p = prodById(b.dataset.deleteProduct);
       if(!p) return;
       if(!confirm(t('common.confirmDelete'))) return;
       DB.products = DB.products.filter(function(x){ return x.id !== p.id; });
       sbDelete('products', p.id);
       save(); renderProducts(); toast(t('products.deleted'));
-    });
-  });
-  document.querySelectorAll('[data-prod-page]').forEach(function(b){
-    b.addEventListener('click', function(){
-      const v = b.dataset.prodPage;
-      if(v === 'prev') prodPage = Math.max(1, prodPage - 1);
-      else if(v === 'next') prodPage = Math.min(totalPages, prodPage + 1);
-      else prodPage = parseInt(v, 10);
-      renderProducts();
     });
   });
 }
@@ -3158,6 +3229,14 @@ function init(){
       if(e.key === 'ArrowLeft'){ e.preventDefault(); gotoPosPage(posPage - 1); }
     });
   })();
+  // Same sideways paging on the Products view (arrow keys on desktop).
+  document.addEventListener('keydown', function(e){
+    if(curView !== 'products' || document.getElementById('view-products').classList.contains('hidden')) return;
+    const tag = document.activeElement && document.activeElement.tagName;
+    if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if(e.key === 'ArrowRight'){ e.preventDefault(); gotoProdPage(prodPage + 1); }
+    if(e.key === 'ArrowLeft'){ e.preventDefault(); gotoProdPage(prodPage - 1); }
+  });
   document.getElementById('posSearch').addEventListener('keydown', function(e){
     /* USB barcode scanner (keyboard wedge) types the code + Enter: add the
        exact barcode/SKU match, or the single filtered product; otherwise
