@@ -357,7 +357,7 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
 .login-error{color:var(--danger);font-size:13px;font-weight:650;margin:0 0 14px}
 .login-note{color:var(--accent-strong);font-size:13px;font-weight:650;margin:0 0 14px}
 .login-switch{display:block;margin:16px auto 0;background:none;border:0;color:var(--accent-strong);font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-.login-card .lang-toggle{margin-top:18px}
+.login-lang-select{position:fixed;right:16px;bottom:16px;z-index:5;width:auto;min-height:0;font:inherit;font-size:12px;font-weight:700;color:var(--dim);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08)}
 
 /* ---------- print: receipt only ---------- */
 @media print{
@@ -392,12 +392,12 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
     <p class="login-note hidden" id="loginConfirmNote"></p>
     <button class="btn primary block big" type="button" id="loginBtn" data-t="login.button">Log in</button>
     <button class="login-switch" type="button" id="loginSwitchBtn" data-t="login.toSignup">Don't have an account? Sign up</button>
-    <div class="lang-toggle" id="loginLangToggle">
-      <button type="button" data-lang="my">မြန်မာ</button>
-      <button type="button" data-lang="en">English</button>
-    </div>
     </div>
   </div>
+  <select class="login-lang-select" id="loginLangSelect" aria-label="Language">
+    <option value="my">မြန်မာ</option>
+    <option value="en">English</option>
+  </select>
 </div>
 
 <!-- ======== side nav (desktop) ======== -->
@@ -1902,6 +1902,8 @@ function applyLang(){
   document.querySelectorAll('.lang-toggle').forEach(function(tg){
     tg.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === DB.settings.lang); });
   });
+  var loginLangSelect = document.getElementById('loginLangSelect');
+  if(loginLangSelect) loginLangSelect.value = DB.settings.lang;
   document.getElementById('brandName').textContent = DB.settings.storeName;
   document.getElementById('mobileBrandName').textContent = DB.settings.storeName;
   document.getElementById('loginStoreName').textContent = DB.settings.storeName;
@@ -2861,6 +2863,7 @@ function init(){
       b.addEventListener('click', function(){ setLang(b.dataset.lang); });
     });
   });
+  document.getElementById('loginLangSelect').addEventListener('change', function(){ setLang(this.value); });
   document.querySelectorAll('#setThemeToggle button').forEach(function(b){
     b.addEventListener('click', function(){ applyTheme(b.dataset.theme); });
   });
