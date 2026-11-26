@@ -164,6 +164,11 @@ small{color:var(--dim)}
 .category-row button{white-space:nowrap;min-height:44px;padding:0 14px}
 .category-row button.active{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(109,40,217,.25)}
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px}
+.pager{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.pager button{min-width:36px;min-height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface);font-size:13px;font-weight:700}
+.pager button.active{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(109,40,217,.25)}
+.pager button:disabled{opacity:.35}
+.pager-ellipsis{color:var(--dim);padding:0 2px}
 .product-card{padding:0;display:block;text-align:left;border-radius:14px;overflow:hidden;background:var(--surface);border:1px solid var(--border);position:relative}
 .product-card:hover{border-color:var(--accent-3);box-shadow:0 8px 20px rgba(109,40,217,.12)}
 .product-card.sold-out{opacity:.55}
@@ -296,7 +301,7 @@ body.logged-out .scan-wrap{display:none!important}
 }
 @media(max-width:767px){
   .side-nav{display:none}
-  .workspace{margin-left:0}
+  .workspace{margin-left:0;min-height:calc(100vh - 58px - env(safe-area-inset-top));min-height:calc(100dvh - 58px - env(safe-area-inset-top))}
   .mobile-top{height:calc(58px + env(safe-area-inset-top));padding:calc(8px + env(safe-area-inset-top)) 14px 8px;display:flex;align-items:center;justify-content:space-between;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:25}
   .mobile-top .brand strong{font-size:13px}
   .page{padding:20px 14px calc(20px + var(--bottom-nav-h) + 70px)}
@@ -316,6 +321,10 @@ body.logged-out .scan-wrap{display:none!important}
   .pos-toolbar h1{font-size:17px}
   .searchbar{position:sticky;top:calc(70px + env(safe-area-inset-top));z-index:20;box-shadow:0 5px 14px rgba(0,0,0,.04)}
   .product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .product-photo{height:48px;font-size:26px}
+  .product-copy{padding:8px}
+  .product-copy>small{margin-bottom:2px}
+  .product-copy .p-price{margin-top:4px}
   .mobile-cartbar{position:fixed;z-index:24;left:10px;right:10px;bottom:calc(var(--bottom-nav-h) + 7px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:center;min-height:54px;border:0;background:var(--grad);color:#fff;box-shadow:0 10px 28px rgba(109,40,217,.35)}
   .mobile-cartbar span{color:#e4dcfb;font-size:12px}
   .modal-wrap{padding:0;place-items:end center}
@@ -342,7 +351,7 @@ body.logged-out .scan-wrap{display:none!important}
   .modal.wide .field{margin-bottom:10px}
   .modal.wide .summary-box{padding:13px 16px;margin-bottom:10px}
   .modal.wide .summary-box .due{font-size:26px;margin:2px 0 8px}
-  .modal.wide .total-banner{padding:12px 16px;margin-bottom:12px}
+  .modal.wide .total-banner{padding:10px 16px;margin-bottom:12px}
   .modal.wide .total-banner-ico{width:38px;height:38px;border-radius:10px}
   .modal.wide .total-banner-ico svg{width:20px;height:20px}
   .modal.wide .total-banner-text strong{font-size:24px}
@@ -501,6 +510,7 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
       <div class="searchbar"><span aria-hidden="true">🔍</span><input type="search" id="posSearch" data-tp="pos.search" placeholder="Search products, SKU, barcode, or category" autocomplete="off"><button class="btn" type="button" id="posScanBtn" style="flex:none">📷 <span data-t="scan.button">Scan</span></button></div>
       <div class="category-row" id="posCategories"></div>
       <div class="product-grid" id="productGrid"></div>
+      <div class="pager hidden" id="posPager"></div>
       <div class="empty hidden" id="posEmpty"><h3 data-t="pos.noProduct">No product found</h3><p data-t="pos.noProductDetail">Try a product name, SKU, barcode, or another category.</p></div>
     </div>
     <aside class="cart-panel" id="cartPanel"></aside>
@@ -811,6 +821,8 @@ let cart = [];            // {productId, qty}
 let curView = 'dashboard';
 let posCat = 'all';
 let posQuery = '';
+let posPage = 1;
+let lastPosCols = 0;
 let moveProductId = null;
 let lastOrderId = null;
 
@@ -2035,6 +2047,33 @@ function setQty(pid, qty){
   else line.qty = qty;
   renderCart();
 }
+/* POS pagination: 2 rows per page. The page size follows the grid's column
+   count (phone 2 cols -> 4/page, tablet 3 cols -> 6/page, desktop more),
+   so a page always fits one screen without scrolling. */
+function posPageSize(){
+  const grid = document.getElementById('productGrid');
+  if(!grid) return 4;
+  const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(function(s){ return s; }).length || 2;
+  return Math.max(2, cols) * 2;
+}
+function pagerHtml(cur, total){
+  const btn = function(p){
+    return '<button type="button" data-page="' + p + '"' + (p === cur ? ' class="active" aria-current="page"' : '') + '>' + p + '</button>';
+  };
+  let nums = [];
+  if(total <= 7){ for(let i = 1; i <= total; i++) nums.push(i); }
+  else {
+    const set = {};
+    [1, 2, total - 1, total, cur - 1, cur, cur + 1].forEach(function(n){ if(n >= 1 && n <= total) set[n] = true; });
+    const arr = Object.keys(set).map(function(n){ return parseInt(n, 10); }).sort(function(a, b){ return a - b; });
+    let prev = 0;
+    arr.forEach(function(n){ if(n - prev > 1) nums.push('…'); nums.push(n); prev = n; });
+  }
+  let h = '<button type="button" data-page="' + (cur - 1) + '"' + (cur === 1 ? ' disabled' : '') + '>‹</button>';
+  nums.forEach(function(n){ h += (n === '…') ? '<span class="pager-ellipsis">…</span>' : btn(n); });
+  h += '<button type="button" data-page="' + (cur + 1) + '"' + (cur === total ? ' disabled' : '') + '>›</button>';
+  return h;
+}
 function renderPos(){
   // categories
   const cats = ['all'].concat(CATEGORIES.filter(function(c){ return DB.products.some(function(p){ return p.active && p.category === c; }); }));
@@ -2043,7 +2082,7 @@ function renderPos(){
     return '<button type="button" class="btn' + (posCat === c ? ' active' : '') + '" data-cat="' + esc(c) + '">' + esc(label) + '</button>';
   }).join('');
   document.querySelectorAll('#posCategories button').forEach(function(b){
-    b.addEventListener('click', function(){ posCat = b.dataset.cat; renderPos(); });
+    b.addEventListener('click', function(){ posCat = b.dataset.cat; posPage = 1; renderPos(); });
   });
   // grid
   const q = posQuery.trim().toLowerCase();
@@ -2055,7 +2094,27 @@ function renderPos(){
   });
   const grid = document.getElementById('productGrid');
   document.getElementById('posEmpty').classList.toggle('hidden', list.length > 0);
-  grid.innerHTML = list.map(function(p){
+  const pageSize = posPageSize();
+  lastPosCols = pageSize / 2;
+  const totalPages = Math.max(1, Math.ceil(list.length / pageSize));
+  if(posPage > totalPages) posPage = totalPages;
+  if(posPage < 1) posPage = 1;
+  const pageList = list.slice((posPage - 1) * pageSize, posPage * pageSize);
+  const pager = document.getElementById('posPager');
+  if(totalPages <= 1){ pager.innerHTML = ''; pager.classList.add('hidden'); }
+  else {
+    pager.classList.remove('hidden');
+    pager.innerHTML = pagerHtml(posPage, totalPages);
+    pager.querySelectorAll('[data-page]').forEach(function(b){
+      b.addEventListener('click', function(){
+        if(b.disabled) return;
+        posPage = parseInt(b.dataset.page, 10);
+        renderPos();
+        window.scrollTo({top: 0});
+      });
+    });
+  }
+  grid.innerHTML = pageList.map(function(p){
     const price = effPrice(p), onSale = price < p.sellingPrice;
     const inCart = cartQty(p.id);
     const stockTxt = p.stock === 0 ? '<em class="low">' + esc(t('pos.outOfStock')) + '</em>'
@@ -2897,6 +2956,19 @@ function init(){
     }
   }
   document.getElementById('posBackBtn').addEventListener('click', function(){ showView('dashboard'); });
+  // Rotation / resize can change the grid's column count, which changes the
+  // page size — re-render the POS grid so the pager stays correct.
+  let posResizeTimer = null;
+  window.addEventListener('resize', function(){
+    if(curView !== 'pos') return;
+    clearTimeout(posResizeTimer);
+    posResizeTimer = setTimeout(function(){
+      const grid = document.getElementById('productGrid');
+      if(!grid) return;
+      const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(function(s){ return s; }).length;
+      if(cols && cols !== lastPosCols){ lastPosCols = cols; renderPos(); }
+    }, 200);
+  });
   document.getElementById('posMenuBtn').addEventListener('click', function(e){
     e.stopPropagation();
     document.getElementById('posMenu').classList.toggle('hidden');
@@ -2930,7 +3002,7 @@ function init(){
   document.querySelectorAll('#setThemeToggle button').forEach(function(b){
     b.addEventListener('click', function(){ applyTheme(b.dataset.theme); });
   });
-  document.getElementById('posSearch').addEventListener('input', function(e){ posQuery = e.target.value; renderPos(); });
+  document.getElementById('posSearch').addEventListener('input', function(e){ posQuery = e.target.value; posPage = 1; renderPos(); });
   document.getElementById('posSearch').addEventListener('keydown', function(e){
     /* USB barcode scanner (keyboard wedge) types the code + Enter: add the
        exact barcode/SKU match, or the single filtered product; otherwise
