@@ -208,7 +208,7 @@ small{color:var(--dim)}
 .cart-actions{display:flex;gap:10px;margin-top:14px}
 .cart-actions .cart-clear-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:55px;padding:0 16px;border:1.5px solid var(--accent-3);border-radius:10px;background:var(--surface);color:var(--accent-strong);font-size:14px;font-weight:800;cursor:pointer;flex:none}
 .cart-actions .charge-btn{flex:1;width:auto;margin-top:0}
-.mobile-cartbar{display:none}
+.mobile-cartfab{display:none}
 
 /* ---------- modal ---------- */
 .modal-wrap{position:fixed;z-index:80;inset:0;display:grid;place-items:center;padding:20px}
@@ -327,8 +327,8 @@ body.logged-out .scan-wrap{display:none!important}
   .product-copy .p-price{margin-top:4px}
   .product-copy .p-price del{display:block;margin-left:0;margin-top:2px}
   .sale-badge{top:6px;left:6px;padding:2px 5px;font-size:8px}
-  .mobile-cartbar{position:fixed;z-index:24;left:10px;right:10px;bottom:calc(var(--bottom-nav-h) + 7px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:center;min-height:54px;border:0;background:var(--grad);color:#fff;box-shadow:0 10px 28px rgba(109,40,217,.35)}
-  .mobile-cartbar span{color:#e4dcfb;font-size:12px}
+  .mobile-cartfab{position:fixed;z-index:24;right:14px;bottom:calc(var(--bottom-nav-h) + 14px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;border:0;background:var(--grad);color:#fff;box-shadow:0 10px 28px rgba(109,40,217,.35);display:flex;align-items:center;justify-content:center;padding:0}
+  .mobile-cartfab .fab-count{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 5px;border-radius:99px;background:var(--danger);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface);line-height:1}
   .modal-wrap{padding:0;place-items:end center}
   .modal{width:100%;max-height:92vh;border-radius:16px 16px 0 0;padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom))}
   .modal>header{margin:-18px -18px 16px;padding:14px 18px;border-radius:16px 16px 0 0}
@@ -516,7 +516,7 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
       <div class="empty hidden" id="posEmpty"><h3 data-t="pos.noProduct">No product found</h3><p data-t="pos.noProductDetail">Try a product name, SKU, barcode, or another category.</p></div>
     </div>
     <aside class="cart-panel" id="cartPanel"></aside>
-    <button class="btn mobile-cartbar hidden" type="button" id="mobileCartBar"><span id="mobileCartInfo">0 items</span><strong id="mobileCartTotal">—</strong></button>
+    <button class="btn mobile-cartfab hidden" type="button" id="mobileCartFab" aria-label="Cart"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg><span class="fab-count" id="mobileCartCount">0</span></button>
   </section>
 
   <!-- ======== PRODUCTS ======== -->
@@ -2195,13 +2195,12 @@ function renderCart(){
     inp.addEventListener('change', function(){ setQty(inp.dataset.qty, parseInt(inp.value, 10)); });
   });
   }
-  // mobile cart bar
-  const bar = document.getElementById('mobileCartBar');
+  // mobile cart FAB (icon + count badge)
+  const fab = document.getElementById('mobileCartFab');
   if(count > 0){
-    bar.classList.remove('hidden');
-    document.getElementById('mobileCartInfo').textContent = t('pos.items', {count: count});
-    document.getElementById('mobileCartTotal').textContent = money(round2(tot.subtotal * (1 + DB.settings.taxRate / 100)));
-  } else bar.classList.add('hidden');
+    fab.classList.remove('hidden');
+    document.getElementById('mobileCartCount').textContent = count;
+  } else fab.classList.add('hidden');
 }
 
 /* ================= checkout & receipt ================= */
@@ -3107,7 +3106,7 @@ function init(){
     const f = document.getElementById('pfBarcode');
     if(f) f.value = code;
   });
-  document.getElementById('mobileCartBar').addEventListener('click', function(){
+  document.getElementById('mobileCartFab').addEventListener('click', function(){
     // open the cart as a modal on mobile
     const panel = document.getElementById('cartPanel');
     openModal('<header class="cart-sheet-head"><button class="btn icon-btn" type="button" data-close aria-label="Back">' + BACK_SVG + '</button><h2>' + esc(t('cart.title')) + '</h2><button class="btn icon-btn" type="button" id="cartSheetTrash" aria-label="' + esc(t('cart.clear')) + '">' + TRASH_SVG + '</button></header><div id="mobileCartBody"></div>');
