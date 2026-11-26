@@ -36,6 +36,7 @@ html.dark .badge.warn{background:#33270f;color:var(--warn)}
 html.dark .badge.bad{background:#3a1a15;color:var(--danger)}
 html.dark .badge.blue{background:#122a36;color:var(--blue)}
 html.dark .avatar{background:#2d2342;color:#c4b5fd}
+html.dark .prod-thumb{background:#2d2342;color:#c4b5fd}
 html.dark .product-photo{background:#2d2342}
 html.dark .bottom-nav button.active{background:#2d2342;color:#c4b5fd}
 html.dark .success-mark{background:#123524;color:#4ade80}
@@ -127,6 +128,13 @@ small{color:var(--dim)}
 .list-row strong{font-size:13px}
 .list-row small{font-size:11px;color:var(--dim);margin-top:3px}
 .list-row .amt{text-align:right;font-weight:800;font-size:13px;white-space:nowrap}
+.prod-row{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--border)}
+.prod-row:last-child{border-bottom:0}
+.prod-row .prod-thumb{width:46px;height:46px;border-radius:12px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-size:22px;flex:none}
+.prod-row .grow{flex:1;min-width:0}
+.prod-row .grow strong{display:block;font-size:14px;font-weight:700;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-row .grow small{display:block;font-size:11px;color:var(--dim);margin-top:3px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod-row .prod-price{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none;text-align:right;font-weight:800;font-size:14px;line-height:1.45;white-space:nowrap}
 .avatar{width:42px;height:42px;border-radius:50%;background:#ede9fe;color:#6d28d9;display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
 .empty{text-align:center;padding:42px 20px;color:var(--dim)}
 .empty h3{margin:0;color:var(--text);font-size:14px}
@@ -942,7 +950,7 @@ function load(){
 /* Offline-first: localStorage is the source of truth on this device; the cloud is
    a shared copy. If Supabase is unreachable, everything keeps working locally
    and the next save retries the push. */
-const APP_VERSION = '1.0.1'; /* shown on the login screen and in Settings → About */
+const APP_VERSION = '1.0.2'; /* shown on the login screen and in Settings → About */
 const SB_URL = 'https://lvvulqjawnowqhiulmow.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2dnVscWphd25vd3FoaXVsbW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1MzU2MDksImV4cCI6MjExMTExMTYwOX0.nB-3sc9m938ZC6tex0xUsOB69hQyj3dwmb9v2deavFA';
 const SB_TABLES = ['products','customers','staff','orders','expenses','movements','settings'];
@@ -2530,10 +2538,9 @@ function renderProducts(){
       : p.stock === 0 ? '<span class="badge bad">' + esc(t('inventory.out')) + '</span>'
       : p.stock <= p.minStock ? '<span class="badge warn">' + esc(t('inventory.low')) + '</span>'
       : '<span class="badge good">' + esc(t('pos.inStock', {count: p.stock})) + '</span>';
-    return '<div class="list-row"><div class="avatar" style="border-radius:8px">' + (PROD_ICON[p.category] || '📦') + '</div>' +
+    return '<div class="prod-row"><div class="prod-thumb">' + (PROD_ICON[p.category] || '📦') + '</div>' +
       '<div class="grow"><strong>' + esc(p.name) + '</strong><small>' + esc(p.sku) + ' · ' + esc(tCat(p.category)) + (p.brand ? ' · ' + esc(p.brand) : '') + '</small></div>' +
-      '<div class="amt">' + money(effPrice(p)) + '<small style="display:block;color:var(--dim);font-weight:400">' + esc(t('common.stock')) + ': ' + p.stock + '</small></div>' +
-      badge +
+      '<div class="prod-price">' + money(effPrice(p)) + badge + '</div>' +
       '<button class="btn icon-btn" type="button" data-edit-product="' + p.id + '" aria-label="Edit">✎</button></div>';
   }).join('') : '<div class="empty"><h3>' + esc(t('pos.noProduct')) + '</h3></div>';
   document.querySelectorAll('[data-edit-product]').forEach(function(b){
