@@ -206,6 +206,14 @@ small{color:var(--dim)}
 .product-card:hover{border-color:var(--accent-3);box-shadow:0 8px 20px rgba(109,40,217,.12)}
 .product-card.sold-out{opacity:.55}
 .product-photo{height:96px;background:#f1eefb;display:grid;place-items:center;font-size:34px}
+/* Product photos: an <img> fills its tile (cover), else the category icon shows. */
+.product-photo img,.cart-thumb img,.prod-thumb img,.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.cart-thumb,.prod-thumb,.avatar{overflow:hidden}
+.pf-photo{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.pf-photo-preview{width:96px;height:96px;border-radius:12px;background:#f1eefb;display:grid;place-items:center;font-size:34px;overflow:hidden;flex:none}
+.pf-photo-preview img{width:100%;height:100%;object-fit:cover;display:block}
+.pf-photo-btns{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+html.dark .pf-photo-preview{background:#2d2342}
 .product-copy{padding:11px}
 .product-copy>small{font-size:10px;color:var(--dim);display:block;margin-bottom:4px}
 .product-copy>strong{font-size:13px;line-height:1.25;display:block;min-height:33px}
@@ -840,7 +848,7 @@ en: {
   "payment.cash":"Cash","payment.bank":"Bank Transfer","payment.qr":"QR Payment","payment.card":"Card","payment.other":"Other",
   "receipt.title":"Receipt","receipt.thanks":"Thank you for shopping with us!","receipt.print":"Print receipt","receipt.newSale":"New sale","receipt.subtotal":"Subtotal","receipt.discount":"Discount","receipt.tax":"Tax","receipt.total":"Total","receipt.payment":"Payment method","receipt.amountReceived":"Amount received","receipt.change":"Change","receipt.cashier":"Cashier","receipt.customer":"Customer","receipt.order":"Order","receipt.date":"Date",
   "dashboard.eyebrow":"Business pulse","dashboard.title":"Today at a glance","dashboard.detail":"Live totals from this register's ledger.","dashboard.todaySales":"Today's sales","dashboard.monthSales":"This month's sales","dashboard.expenses":"Expenses (this month)","dashboard.netProfit":"Net profit (this month)","dashboard.netDetail":"Sales minus cost & expenses","dashboard.topProducts":"Top products","dashboard.topDetail":"Best sellers this month","dashboard.stockAttention":"Stock attention","dashboard.openInventory":"Open inventory","dashboard.ordersToday":"{count} order(s) today","dashboard.ordersMonth":"{count} order(s) this month","dashboard.expenseCount":"{count} recorded","dashboard.lowCount":"{count} items at or below minimum","dashboard.unitsSold":"{count} sold","dashboard.left":"{count} left","dashboard.noSales":"No sales yet in this period.",
-  "products.eyebrow":"Catalog","products.title":"Products","products.detail":"{count} active products across {categories} categories.","products.add":"Add product","products.search":"Search product or SKU","products.all":"All products","products.low":"Low stock","products.sortName":"Name A–Z","products.sortStock":"Stock low to high","products.sortPrice":"Price high to low","products.edit":"Edit product","products.productName":"Product name","products.sku":"SKU","products.costPrice":"Cost price","products.sellingPrice":"Selling price","products.discountPrice":"Discount price (optional)","products.stockQty":"Stock quantity","products.minStock":"Minimum stock","products.category":"Category","products.brand":"Brand","products.saved":"Product saved","products.deleted":"Product deleted","products.sale":"Sale","products.colImage":"Image","products.colStatus":"Status","products.active":"Active","products.inactive":"Inactive","products.totalItems":"Total: {count} Items",
+  "products.eyebrow":"Catalog","products.title":"Products","products.detail":"{count} active products across {categories} categories.","products.add":"Add product","products.search":"Search product or SKU","products.all":"All products","products.low":"Low stock","products.sortName":"Name A–Z","products.sortStock":"Stock low to high","products.sortPrice":"Price high to low","products.edit":"Edit product","products.productName":"Product name","products.sku":"SKU","products.costPrice":"Cost price","products.sellingPrice":"Selling price","products.discountPrice":"Discount price (optional)","products.stockQty":"Stock quantity","products.minStock":"Minimum stock","products.category":"Category","products.brand":"Brand","products.saved":"Product saved","products.deleted":"Product deleted","products.sale":"Sale","products.colImage":"Image","products.colStatus":"Status","products.active":"Active","products.inactive":"Inactive","products.totalItems":"Total: {count} Items","products.photo":"Photo","products.addPhoto":"Add photo","products.changePhoto":"Change photo","products.removePhoto":"Remove photo","products.photoError":"Could not use that photo. Try another image.",
   "category.Phones":"Phones","category.Accessories":"Accessories","category.Chargers":"Chargers","category.Cables":"Cables","category.Earphones":"Earphones","category.Power Banks":"Power Banks","category.Cases":"Cases","category.Screen Protectors":"Screen Protectors",
   "inventory.eyebrow":"Stock control","inventory.title":"Inventory","inventory.detail":"Every sale and adjustment leaves an auditable movement.","inventory.products":"Products","inventory.stockValue":"Stock value","inventory.atCost":"At cost","inventory.needsAttention":"Needs attention","inventory.levels":"Stock levels","inventory.tap":"Tap an item to record movement","inventory.history":"Movement history","inventory.newest":"Newest first","inventory.type":"Movement","inventory.stockIn":"Stock in","inventory.stockOut":"Stock out","inventory.adjustment":"Adjustment (+ / −)","inventory.quantity":"Quantity","inventory.reason":"Reason / note","inventory.reasonPlaceholder":"Supplier delivery, damaged unit, count correction…","inventory.update":"Update stock","inventory.updated":"Inventory updated","inventory.current":"Current stock: {count}","inventory.low":"Low stock","inventory.out":"Out of stock","inventory.sale":"Sale","inventory.noHistory":"No movements yet.",
   "orders.eyebrow":"Sales ledger","orders.title":"Orders","orders.detail":"{count} sales records with receipts and stock history.","orders.search":"Order, customer or payment","orders.all":"All statuses","orders.order":"Order","orders.customer":"Customer","orders.payment":"Payment","orders.total":"Total","orders.completed":"Completed","orders.refunded":"Refunded","orders.cancelled":"Cancelled","orders.refund":"Refund","orders.refundedMsg":"Order refunded — stock returned.","orders.noOrders":"No orders yet.","orders.exportExcel":"Export Excel","orders.exported":"Excel file downloaded.","orders.xDate":"Date","orders.xOrderNo":"Order No.","orders.xProduct":"Product","orders.xSku":"SKU","orders.xQty":"Qty","orders.xUnitPrice":"Unit Price","orders.xDiscount":"Discount","orders.xLineTotal":"Line Total","orders.xPayment":"Payment Method","orders.xCashier":"Cashier","orders.xCustomer":"Customer","orders.xTotal":"Total","orders.xOrders":"Orders","orders.xByPayment":"By payment method","orders.xGrandTotal":"Grand total","orders.xName":"Name","orders.xCategory":"Category","orders.xAmount":"Amount","orders.xNote":"Note","orders.xSalesTotal":"Total sales","orders.xCost":"Cost of goods","orders.xExpensesTotal":"Total expenses","orders.xNetProfit":"Net profit",
@@ -859,7 +867,7 @@ my: {
   "payment.cash":"ငွေသား","payment.bank":"ဘဏ်လွှဲ","payment.qr":"QR ငွေပေးချေမှု","payment.card":"ကတ်","payment.other":"အခြား",
   "receipt.title":"ပြေစာ","receipt.thanks":"အားပေးမှုအတွက် ကျေးဇူးတင်ပါသည်။","receipt.print":"ပြေစာထုတ်ရန်","receipt.newSale":"အရောင်းအသစ်","receipt.subtotal":"စုစုပေါင်းခွဲ","receipt.discount":"လျှော့စျေး","receipt.tax":"အခွန်","receipt.total":"စုစုပေါင်း","receipt.payment":"ငွေပေးချေမှုနည်းလမ်း","receipt.amountReceived":"ရရှိငွေ","receipt.change":"အမ်းငွေ","receipt.cashier":"ငွေကိုင်","receipt.customer":"ဖောက်သည်","receipt.order":"အရောင်း","receipt.date":"ရက်စွဲ",
   "dashboard.eyebrow":"လုပ်ငန်းအခြေအနေ","dashboard.title":"ယနေ့လုပ်ငန်းအကျဉ်း","dashboard.detail":"ဤကောင်တာ၏ အရောင်းမှတ်တမ်းများမှ နောက်ဆုံးစာရင်း။","dashboard.todaySales":"ယနေ့အရောင်း","dashboard.monthSales":"ယခုလအရောင်း","dashboard.expenses":"အသုံးစရိတ် (ယခုလ)","dashboard.netProfit":"အသားတင်အမြတ် (ယခုလ)","dashboard.netDetail":"အရောင်းမှ ကုန်ကျစရိတ်နှင့် အသုံးစရိတ် နုတ်ပြီး","dashboard.topProducts":"အရောင်းရဆုံးပစ္စည်းများ","dashboard.topDetail":"ယခုလ အရောင်းရဆုံး","dashboard.stockAttention":"စတော့သတိပေးချက်","dashboard.openInventory":"စတော့စာရင်းဖွင့်ရန်","dashboard.ordersToday":"ယနေ့အရောင်း {count} ခု","dashboard.ordersMonth":"ယခုလအရောင်း {count} ခု","dashboard.expenseCount":"မှတ်တမ်း {count} ခု","dashboard.lowCount":"အနည်းဆုံးပမာဏနှင့်အောက် {count} မျိုး","dashboard.unitsSold":"{count} ခု ရောင်းပြီး","dashboard.left":"{count} ခုကျန်","dashboard.noSales":"ဤကာလတွင် အရောင်းမရှိသေးပါ။",
-  "products.eyebrow":"ကုန်ပစ္စည်းစာရင်း","products.title":"ကုန်ပစ္စည်းများ","products.detail":"အမျိုးအစား {categories} ခုတွင် အသုံးပြုနေသောပစ္စည်း {count} မျိုး။","products.add":"ကုန်ပစ္စည်းထည့်ရန်","products.search":"ကုန်ပစ္စည်း သို့ SKU ရှာရန်","products.all":"ကုန်ပစ္စည်းအားလုံး","products.low":"စတော့နည်း","products.sortName":"အမည် က မှ အ","products.sortStock":"စတော့နည်းမှ များသို့","products.sortPrice":"စျေးမြင့်မှ နိမ့်သို့","products.edit":"ကုန်ပစ္စည်းပြင်ဆင်ရန်","products.productName":"ကုန်ပစ္စည်းအမည်","products.sku":"SKU","products.costPrice":"အရင်းစျေး","products.sellingPrice":"ရောင်းစျေး","products.discountPrice":"လျှော့စျေး (မရှိလျှင် ထားခဲ့ပါ)","products.stockQty":"စတော့အရေအတွက်","products.minStock":"အနည်းဆုံးစတော့","products.category":"အမျိုးအစား","products.brand":"အမှတ်တံဆိပ်","products.saved":"ကုန်ပစ္စည်း သိမ်းပြီးပါပြီ","products.deleted":"ကုန်ပစ္စည်း ဖျက်ပြီးပါပြီ","products.sale":"လျှော့စျေး","products.colImage":"ပုံ","products.colStatus":"အခြေအနေ","products.active":"အသုံးပြုနေသည်","products.inactive":"ပိတ်ထားသည်","products.totalItems":"စုစုပေါင်း {count} မျိုး",
+  "products.eyebrow":"ကုန်ပစ္စည်းစာရင်း","products.title":"ကုန်ပစ္စည်းများ","products.detail":"အမျိုးအစား {categories} ခုတွင် အသုံးပြုနေသောပစ္စည်း {count} မျိုး။","products.add":"ကုန်ပစ္စည်းထည့်ရန်","products.search":"ကုန်ပစ္စည်း သို့ SKU ရှာရန်","products.all":"ကုန်ပစ္စည်းအားလုံး","products.low":"စတော့နည်း","products.sortName":"အမည် က မှ အ","products.sortStock":"စတော့နည်းမှ များသို့","products.sortPrice":"စျေးမြင့်မှ နိမ့်သို့","products.edit":"ကုန်ပစ္စည်းပြင်ဆင်ရန်","products.productName":"ကုန်ပစ္စည်းအမည်","products.sku":"SKU","products.costPrice":"အရင်းစျေး","products.sellingPrice":"ရောင်းစျေး","products.discountPrice":"လျှော့စျေး (မရှိလျှင် ထားခဲ့ပါ)","products.stockQty":"စတော့အရေအတွက်","products.minStock":"အနည်းဆုံးစတော့","products.category":"အမျိုးအစား","products.brand":"အမှတ်တံဆိပ်","products.saved":"ကုန်ပစ္စည်း သိမ်းပြီးပါပြီ","products.deleted":"ကုန်ပစ္စည်း ဖျက်ပြီးပါပြီ","products.sale":"လျှော့စျေး","products.colImage":"ပုံ","products.colStatus":"အခြေအနေ","products.active":"အသုံးပြုနေသည်","products.inactive":"ပိတ်ထားသည်","products.totalItems":"စုစုပေါင်း {count} မျိုး","products.photo":"ဓာတ်ပုံ","products.addPhoto":"ဓာတ်ပုံထည့်ရန်","products.changePhoto":"ဓာတ်ပုံပြောင်းရန်","products.removePhoto":"ဓာတ်ပုံဖျက်ရန်","products.photoError":"ဤဓာတ်ပုံကို သုံး၍မရပါ။ အခြားပုံဖြင့် ထပ်ကြိုးစားပါ။",
   "category.Phones":"ဖုန်းများ","category.Accessories":"ဖုန်းအပိုပစ္စည်းများ","category.Chargers":"အားသွင်းခေါင်းများ","category.Cables":"ကြိုးများ","category.Earphones":"နားကြပ်များ","category.Power Banks":"ပါဝါဘဏ်များ","category.Cases":"ဖုန်းကာဗာများ","category.Screen Protectors":"မှန်ကာများ",
   "inventory.eyebrow":"စတော့ထိန်းချုပ်မှု","inventory.title":"စတော့စာရင်း","inventory.detail":"အရောင်းနှင့် စတော့ပြင်ဆင်မှုတိုင်းကို စစ်ဆေးနိုင်ရန် မှတ်တမ်းတင်ထားသည်။","inventory.products":"ကုန်ပစ္စည်းများ","inventory.stockValue":"စတော့တန်ဖိုး","inventory.atCost":"အရင်းတန်ဖိုး","inventory.needsAttention":"စစ်ဆေးရန်လို","inventory.levels":"စတော့လက်ကျန်","inventory.tap":"အဝင်အထွက်မှတ်ရန် ပစ္စည်းကို နှိပ်ပါ","inventory.history":"အဝင်အထွက်မှတ်တမ်း","inventory.newest":"နောက်ဆုံးမှတ်တမ်း ဦးစွာ","inventory.type":"လုပ်ဆောင်ချက်","inventory.stockIn":"စတော့ဝင်","inventory.stockOut":"စတော့ထွက်","inventory.adjustment":"စတော့ပြင်ဆင်မှု (+ / −)","inventory.quantity":"အရေအတွက်","inventory.reason":"အကြောင်းရင်း / မှတ်ချက်","inventory.reasonPlaceholder":"ကုန်ဝင်၊ ပျက်စီး၊ စာရင်းပြင်ဆင်မှု…","inventory.update":"စတော့ပြင်ဆင်ရန်","inventory.updated":"စတော့စာရင်း ပြင်ဆင်ပြီးပါပြီ","inventory.current":"လက်ရှိစတော့: {count}","inventory.low":"စတော့နည်း","inventory.out":"စတော့ကုန်","inventory.sale":"အရောင်း","inventory.noHistory":"အဝင်အထွက်မှတ်တမ်း မရှိသေးပါ။",
   "orders.eyebrow":"အရောင်းမှတ်တမ်း","orders.title":"အရောင်းစာရင်း","orders.detail":"ပြေစာနှင့် စတော့မှတ်တမ်းပါ အရောင်း {count} ခု။","orders.search":"အရောင်းအမှတ်၊ ဖောက်သည် သို့ ငွေပေးချေမှု ရှာရန်","orders.all":"အခြေအနေအားလုံး","orders.order":"အရောင်း","orders.customer":"ဖောက်သည်","orders.payment":"ငွေပေးချေမှု","orders.total":"စုစုပေါင်း","orders.completed":"ပြီးမြောက်","orders.refunded":"ငွေပြန်အမ်းပြီး","orders.cancelled":"ပယ်ဖျက်ပြီး","orders.refund":"ငွေပြန်အမ်းရန်","orders.refundedMsg":"ငွေပြန်အမ်းပြီးပါပြီ — စတော့ထဲ ပြန်ထည့်ထားသည်။","orders.noOrders":"အရောင်းမှတ်တမ်း မရှိသေးပါ။","orders.exportExcel":"Excel ထုတ်ရန်","orders.exported":"Excel ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ။","orders.xDate":"ရက်စွဲ","orders.xOrderNo":"အရောင်းအမှတ်","orders.xProduct":"ကုန်ပစ္စည်း","orders.xSku":"SKU","orders.xQty":"အရေအတွက်","orders.xUnitPrice":"တစ်ခုဈေး","orders.xDiscount":"လျှော့ဈေး","orders.xLineTotal":"စုစုပေါင်း","orders.xPayment":"ငွေပေးချေမှု","orders.xCashier":"ငွေကိုင်","orders.xCustomer":"ဖောက်သည်","orders.xTotal":"စုစုပေါင်း","orders.xOrders":"အရောင်း","orders.xByPayment":"ငွေပေးချေမှုအလိုက်","orders.xGrandTotal":"စုစုပေါင်းချုပ်","orders.xName":"အမည်","orders.xCategory":"အမျိုးအစား","orders.xAmount":"ပမာဏ","orders.xNote":"မှတ်ချက်","orders.xSalesTotal":"အရောင်းစုစုပေါင်း","orders.xCost":"ပစ္စည်းကုန်ကျစရိတ်","orders.xExpensesTotal":"အသုံးစရိတ်စုစုပေါင်း","orders.xNetProfit":"အသားတင်အမြတ်",
@@ -887,6 +895,49 @@ const CATEGORIES = ['Phones','Accessories','Chargers','Cables','Earphones','Powe
 const EXP_CATS = ['Rent','Electricity','Water','Salary','Transportation','Supplies','Marketing','Other'];
 const PAY_METHODS = ['Cash','Bank Transfer','QR Payment','Card','Other'];
 const PROD_ICON = { Phones:'📱', Chargers:'🔌', Earphones:'🎧', 'Power Banks':'🔋', Cables:'🔌', Cases:'📱', 'Screen Protectors':'🛡️', Accessories:'🧩' };
+/* Product photo if one is saved, else the category icon. A photo lives in
+   Supabase Storage as a file; the product record holds its public URL
+   (p.photo). While an upload is pending, the compressed JPEG data URI sits
+   in p.photoPending (local only, never sent to the cloud) and is shown
+   instead — it is the newest photo the user picked. */
+function prodTile(p){
+  const src = (p && (p.photoPending || p.photo)) || '';
+  if(src) return '<img src="' + esc(src) + '" alt="">';
+  return PROD_ICON[(p && p.category) || ''] || '📦';
+}
+/* Shrink a picked photo to max 400px on the longest side as JPEG ~0.75, so
+   one photo stays ~30-60KB. Returns {uri, blob}: the data URI is the local
+   preview / pending representation, the Blob is what gets uploaded to
+   Supabase Storage. White behind it: JPEG has no transparency (a PNG logo
+   would otherwise get a black background). */
+function compressPhoto(file){
+  return new Promise(function(resolve, reject){
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = function(){
+      URL.revokeObjectURL(url);
+      try{
+        const max = 400;
+        const scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+        const w = Math.max(1, Math.round(img.naturalWidth * scale));
+        const h = Math.max(1, Math.round(img.naturalHeight * scale));
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        const ctx = cv.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        const uri = cv.toDataURL('image/jpeg', 0.75);
+        cv.toBlob(function(blob){
+          if(blob) resolve({ uri: uri, blob: blob });
+          else reject(new Error('compress failed'));
+        }, 'image/jpeg', 0.75);
+      }catch(e){ reject(e); }
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error('bad image')); };
+    img.src = url;
+  });
+}
 
 let DB = null;
 let cart = [];            // {productId, qty}
@@ -991,6 +1042,7 @@ function persistLocal(){
 function save(){
   persistLocal();
   schedulePush();
+  retryPendingPhotos(); /* a pending photo upload is retried on the next save when online */
 }
 function load(){
   try{
@@ -1004,7 +1056,7 @@ function load(){
 /* Offline-first: localStorage is the source of truth on this device; the cloud is
    a shared copy. If Supabase is unreachable, everything keeps working locally
    and the next save retries the push. */
-const APP_VERSION = '1.0.4'; /* shown on the login screen and in Settings → About */
+const APP_VERSION = '1.0.5'; /* shown on the login screen and in Settings → About */
 const SB_URL = 'https://lvvulqjawnowqhiulmow.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2dnVscWphd25vd3FoaXVsbW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1MzU2MDksImV4cCI6MjExMTExMTYwOX0.nB-3sc9m938ZC6tex0xUsOB69hQyj3dwmb9v2deavFA';
 const SB_TABLES = ['products','customers','staff','orders','expenses','movements','settings'];
@@ -1331,6 +1383,37 @@ function sbUpsert(table, rows){
     body: JSON.stringify(rows)
   }).then(function(r){ if(!r.ok) throw new Error('sb ' + r.status); });
 }
+/* The `photo` column on products holds the public Storage URL of the photo
+   (SQL: alter table products add column if not exists photo text;). Until
+   that runs, PostgREST rejects the upsert with 400 PGRST204 "Could not find
+   the 'photo' column". Retry once WITHOUT photo and remember unsupported
+   for this session, so a missing column can never break the products sync.
+   Re-detected on the next app start, so photo URLs start syncing once the
+   SQL is run. */
+let PHOTO_SUPPORTED = true;
+function sbUpsertProducts(rows){
+  if(!authSession) return Promise.resolve();
+  if(!rows.length) return Promise.resolve();
+  const send = function(list){
+    return fetch(SB_URL + '/rest/v1/products?on_conflict=id', {
+      method: 'POST',
+      headers: Object.assign(sbHeaders(true), { 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
+      body: JSON.stringify(list)
+    });
+  };
+  const stripPhoto = function(list){ return list.map(function(r){ const c = Object.assign({}, r); delete c.photo; return c; }); };
+  if(!PHOTO_SUPPORTED) return send(stripPhoto(rows)).then(function(r){ if(!r.ok) throw new Error('sb ' + r.status); });
+  return send(rows).then(function(r){
+    if(r.ok) return;
+    return r.text().then(function(txt){
+      if(r.status === 400 && txt && txt.indexOf('photo') >= 0){
+        PHOTO_SUPPORTED = false;
+        return send(stripPhoto(rows)).then(function(r2){ if(!r2.ok) throw new Error('sb ' + r2.status); });
+      }
+      throw new Error('sb ' + r.status);
+    });
+  });
+}
 function sbDelete(table, id){
   if(!authSession) return;
   const u = own();
@@ -1340,11 +1423,79 @@ function sbDelete(table, id){
     headers: Object.assign(sbHeaders(false), { 'Prefer': 'return=minimal' })
   }).catch(function(){});
 }
+/* Product photos in Supabase Storage (bucket `product-photos`, public).
+   Setup the user runs once (dashboard + SQL):
+     1. Dashboard → Storage → New bucket `product-photos`, Public.
+     2. Storage policies on storage.objects for authenticated users
+        (insert / update / delete where bucket_id = 'product-photos'),
+        plus a public read policy.
+     3. alter table products add column if not exists photo text;
+   Until the bucket/policies exist, uploads fail and the photo stays local
+   as a pending data URI (p.photoPending) — retried on the next app start
+   and on the next save. The DB column only ever receives a public URL
+   (or null), never a data URI. */
+const PHOTO_BUCKET = 'product-photos';
+function storagePhotoUrl(path){ return SB_URL + '/storage/v1/object/public/' + PHOTO_BUCKET + '/' + path; }
+function photoPathFromUrl(url){
+  const pre = SB_URL + '/storage/v1/object/public/' + PHOTO_BUCKET + '/';
+  return (url && url.indexOf(pre) === 0) ? url.slice(pre.length) : '';
+}
+function sbStorageDelete(path){
+  if(!authSession || !path) return Promise.resolve();
+  return fetch(SB_URL + '/storage/v1/object/' + PHOTO_BUCKET + '/' + path, {
+    method: 'DELETE', headers: sbHeaders(false)
+  }).catch(function(){});
+}
+function dataUriToBlob(uri){
+  return fetch(uri).then(function(r){ return r.blob(); });
+}
+/* Upload one product's pending photo. On success the old object is deleted,
+   p.photo becomes the public URL and the pending data URI is cleared, then
+   the URL is pushed to the cloud. On failure the pending photo stays local
+   for a later retry. Never throws. */
+let photoRetryRunning = false;
+const photoUploading = {}; /* product id -> true while its upload is in flight */
+function uploadProductPhoto(p){
+  if(!p || !p.photoPending || !authSession || photoUploading[p.id]) return Promise.resolve(false);
+  photoUploading[p.id] = true;
+  const oldUrl = p.photo || '';
+  const path = p.id + '-' + Date.now().toString(36) + Math.floor(Math.random()*1296).toString(36) + '.jpg';
+  return dataUriToBlob(p.photoPending).then(function(blob){
+    return fetch(SB_URL + '/storage/v1/object/' + PHOTO_BUCKET + '/' + path, {
+      method: 'POST',
+      headers: Object.assign(sbHeaders(false), { 'Content-Type': 'image/jpeg' }),
+      body: blob
+    }).then(function(r){ if(!r.ok) throw new Error('upload ' + r.status); });
+  }).then(function(){
+    const oldPath = photoPathFromUrl(oldUrl);
+    if(oldPath && oldPath !== path) sbStorageDelete(oldPath);
+    p.photo = storagePhotoUrl(path);
+    p.photoPending = '';
+    persistLocal();
+    if(curView === 'pos' || curView === 'products' || curView === 'inventory') renderCurrent();
+    schedulePush();
+    return true;
+  }).catch(function(){ return false; })
+  .then(function(ok){ delete photoUploading[p.id]; return ok; });
+}
+/* Retry every pending photo upload (next app start, next save). Sequential,
+   one at a time; a no-op when offline, signed out, or nothing is pending. */
+function retryPendingPhotos(){
+  if(photoRetryRunning || !authSession || !DB) return;
+  const pending = DB.products.filter(function(p){ return p.photoPending && !photoUploading[p.id]; });
+  if(!pending.length) return;
+  photoRetryRunning = true;
+  let chain = Promise.resolve();
+  pending.forEach(function(p){
+    chain = chain.then(function(){ return uploadProductPhoto(p); });
+  });
+  chain.then(function(){ photoRetryRunning = false; });
+}
 function toISO(ms){ return new Date(ms || Date.now()).toISOString(); }
 function fromTS(s){ return s ? new Date(s).getTime() : 0; }
 
 /* local (camelCase) -> Supabase row (snake_case) */
-function toProductRow(p){ return withOwner({ id:p.id, name:p.name, sku:p.sku || null, barcode:p.barcode || null, category:p.category, brand:p.brand || null, cost_price:p.costPrice || 0, selling_price:p.sellingPrice || 0, discount_price:(p.discountPrice == null ? null : p.discountPrice), stock:p.stock || 0, min_stock:p.minStock || 0, unit:p.unit || 'pc', description:p.description || null, supplier:p.supplier || null, active:(p.active !== false) }); }
+function toProductRow(p){ return withOwner({ id:p.id, name:p.name, sku:p.sku || null, barcode:p.barcode || null, category:p.category, brand:p.brand || null, cost_price:p.costPrice || 0, selling_price:p.sellingPrice || 0, discount_price:(p.discountPrice == null ? null : p.discountPrice), stock:p.stock || 0, min_stock:p.minStock || 0, unit:p.unit || 'pc', description:p.description || null, supplier:p.supplier || null, active:(p.active !== false), photo:((p.photo && p.photo.indexOf('data:') === 0) ? null : (p.photo || null)) }); }
 function toCustomerRow(c){ return withOwner({ id:c.id, name:c.name, phone:c.phone || null, email:c.email || null, address:c.address || null, notes:c.notes || null }); }
 function toStaffRow(m){ return withOwner({ id:m.id, name:m.name, role:m.role, email:m.email || null, active:(m.active !== false) }); }
 function toOrderRow(o){ return withOwner({ id:o.id, order_number:o.orderNumber, customer_id:o.customerId || null, cashier:o.cashier || null, subtotal:o.subtotal || 0, discount:o.discount || 0, tax:o.tax || 0, total:o.total || 0, payment_method:o.paymentMethod || null, amount_received:o.amountReceived || 0, change_amount:o.changeAmount || 0, status:o.status || 'Completed', items:o.items || [], created_at:toISO(o.createdAt) }); }
@@ -1356,7 +1507,7 @@ function toMovementRow(m){ return withOwner({ id:m.id, product_id:m.productId, t
 function toSettingsRow(db){ const s = db.settings; return withOwner({ id: own() || 1, store_name:s.storeName, address:s.address || null, phone:s.phone || null, currency:s.currency || 'THB', lang:s.lang || 'my', tax_rate:(s.taxRate == null ? 0 : s.taxRate), receipt_size:s.receiptSize || '80mm', next_order_seq:db.nextOrderSeq || 5 }); }
 
 /* Supabase row (snake_case) -> local (camelCase) */
-function fromProductRow(r){ return { id:r.id, name:r.name, sku:r.sku || '', barcode:r.barcode || '', category:r.category, brand:r.brand || '', costPrice:Number(r.cost_price) || 0, sellingPrice:Number(r.selling_price) || 0, discountPrice:(r.discount_price == null ? null : Number(r.discount_price)), stock:Number(r.stock) || 0, minStock:Number(r.min_stock) || 0, unit:r.unit || 'pc', description:r.description || '', supplier:r.supplier || '', active:(r.active !== false) }; }
+function fromProductRow(r){ return { id:r.id, name:r.name, sku:r.sku || '', barcode:r.barcode || '', category:r.category, brand:r.brand || '', costPrice:Number(r.cost_price) || 0, sellingPrice:Number(r.selling_price) || 0, discountPrice:(r.discount_price == null ? null : Number(r.discount_price)), stock:Number(r.stock) || 0, minStock:Number(r.min_stock) || 0, unit:r.unit || 'pc', description:r.description || '', supplier:r.supplier || '', active:(r.active !== false), photo:((r.photo && r.photo.indexOf('data:') === 0) ? '' : (r.photo || '')) }; }
 function fromCustomerRow(r){ return { id:r.id, name:r.name, phone:r.phone || '', email:r.email || '', address:r.address || '', notes:r.notes || '' }; }
 function fromStaffRow(r){ return { id:r.id, name:r.name, role:r.role, email:r.email || '', active:(r.active !== false) }; }
 function fromOrderRow(r){ return { id:r.id, orderNumber:r.order_number, customerId:r.customer_id || '', cashier:r.cashier || '', subtotal:Number(r.subtotal) || 0, discount:Number(r.discount) || 0, tax:Number(r.tax) || 0, total:Number(r.total) || 0, paymentMethod:r.payment_method || '', amountReceived:Number(r.amount_received) || 0, changeAmount:Number(r.change_amount) || 0, status:r.status || 'Completed', items:r.items || [], createdAt:fromTS(r.created_at) }; }
@@ -1374,7 +1525,16 @@ function cloudToLocal(cloud){
   return {
     settings: s ? { storeName:s.store_name || '', address:s.address || '', phone:s.phone || '', currency:s.currency || 'THB', lang:s.lang || 'my', taxRate:Number(s.tax_rate) || 0, receiptSize:s.receipt_size || '80mm' }
                 : { storeName:DB.settings.storeName, address:DB.settings.address, phone:DB.settings.phone, currency:DB.settings.currency, lang:DB.settings.lang, taxRate:DB.settings.taxRate, receiptSize:DB.settings.receiptSize },
-    products: cloud.products.map(fromProductRow),
+    products: cloud.products.map(function(r){
+      const pr = fromProductRow(r);
+      /* A photo still waiting to upload (offline, or bucket not set up yet)
+         lives only on this device — carry it over the pull so the retry on
+         app start can still upload it. The cloud URL (if any) stays in
+         pr.photo and is replaced once the pending upload succeeds. */
+      const local = DB && DB.products ? DB.products.find(function(x){ return x.id === pr.id; }) : null;
+      if(local && local.photoPending) pr.photoPending = local.photoPending;
+      return pr;
+    }),
     customers: cloud.customers.map(fromCustomerRow),
     staff: cloud.staff.map(fromStaffRow),
     orders: cloud.orders.map(fromOrderRow),
@@ -1425,7 +1585,7 @@ function pushCloud(){
   ];
   let chain = Promise.resolve();
   jobs.forEach(function(job){
-    chain = chain.then(function(){ return sbUpsert(job[0], job[1]); });
+    chain = chain.then(function(){ return job[0] === 'products' ? sbUpsertProducts(job[1]) : sbUpsert(job[0], job[1]); });
   });
   return chain.then(function(){ setSyncStatus('ok'); saveOwner(authUid()); return true; }).catch(function(){ setSyncStatus('fail'); return false; });
 }
@@ -1462,6 +1622,7 @@ function initialSync(){
       flushPendingPush();
       setSyncStatus('ok');
       applyLang();
+      retryPendingPhotos();
     } else {
       const foreign = discardForeignLocal();
       if(foreign || !loadOwner()) rekeyLocalDb();
@@ -1469,12 +1630,14 @@ function initialSync(){
       cloudReady = true;
       pushPending = false; /* the direct push below uploads everything, pending included */
       pushCloud();
+      retryPendingPhotos();
     }
   }).catch(function(){
     if(discardForeignLocal()){ rekeyLocalDb(); persistLocal(); }
     cloudReady = true;
     flushPendingPush();
     setSyncStatus('offline');
+    retryPendingPhotos();
   });
 }
 /* Wipe the cloud tables (used by Restore demo data) so stale rows cannot come back on the next load.
@@ -1944,6 +2107,7 @@ function doRestore(data){
     if(ok){ showBackupMsg(''); }
     else { showBackupMsg(t('backup.restoredSyncFailed')); toast(t('backup.restoredSyncFailed')); }
   });
+  retryPendingPhotos(); /* a photo restored from backup but not yet uploaded gets its turn now */
 }
 function onRestoreFilePicked(e){
   const file = e.target.files && e.target.files[0];
@@ -2168,7 +2332,7 @@ function posCardHtml(p){
   return '<button type="button" class="product-card' + (p.stock === 0 ? ' sold-out' : '') + '" data-pid="' + p.id + '"' + (p.stock === 0 ? ' disabled' : '') + '>' +
     (onSale ? '<span class="sale-badge">' + esc(t('products.sale')) + '</span>' : '') +
     (inCart > 0 ? '<span class="cart-count">' + inCart + '</span>' : '') +
-    '<div class="product-photo">' + (PROD_ICON[p.category] || '📦') + '</div>' +
+    '<div class="product-photo">' + prodTile(p) + '</div>' +
     '<div class="product-copy"><small>' + esc(p.sku) + '</small><strong>' + esc(p.name) + '</strong>' +
     '<div class="p-price">' + money(price) + (onSale ? '<del>' + money(p.sellingPrice) + '</del>' : '') + '</div>' +
     stockTxt + '</div></button>';
@@ -2241,7 +2405,7 @@ function renderCart(){
     itemsHtml = cart.map(function(l){
       const p = prodById(l.productId); if(!p) return '';
       const price = effPrice(p);
-      return '<div class="cart-item"><div class="cart-thumb">' + (PROD_ICON[p.category] || '📦') + '</div><div class="cart-info"><strong>' + esc(p.name) + '</strong><small>' + esc(t('cart.each', {price: money(price)})) + '</small>' +
+      return '<div class="cart-item"><div class="cart-thumb">' + prodTile(p) + '</div><div class="cart-info"><strong>' + esc(p.name) + '</strong><small>' + esc(t('cart.each', {price: money(price)})) + '</small>' +
         '<span class="stepper"><button type="button" data-dec="' + p.id + '" aria-label="−">−</button>' +
         '<input type="number" value="' + l.qty + '" min="0" max="' + p.stock + '" data-qty="' + p.id + '" aria-label="Qty">' +
         '<button type="button" data-inc="' + p.id + '" aria-label="+">＋</button></span></div>' +
@@ -2666,7 +2830,7 @@ function renderProducts(){
     const status = p.active
       ? '<span class="badge good">' + esc(t('products.active')) + '</span>'
       : '<span class="badge">' + esc(t('products.inactive')) + '</span>';
-    return '<div class="prod-trow"><div class="c-img"><div class="prod-thumb">' + (PROD_ICON[p.category] || '📦') + '</div></div>' +
+    return '<div class="prod-trow"><div class="c-img"><div class="prod-thumb">' + prodTile(p) + '</div></div>' +
       '<div class="c-name"><strong>' + esc(p.name) + '</strong><small><span class="m-sku">' + esc(p.sku) + '</span><span class="m-cat"> · ' + esc(tCat(p.category)) + '</span></small></div>' +
       '<div class="c-cat">' + esc(tCat(p.category)) + '</div>' +
       '<div class="c-price">' + money(effPrice(p)) + '</div>' +
@@ -2698,6 +2862,7 @@ function renderProducts(){
       const p = prodById(b.dataset.deleteProduct);
       if(!p) return;
       if(!confirm(t('common.confirmDelete'))) return;
+      if(p.photo) sbStorageDelete(photoPathFromUrl(p.photo));
       DB.products = DB.products.filter(function(x){ return x.id !== p.id; });
       sbDelete('products', p.id);
       save(); renderProducts(); toast(t('products.deleted'));
@@ -2706,11 +2871,21 @@ function renderProducts(){
 }
 function openProductForm(id){
   const p = id ? prodById(id) : null;
+  let photoData = (p && (p.photoPending || p.photo)) ? (p.photoPending || p.photo) : ''; /* staged photo; saved only on Save */
+  let photoBlob = null; /* compressed Blob of a newly picked photo; null when the photo is unchanged */
   const catOpts = CATEGORIES.map(function(c){
     return '<option value="' + esc(c) + '"' + (p && p.category === c ? ' selected' : '') + '>' + esc(tCat(c)) + '</option>';
   }).join('');
   openModal(
     '<header><h2>' + esc(p ? t('products.edit') : t('products.add')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    '<div class="pf-photo">' +
+      '<div class="pf-photo-preview" id="pfPhotoPreview">' + (photoData ? '<img src="' + esc(photoData) + '" alt="">' : '📷') + '</div>' +
+      '<div class="pf-photo-btns">' +
+        '<button class="btn" type="button" id="pfPhotoBtn">' + esc(t(photoData ? 'products.changePhoto' : 'products.addPhoto')) + '</button>' +
+        '<button class="btn' + (photoData ? '' : ' hidden') + '" type="button" id="pfPhotoRemove">' + esc(t('products.removePhoto')) + '</button>' +
+      '</div>' +
+      '<input type="file" id="pfPhotoInput" accept="image/*" hidden>' +
+    '</div>' +
     fieldHtml(t('products.productName'), '<input type="text" id="pfName" value="' + esc(p ? p.name : '') + '">') +
     '<div class="form-grid">' +
     fieldHtml(t('products.sku'), '<input type="text" id="pfSku" value="' + esc(p ? p.sku : '') + '">') +
@@ -2743,16 +2918,52 @@ function openProductForm(id){
       sellingPrice: price,
       discountPrice: (isFinite(disc) && disc > 0) ? disc : null,
       stock: Math.max(0, parseInt(document.getElementById('pfStock').value, 10) || 0),
-      minStock: Math.max(0, parseInt(document.getElementById('pfMin').value, 10) || 0)
+      minStock: Math.max(0, parseInt(document.getElementById('pfMin').value, 10) || 0),
+      /* Photo (Storage): a newly picked photo is staged as a pending data URI
+         and uploaded by retryPendingPhotos() (triggered by save()); the old
+         URL stays until the upload succeeds. Removing clears both and
+         deletes the old storage object (best effort). Unchanged leaves the
+         photo fields alone. */
+      photo: p ? p.photo : '',
+      photoPending: p ? (p.photoPending || '') : ''
     };
+    if(photoBlob){ data.photoPending = photoData; }
+    else if(!photoData){
+      if(p && p.photo) sbStorageDelete(photoPathFromUrl(p.photo));
+      data.photo = ''; data.photoPending = '';
+    }
     if(p) Object.assign(p, data);
     else DB.products.push(Object.assign({ id: uid('p'), barcode: '', unit: 'pc', description: '', supplier: '', active: true }, data));
     save(); closeModal(); renderProducts(); toast(t('products.saved'));
   });
   document.getElementById('pfScanBtn').addEventListener('click', function(){ openScanner('product'); });
+  /* Photo: file input with accept="image/*" and NO capture attribute, so
+     Android Chrome / the TWA app offer Camera + Gallery. The picked file is
+     compressed (max 400px, JPEG ~0.75) and staged in photoData + photoBlob
+     until Save; on Save the Blob is uploaded to Supabase Storage and the
+     product keeps the public URL, with the data URI as the pending local
+     copy until the upload succeeds. */
+  function updatePhotoPreview(){
+    const prev = document.getElementById('pfPhotoPreview');
+    if(prev) prev.innerHTML = photoData ? '<img src="' + esc(photoData) + '" alt="">' : '📷';
+    const btn = document.getElementById('pfPhotoBtn');
+    if(btn) btn.textContent = t(photoData ? 'products.changePhoto' : 'products.addPhoto');
+    const rm = document.getElementById('pfPhotoRemove');
+    if(rm) rm.classList.toggle('hidden', !photoData);
+  }
+  document.getElementById('pfPhotoBtn').addEventListener('click', function(){ document.getElementById('pfPhotoInput').click(); });
+  document.getElementById('pfPhotoInput').addEventListener('change', function(ev){
+    const f = ev.target.files && ev.target.files[0];
+    ev.target.value = ''; /* allow picking the same file again */
+    if(!f) return;
+    compressPhoto(f).then(function(res){ photoData = res.uri; photoBlob = res.blob; updatePhotoPreview(); })
+      .catch(function(){ toast(t('products.photoError')); });
+  });
+  document.getElementById('pfPhotoRemove').addEventListener('click', function(){ photoData = ''; photoBlob = null; updatePhotoPreview(); });
   const del = document.getElementById('pfDelete');
   if(del) del.addEventListener('click', function(){
     if(!confirm(t('common.confirmDelete'))) return;
+    if(p.photo) sbStorageDelete(photoPathFromUrl(p.photo));
     DB.products = DB.products.filter(function(x){ return x.id !== p.id; });
     sbDelete('products', p.id);
     save(); closeModal(); renderProducts(); toast(t('products.deleted'));
@@ -2899,7 +3110,7 @@ function renderInventory(){
     const cls = p.stock === 0 ? 'low' : p.stock <= p.minStock ? 'low' : '';
     const tag = p.stock === 0 ? t('inventory.out') : p.stock <= p.minStock ? t('inventory.low') : '';
     return '<button type="button" data-stock="' + p.id + '" style="display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid var(--border);background:transparent;text-align:left;padding:9px 2px">' +
-      '<span class="avatar" style="border-radius:8px">' + (PROD_ICON[p.category] || '📦') + '</span>' +
+      '<span class="avatar" style="border-radius:8px">' + prodTile(p) + '</span>' +
       '<span><strong style="font-size:12px;display:block">' + esc(p.name) + '</strong><small style="font-size:10px;color:var(--dim)">' + esc(p.sku) + (tag ? ' · ' + esc(tag) : '') + '</small></span>' +
       '<b style="font-size:16px" class="' + cls + '"' + (cls ? ' style="color:var(--danger)"' : '') + '>' + p.stock + '</b></button>';
   }).join('');
@@ -2919,7 +3130,7 @@ function renderInventory(){
   document.getElementById('moveHistory').innerHTML = hist.length ? hist.map(function(m){
     const p = prodById(m.productId);
     const sign = m.quantity > 0 ? '+' : '';
-    return '<div class="list-row"><div class="avatar" style="border-radius:8px">' + (PROD_ICON[p ? p.category : ''] || '📦') + '</div>' +
+    return '<div class="list-row"><div class="avatar" style="border-radius:8px">' + prodTile(p) + '</div>' +
       '<div class="grow"><strong>' + esc(p ? p.name : '—') + '</strong><small>' + esc(typeLabel[m.type] || m.type) + ' · ' + esc(m.reference || '') + (m.note ? ' · ' + esc(m.note) : '') + '<br>' + fmtDate(m.createdAt) + '</small></div>' +
       '<div class="amt" style="color:' + (m.quantity > 0 ? 'var(--good)' : 'var(--danger)') + '">' + sign + m.quantity + '<small style="display:block;color:var(--dim);font-weight:400">' + m.previousStock + ' → ' + m.newStock + '</small></div></div>';
   }).join('') : '<div class="empty"><p>' + esc(t('inventory.noHistory')) + '</p></div>';
