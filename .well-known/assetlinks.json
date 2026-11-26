@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.mercurymobile.pos",
+    "sha256_cert_fingerprints": ["37:21:C2:6F:78:CA:D1:42:0D:21:E1:D1:6B:58:58:E0:2C:0C:17:9C:C5:EB:6C:37:07:6F:24:C4:57:0A:72:4F"]
+  }
+}]
