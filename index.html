@@ -163,12 +163,12 @@ small{color:var(--dim)}
 .category-row{display:flex;flex-wrap:wrap;gap:7px;padding:13px 0 15px}
 .category-row button{white-space:nowrap;min-height:44px;padding:0 14px}
 .category-row button.active{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(109,40,217,.25)}
-.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px}
-.pager{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}
-.pager button{min-width:36px;min-height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface);font-size:13px;font-weight:700}
-.pager button.active{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(109,40,217,.25)}
-.pager button:disabled{opacity:.35}
-.pager-ellipsis{color:var(--dim);padding:0 2px}
+.product-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;touch-action:pan-x;user-select:none;-webkit-user-select:none}
+.product-grid::-webkit-scrollbar{display:none}
+.pos-page-grid{flex:0 0 100%;scroll-snap-align:start;display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;align-content:start}
+.pager-dots{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:12px;pointer-events:none}
+.pager-dots .dot{width:7px;height:7px;border-radius:99px;background:var(--border);transition:width .18s,background .18s}
+.pager-dots .dot.on{width:22px;background:var(--accent)}
 .product-card{padding:0;display:block;text-align:left;border-radius:14px;overflow:hidden;background:var(--surface);border:1px solid var(--border);position:relative}
 .product-card:hover{border-color:var(--accent-3);box-shadow:0 8px 20px rgba(109,40,217,.12)}
 .product-card.sold-out{opacity:.55}
@@ -286,7 +286,7 @@ body.logged-out .scan-wrap{display:none!important}
   .side-foot{display:none}
   .pos-page{grid-template-columns:minmax(0,1fr) 320px}
   .catalog-pane{padding:22px 20px 40px}
-  .product-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .pos-page-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
   .cart-panel{padding:20px 18px}
   .page{padding:30px 28px}
   .metric-strip{grid-template-columns:repeat(2,1fr)}
@@ -320,11 +320,13 @@ body.logged-out .scan-wrap{display:none!important}
   .pos-toolbar{position:sticky;z-index:25;top:0;margin:0 -12px 12px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px;background:var(--surface);border-bottom:1px solid var(--border)}
   .pos-toolbar h1{font-size:17px}
   .searchbar{position:sticky;top:calc(70px + env(safe-area-inset-top));z-index:20;box-shadow:0 5px 14px rgba(0,0,0,.04)}
-  .product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-  .product-photo{height:48px;font-size:26px}
-  .product-copy{padding:8px}
+  .pos-page-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+  .product-photo{height:36px;font-size:22px}
+  .product-copy{padding:7px}
   .product-copy>small{margin-bottom:2px}
   .product-copy .p-price{margin-top:4px}
+  .product-copy .p-price del{display:block;margin-left:0;margin-top:2px}
+  .sale-badge{top:6px;left:6px;padding:2px 5px;font-size:8px}
   .mobile-cartbar{position:fixed;z-index:24;left:10px;right:10px;bottom:calc(var(--bottom-nav-h) + 7px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:center;min-height:54px;border:0;background:var(--grad);color:#fff;box-shadow:0 10px 28px rgba(109,40,217,.35)}
   .mobile-cartbar span{color:#e4dcfb;font-size:12px}
   .modal-wrap{padding:0;place-items:end center}
@@ -510,7 +512,7 @@ body.logged-out .bottom-nav, body.logged-out .more-sheet{display:none!important}
       <div class="searchbar"><span aria-hidden="true">🔍</span><input type="search" id="posSearch" data-tp="pos.search" placeholder="Search products, SKU, barcode, or category" autocomplete="off"><button class="btn" type="button" id="posScanBtn" style="flex:none">📷 <span data-t="scan.button">Scan</span></button></div>
       <div class="category-row" id="posCategories"></div>
       <div class="product-grid" id="productGrid"></div>
-      <div class="pager hidden" id="posPager"></div>
+      <div class="pager-dots hidden" id="posPagerDots"></div>
       <div class="empty hidden" id="posEmpty"><h3 data-t="pos.noProduct">No product found</h3><p data-t="pos.noProductDetail">Try a product name, SKU, barcode, or another category.</p></div>
     </div>
     <aside class="cart-panel" id="cartPanel"></aside>
@@ -2047,32 +2049,56 @@ function setQty(pid, qty){
   else line.qty = qty;
   renderCart();
 }
-/* POS pagination: 2 rows per page. The page size follows the grid's column
-   count (phone 2 cols -> 4/page, tablet 3 cols -> 6/page, desktop more),
-   so a page always fits one screen without scrolling. */
+/* POS swipe pages: 2 rows per page, swiped sideways like a phone app drawer
+   (touch swipe on phone/tablet, mouse drag or arrow keys on desktop).
+   Page size follows the page grid's column count (phone 3 cols -> 6/page),
+   so a page always fits one screen without scrolling. The dots below the
+   grid are indicators only — there are no page buttons. */
+let posDragged = false; // set while a swipe/drag moved, so the tap does not add to cart
 function posPageSize(){
   const grid = document.getElementById('productGrid');
-  if(!grid) return 4;
-  const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(function(s){ return s; }).length || 2;
+  if(!grid) return 6;
+  grid.innerHTML = '<div class="pos-page-grid"></div>';
+  const cols = getComputedStyle(grid.firstChild).gridTemplateColumns.split(' ').filter(function(s){ return s; }).length || 3;
   return Math.max(2, cols) * 2;
 }
-function pagerHtml(cur, total){
-  const btn = function(p){
-    return '<button type="button" data-page="' + p + '"' + (p === cur ? ' class="active" aria-current="page"' : '') + '>' + p + '</button>';
-  };
-  let nums = [];
-  if(total <= 7){ for(let i = 1; i <= total; i++) nums.push(i); }
-  else {
-    const set = {};
-    [1, 2, total - 1, total, cur - 1, cur, cur + 1].forEach(function(n){ if(n >= 1 && n <= total) set[n] = true; });
-    const arr = Object.keys(set).map(function(n){ return parseInt(n, 10); }).sort(function(a, b){ return a - b; });
-    let prev = 0;
-    arr.forEach(function(n){ if(n - prev > 1) nums.push('…'); nums.push(n); prev = n; });
-  }
-  let h = '<button type="button" data-page="' + (cur - 1) + '"' + (cur === 1 ? ' disabled' : '') + '>‹</button>';
-  nums.forEach(function(n){ h += (n === '…') ? '<span class="pager-ellipsis">…</span>' : btn(n); });
-  h += '<button type="button" data-page="' + (cur + 1) + '"' + (cur === total ? ' disabled' : '') + '>›</button>';
-  return h;
+function posTotalPages(){
+  const grid = document.getElementById('productGrid');
+  return (grid ? grid.querySelectorAll('.pos-page-grid').length : 1) || 1;
+}
+function updatePosDots(){
+  const dots = document.getElementById('posPagerDots');
+  if(!dots) return;
+  dots.querySelectorAll('.dot').forEach(function(d, i){
+    d.classList.toggle('on', i + 1 === posPage);
+  });
+}
+function gotoPosPage(p){
+  const grid = document.getElementById('productGrid');
+  if(!grid) return;
+  p = Math.max(1, Math.min(posTotalPages(), p));
+  posPage = p;
+  grid.scrollTo({left: (p - 1) * grid.clientWidth, behavior: 'smooth'});
+  updatePosDots();
+}
+function snapPosPage(){
+  const grid = document.getElementById('productGrid');
+  if(!grid || !grid.clientWidth) return;
+  gotoPosPage(Math.round(grid.scrollLeft / grid.clientWidth) + 1);
+}
+function posCardHtml(p){
+  const price = effPrice(p), onSale = price < p.sellingPrice;
+  const inCart = cartQty(p.id);
+  const stockTxt = p.stock === 0 ? '<em class="low">' + esc(t('pos.outOfStock')) + '</em>'
+    : p.stock <= p.minStock ? '<em class="low">' + esc(t('pos.inStock', {count: p.stock})) + '</em>'
+    : '<em>' + esc(t('pos.inStock', {count: p.stock})) + '</em>';
+  return '<button type="button" class="product-card' + (p.stock === 0 ? ' sold-out' : '') + '" data-pid="' + p.id + '"' + (p.stock === 0 ? ' disabled' : '') + '>' +
+    (onSale ? '<span class="sale-badge">' + esc(t('products.sale')) + '</span>' : '') +
+    (inCart > 0 ? '<span class="cart-count">' + inCart + '</span>' : '') +
+    '<div class="product-photo">' + (PROD_ICON[p.category] || '📦') + '</div>' +
+    '<div class="product-copy"><small>' + esc(p.sku) + '</small><strong>' + esc(p.name) + '</strong>' +
+    '<div class="p-price">' + money(price) + (onSale ? '<del>' + money(p.sellingPrice) + '</del>' : '') + '</div>' +
+    stockTxt + '</div></button>';
 }
 function renderPos(){
   // categories
@@ -2099,37 +2125,23 @@ function renderPos(){
   const totalPages = Math.max(1, Math.ceil(list.length / pageSize));
   if(posPage > totalPages) posPage = totalPages;
   if(posPage < 1) posPage = 1;
-  const pageList = list.slice((posPage - 1) * pageSize, posPage * pageSize);
-  const pager = document.getElementById('posPager');
-  if(totalPages <= 1){ pager.innerHTML = ''; pager.classList.add('hidden'); }
-  else {
-    pager.classList.remove('hidden');
-    pager.innerHTML = pagerHtml(posPage, totalPages);
-    pager.querySelectorAll('[data-page]').forEach(function(b){
-      b.addEventListener('click', function(){
-        if(b.disabled) return;
-        posPage = parseInt(b.dataset.page, 10);
-        renderPos();
-        window.scrollTo({top: 0});
-      });
-    });
+  let pagesHtml = '';
+  for(let pi = 0; pi < totalPages; pi++){
+    pagesHtml += '<div class="pos-page-grid" data-page="' + (pi + 1) + '">' +
+      list.slice(pi * pageSize, (pi + 1) * pageSize).map(posCardHtml).join('') + '</div>';
   }
-  grid.innerHTML = pageList.map(function(p){
-    const price = effPrice(p), onSale = price < p.sellingPrice;
-    const inCart = cartQty(p.id);
-    const stockTxt = p.stock === 0 ? '<em class="low">' + esc(t('pos.outOfStock')) + '</em>'
-      : p.stock <= p.minStock ? '<em class="low">' + esc(t('pos.inStock', {count: p.stock})) + '</em>'
-      : '<em>' + esc(t('pos.inStock', {count: p.stock})) + '</em>';
-    return '<button type="button" class="product-card' + (p.stock === 0 ? ' sold-out' : '') + '" data-pid="' + p.id + '"' + (p.stock === 0 ? ' disabled' : '') + '>' +
-      (onSale ? '<span class="sale-badge">' + esc(t('products.sale')) + '</span>' : '') +
-      (inCart > 0 ? '<span class="cart-count">' + inCart + '</span>' : '') +
-      '<div class="product-photo">' + (PROD_ICON[p.category] || '📦') + '</div>' +
-      '<div class="product-copy"><small>' + esc(p.sku) + '</small><strong>' + esc(p.name) + '</strong>' +
-      '<div class="p-price">' + money(price) + (onSale ? '<del>' + money(p.sellingPrice) + '</del>' : '') + '</div>' +
-      stockTxt + '</div></button>';
-  }).join('');
+  grid.innerHTML = pagesHtml;
+  const dots = document.getElementById('posPagerDots');
+  if(totalPages <= 1){ dots.innerHTML = ''; dots.classList.add('hidden'); }
+  else {
+    dots.classList.remove('hidden');
+    let dotsHtml = '';
+    for(let di = 1; di <= totalPages; di++) dotsHtml += '<span class="dot' + (di === posPage ? ' on' : '') + '"></span>';
+    dots.innerHTML = dotsHtml;
+  }
+  grid.scrollTo({left: (posPage - 1) * grid.clientWidth, behavior: 'instant'});
   grid.querySelectorAll('.product-card').forEach(function(card){
-    card.addEventListener('click', function(){ addToCart(card.dataset.pid); });
+    card.addEventListener('click', function(){ if(posDragged) return; addToCart(card.dataset.pid); });
   });
   renderCart();
 }
@@ -3003,6 +3015,45 @@ function init(){
     b.addEventListener('click', function(){ applyTheme(b.dataset.theme); });
   });
   document.getElementById('posSearch').addEventListener('input', function(e){ posQuery = e.target.value; posPage = 1; renderPos(); });
+  // Swipe between POS pages: touch scrolls natively (scroll-snap), mouse drag
+  // is handled here, arrow keys work on desktop. Dots follow the scroll.
+  (function(){
+    const posGrid = document.getElementById('productGrid');
+    let dragX = null, dragLeft = 0, dragMoved = 0;
+    posGrid.addEventListener('scroll', function(){
+      const w = posGrid.clientWidth;
+      if(!w) return;
+      const p = Math.round(posGrid.scrollLeft / w) + 1;
+      if(p !== posPage && p >= 1 && p <= posTotalPages()){ posPage = p; updatePosDots(); }
+    }, {passive: true});
+    posGrid.addEventListener('pointerdown', function(e){
+      if(e.pointerType !== 'mouse') return;
+      dragX = e.clientX; dragLeft = posGrid.scrollLeft; dragMoved = 0;
+    });
+    posGrid.addEventListener('pointermove', function(e){
+      if(dragX === null) return;
+      const dx = e.clientX - dragX;
+      if(Math.abs(dx) > 4){ dragMoved = Math.abs(dx); posGrid.scrollLeft = dragLeft - dx; }
+    });
+    const endDrag = function(){
+      if(dragX === null) return;
+      dragX = null;
+      if(dragMoved > 8){
+        posDragged = true;
+        setTimeout(function(){ posDragged = false; }, 0);
+        snapPosPage();
+      }
+    };
+    posGrid.addEventListener('pointerup', endDrag);
+    posGrid.addEventListener('pointercancel', function(){ dragX = null; });
+    document.addEventListener('keydown', function(e){
+      if(curView !== 'pos' || document.getElementById('view-pos').classList.contains('hidden')) return;
+      const tag = document.activeElement && document.activeElement.tagName;
+      if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if(e.key === 'ArrowRight'){ e.preventDefault(); gotoPosPage(posPage + 1); }
+      if(e.key === 'ArrowLeft'){ e.preventDefault(); gotoPosPage(posPage - 1); }
+    });
+  })();
   document.getElementById('posSearch').addEventListener('keydown', function(e){
     /* USB barcode scanner (keyboard wedge) types the code + Enter: add the
        exact barcode/SKU match, or the single filtered product; otherwise
