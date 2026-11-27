@@ -2,9 +2,25 @@
    Navigation (index.html) is network-first so updates appear on the next
    open when online, with the cached copy as the offline fallback.
    Static assets are cache-first. Only same-origin GETs are handled;
-   Supabase API calls pass through untouched. Bump CACHE on SW changes. */
-const CACHE = 'pos-system-v1';
-const ASSETS = ['index.html', 'manifest.json', 'icon-192.png', 'icon-512.png'];
+   Supabase API calls pass through untouched. Bump CACHE on SW changes.
+   Split build (1.0.6): caches every file of the multi-file project, so an
+   offline open still gets the whole app, not just the shell. */
+const CACHE = 'pos-system-v2';
+const ASSETS = [
+  'index.html',
+  'styles.css',
+  'app.js',
+  'database.js',
+  'auth.js',
+  'sync.js',
+  'sales.js',
+  'inventory.js',
+  'reports.js',
+  'settings.js',
+  'manifest.json',
+  'icon-192.png',
+  'icon-512.png'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
