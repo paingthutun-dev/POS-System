@@ -25,13 +25,36 @@
     <div class="login-card">
     <h1 id="loginStoreName">Mercury Mobile Accessories</h1>
     <p class="login-sub" id="loginSub" data-t="login.subtitle">Sign in to open the register.</p>
+    <div id="loginFormFields">
     <div class="field"><span data-t="login.email">Email</span><input type="email" id="loginEmail" autocomplete="username" autocapitalize="off" spellcheck="false"></div>
-    <div class="field"><span data-t="login.password">Password</span><input type="password" id="loginPassword" autocomplete="current-password"></div>
+    <div class="field" id="loginPwWrap"><span data-t="login.password">Password</span><input type="password" id="loginPassword" autocomplete="current-password"></div>
     <div class="field hidden" id="loginConfirmWrap"><span data-t="login.confirmPw">Confirm password</span><input type="password" id="loginConfirmPassword" autocomplete="new-password"></div>
+    <div class="field hidden" id="loginNameWrap"><span data-t="login.displayName">Display name</span><input type="text" id="loginDisplayName" autocomplete="name"></div>
+    <button class="btn primary block big" type="button" id="loginBtn" data-t="login.button">Log in</button>
+    <button class="login-switch" type="button" id="forgotLink" data-t="auth.forgotPassword">Forgot password?</button>
+    <button class="login-switch" type="button" id="loginSwitchBtn" data-t="login.toSignup">Don't have an account? Sign up</button>
+    </div>
     <p class="login-error hidden" id="loginError"></p>
     <p class="login-note hidden" id="loginConfirmNote"></p>
-    <button class="btn primary block big" type="button" id="loginBtn" data-t="login.button">Log in</button>
-    <button class="login-switch" type="button" id="loginSwitchBtn" data-t="login.toSignup">Don't have an account? Sign up</button>
+    <p class="login-note hidden" id="forgotNote"></p>
+    <div class="hidden" id="noAccessBox">
+      <p class="login-note" data-t="auth.noAccess">This account has no shop access yet. Ask your shop owner to add you as staff.</p>
+      <div class="field"><span data-t="settings.storeName">Store name</span><input type="text" id="newShopName"></div>
+      <button class="btn primary block big" type="button" id="createShopBtn" data-t="auth.createShop">Create a new shop</button>
+      <button class="login-switch" type="button" id="noAccessSignOutBtn" data-t="login.signOut">Sign out</button>
+    </div>
+    <div class="hidden" id="shopPickerBox">
+      <p class="login-sub" data-t="auth.chooseShop">Choose a shop</p>
+      <div id="shopPickerList"></div>
+      <button class="login-switch" type="button" id="pickerSignOutBtn" data-t="login.signOut">Sign out</button>
+    </div>
+    <div class="hidden" id="resetPwBox">
+      <p class="login-sub" data-t="auth.resetPassword">Set a new password</p>
+      <div class="field"><span data-t="login.newPassword">New password</span><input type="password" id="resetNewPw" autocomplete="new-password"></div>
+      <div class="field"><span data-t="login.confirmPassword">Confirm new password</span><input type="password" id="resetConfirmPw" autocomplete="new-password"></div>
+      <p class="login-error hidden" id="resetPwError"></p>
+      <button class="btn primary block big" type="button" id="resetPwBtn" data-t="auth.resetPassword">Set a new password</button>
+    </div>
     </div>
   </div>
   <div class="login-lang" id="loginLangWrap">
@@ -103,6 +126,8 @@
             <button type="button" data-nav="dashboard">🏠 <span data-t="nav.dashboard">Dashboard</span></button>
             <button type="button" data-nav="orders">🧾 <span data-t="nav.orders">Orders</span></button>
             <button type="button" data-nav="settings">⚙️ <span data-t="nav.settings">Settings</span></button>
+            <button type="button" id="posSwitchShopBtn" class="hidden">🏪 <span data-t="auth.switchShop">Switch shop</span></button>
+            <button type="button" id="posBranchBtn" class="hidden"><span></span></button>
             <button type="button" id="posDrawerBtn">💵 <span data-t="drawer.open">Open drawer</span></button>
             <button type="button" id="posSignOutBtn">🚪 <span data-t="login.signOut">Sign out</span></button>
           </div>
@@ -225,7 +250,7 @@
     <div class="page-head">
       <div><p class="eyebrow" data-t="settings.eyebrow">Store configuration</p><h1 data-t="settings.title">Settings</h1><p data-t="settings.detail">Receipt, tax, language, currency, and appearance.</p></div>
     </div>
-    <div class="panel">
+    <div class="panel" id="settingsShopPanel">
       <div class="panel-head"><div><h2 data-t="settings.storeProfile">Store profile</h2></div></div>
       <div class="field"><span data-t="settings.storeName">Store name</span><input type="text" id="setStoreName"></div>
       <div class="form-grid">
@@ -265,12 +290,13 @@
         </div>
       </div>
     </div>
-    <div class="panel">
+    <div class="panel" id="settingsStaffPanel">
       <div class="panel-head"><div><h2 data-t="staff.title">Staff &amp; permissions</h2><p data-t="staff.detail">Role-based access for register and back-office work.</p></div>
       <button class="btn" type="button" id="addStaffBtn">＋ <span data-t="staff.add">Add staff</span></button></div>
+      <p class="muted" style="margin:0 0 10px" data-t="staff.deleteNote">Deleting the staff row does not remove their login access — suspend the membership to remove access.</p>
       <div id="staffList"></div>
     </div>
-    <div class="panel">
+    <div class="panel" id="settingsDataPanel">
       <div class="panel-head"><div><h2 data-t="settings.data">Data</h2><p data-t="settings.dataDetail">Everything is saved on this device.</p></div></div>
       <div class="row wrap">
         <button class="btn" type="button" id="exportDataBtn">⬇ <span data-t="settings.exportBackup">Backup</span></button>

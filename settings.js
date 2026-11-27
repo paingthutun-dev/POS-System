@@ -213,15 +213,17 @@ function showRestoreSummary(v){
 }
 
 function doRestore(data){
+  if(deny('backup_restore')) return;
   /* Safety copy of the CURRENT data first, then replace. */
   downloadJson(backupFilename('pos-backup-before-restore'), backupEnvelope());
   const restored = JSON.parse(JSON.stringify(data));
   if(typeof restored.nextOrderSeq !== 'number') restored.nextOrderSeq = 5;
   DB = restored;
   cart = [];
+  clearPushed(); /* every row is new again after a restore */
   persistLocal(); /* no schedulePush here: pushCloud below handles the wipe+push */
   applyLang();
-  showView('dashboard');
+  showView(landingView());
   toast(t('backup.restored'));
   /* Full replace in the cloud too: wipe stale rows first, then push all rows. */
   pendingWipe = true;
@@ -236,6 +238,7 @@ function onRestoreFilePicked(e){
   const file = e.target.files && e.target.files[0];
   e.target.value = '';
   if(!file) return;
+  if(deny('backup_restore')) return;
   const reader = new FileReader();
   reader.onload = function(){
     let parsed = null;
@@ -278,7 +281,7 @@ function openCustomerForm(id){
     fieldHtml(t('common.address'), '<input type="text" id="cfAddress" value="' + esc(c ? c.address : '') + '">') +
     fieldHtml(t('common.note'), '<input type="text" id="cfNotes" value="' + esc(c ? c.notes : '') + '">') +
     '<div class="form-actions">' +
-    (c && c.id !== 'c4' ? '<button class="btn danger" type="button" id="cfDelete" style="margin-right:auto">' + esc(t('common.delete')) + '</button>' : '') +
+    (c && c.id !== 'c4' && can('customers_delete') ? '<button class="btn danger" type="button" id="cfDelete" style="margin-right:auto">' + esc(t('common.delete')) + '</button>' : '') +
     '<button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
     '<button class="btn primary" type="button" id="cfSave">' + esc(t('common.save')) + '</button></div>'
   );
@@ -292,6 +295,7 @@ function openCustomerForm(id){
   });
   const del = document.getElementById('cfDelete');
   if(del) del.addEventListener('click', function(){
+    if(deny('customers_delete')) return;
     if(!confirm(t('common.confirmDelete'))) return;
     DB.customers = DB.customers.filter(function(x){ return x.id !== c.id; });
     sbDelete('customers', c.id);
@@ -303,6 +307,20 @@ function openCustomerForm(id){
 
 function renderSettingsForm(){
   const s = DB.settings;
+  /* Shop profile: visible to all roles, but only owner/admin may change
+     it — the fields go read-only and Save hides for manager/cashier. */
+  const canShop = can('settings_shop');
+  ['setStoreName','setAddress','setPhone','setCurrency','setTaxRate','setReceiptSize'].forEach(function(id){
+    const el = document.getElementById(id);
+    if(el) el.disabled = !canShop;
+  });
+  const saveBtn = document.getElementById('saveSettingsBtn');
+  if(saveBtn) saveBtn.classList.toggle('hidden', !canShop);
+  /* Whole sections, hidden unless the role may use them. */
+  const staffPanel = document.getElementById('settingsStaffPanel');
+  if(staffPanel) staffPanel.classList.toggle('hidden', !can('staff_manage'));
+  const dataPanel = document.getElementById('settingsDataPanel');
+  if(dataPanel) dataPanel.classList.toggle('hidden', !can('backup_restore'));
   document.getElementById('setStoreName').value = s.storeName;
   document.getElementById('setAddress').value = s.address;
   document.getElementById('setPhone').value = s.phone;
@@ -313,13 +331,44 @@ function renderSettingsForm(){
   document.querySelectorAll('#setLangToggle button').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === s.lang); });
   document.querySelectorAll('#setThemeToggle button').forEach(function(b){ b.classList.toggle('active', b.dataset.theme === currentTheme()); });
   document.getElementById('staffList').innerHTML = DB.staff.map(function(m){
+    const linked = !!m.authUid;
+    const member = linked ? memberForStaff(m) : null;
+    const suspended = member ? member.active === false : !m.active;
+    const isSelf = linked && authUid() && m.authUid === authUid();
+    const branchName = branchNameForStaff(m);
+    /* The role select shows the MEMBERSHIP role (lowercase, the RPC's
+       vocabulary); it is not offered for owners — their role is never
+       changed from this app. */
+    const shownRole = (member && member.role) ? String(member.role).toLowerCase() : String(m.role || '').toLowerCase();
+    const roleOpts = ['admin','manager','cashier'].map(function(r){
+      return '<option value="' + r + '"' + (shownRole === r ? ' selected' : '') + '>' + esc(tRole(r)) + '</option>';
+    }).join('');
     return '<div class="list-row"><div class="avatar">' + esc(m.name.trim().charAt(0).toUpperCase()) + '</div>' +
-      '<div class="grow"><strong>' + esc(m.name) + '</strong><small>' + esc(tRole(m.role)) + (m.email ? ' · ' + esc(m.email) : '') + '</small></div>' +
-      '<span class="badge ' + (m.active ? 'good' : '') + '">' + esc(m.active ? 'Active' : 'Inactive') + '</span>' +
+      '<div class="grow"><strong>' + esc(m.name) + '</strong><small>' + esc(tRole(m.role)) + (m.email ? ' · ' + esc(m.email) : '') + (branchName ? ' · ' + esc(branchName) : '') + (suspended ? ' · ' + esc(t('staff.suspended')) : '') + '</small></div>' +
+      (linked
+        ? (shownRole === 'owner' ? '' : '<select data-role-staff="' + m.id + '" style="width:auto;min-width:0" aria-label="' + esc(t('staff.role')) + '">' + roleOpts + '</select>') +
+          (isSelf ? '' : '<button class="btn" type="button" data-suspend-staff="' + m.id + '">' + esc(t(suspended ? 'staff.reactivate' : 'staff.suspend')) + '</button>')
+        : '<button class="btn" type="button" data-link-staff="' + m.id + '">' + esc(t('staff.linkAccount')) + '</button>') +
       '<button class="btn icon-btn" type="button" data-del-staff="' + m.id + '" aria-label="Delete">✕</button></div>';
   }).join('');
+  document.querySelectorAll('[data-link-staff]').forEach(function(b){
+    b.addEventListener('click', function(){ openLinkStaffForm(b.dataset.linkStaff); });
+  });
+  document.querySelectorAll('[data-role-staff]').forEach(function(sel){
+    sel.addEventListener('change', function(){ changeStaffRole(sel.dataset.roleStaff, sel.value, sel); });
+  });
+  document.querySelectorAll('[data-suspend-staff]').forEach(function(b){
+    b.addEventListener('click', function(){
+      const m = DB.staff.find(function(x){ return x.id === b.dataset.suspendStaff; });
+      if(!m) return;
+      const member = memberForStaff(m);
+      if(member && member.active === false) reactivateStaff(m);
+      else suspendStaff(m);
+    });
+  });
   document.querySelectorAll('[data-del-staff]').forEach(function(b){
     b.addEventListener('click', function(){
+      if(deny('staff_manage')) return;
       if(!confirm(t('common.confirmDelete'))) return;
       DB.staff = DB.staff.filter(function(x){ return x.id !== b.dataset.delStaff; });
       sbDelete('staff', b.dataset.delStaff);
@@ -329,24 +378,155 @@ function renderSettingsForm(){
   renderHardware();
 }
 
+/* The shop_members row for a staff row (by its linked login account), or
+   null while unlinked / the directory has not loaded. */
+function memberForStaff(m){
+  if(!m.authUid) return null;
+  return shopMembersCache.find(function(x){ return x.user_id === m.authUid; }) || null;
+}
+
+function branchNameForStaff(m){
+  if(!m.branchId) return '';
+  const b = shopBranchesCache.find(function(x){ return x.id === m.branchId; });
+  return b ? b.name : '';
+}
+
+/* Link a login account to a staff row: resolve the email to an Auth uid,
+   PATCH the staff row, then INSERT the membership (role + branch from the
+   staff row). Both calls are owner/admin-gated by RLS; the RPC's error
+   message is shown, not a generic failure. */
+function openLinkStaffForm(staffId){
+  if(deny('staff_manage')) return;
+  const m = DB.staff.find(function(x){ return x.id === staffId; });
+  if(!m) return;
+  openModal(
+    '<header><h2>' + esc(t('staff.linkAccount')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    '<p class="muted">' + esc(m.name) + '</p>' +
+    fieldHtml(t('staff.linkEmail'), '<input type="email" id="linkEmail" value="' + esc(m.email || '') + '">') +
+    '<div class="form-actions"><button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
+    '<button class="btn primary" type="button" id="linkSave">' + esc(t('staff.linkAccount')) + '</button></div>'
+  );
+  document.getElementById('linkSave').addEventListener('click', function(){
+    const email = document.getElementById('linkEmail').value.trim();
+    if(!email || email.indexOf('@') < 1){ toast(t('login.invalidEmail')); return; }
+    closeModal();
+    linkStaffAccount(m, email);
+  });
+}
+
+function linkStaffAccount(m, email){
+  if(deny('staff_manage')) return;
+  sbRpc('resolve_staff_uid', { p_shop_id: activeShopId, p_email: email }).then(function(uid){
+    if(!uid){ toast(t('staff.notSignedUp')); return; }
+    const branchId = m.branchId || null;
+    return fetch(SB_URL + '/rest/v1/staff?id=eq.' + encodeURIComponent(m.id) + '&shop_id=eq.' + encodeURIComponent(activeShopId), {
+      method: 'PATCH',
+      headers: sbHeaders(true),
+      body: JSON.stringify({ auth_uid: uid })
+    }).then(function(r){
+      if(r.status === 401){ handleAuthError(401); throw new Error('staff link 401'); }
+      if(r.status === 403){ handleAuthError(403); throw new Error('staff link 403'); }
+      if(!r.ok) throw new Error('staff link ' + r.status);
+      return fetch(SB_URL + '/rest/v1/shop_members', {
+        method: 'POST',
+        headers: Object.assign(sbHeaders(true), { 'Prefer': 'return=minimal' }),
+        body: JSON.stringify({ shop_id: activeShopId, user_id: uid, role: String(m.role || 'Cashier').toLowerCase(), branch_id: branchId })
+      });
+    }).then(function(r){
+      if(!r.ok) return r.text().then(function(txt){ throw new Error('shop_members ' + r.status + ' ' + (txt || '')); });
+      m.authUid = uid;
+      shopMembersCache.push({ user_id: uid, role: String(m.role || 'Cashier').toLowerCase(), branch_id: branchId, active: true });
+      save(); renderSettingsForm(); toast(t('staff.linked'));
+    });
+  }).catch(function(e){ toast(rpcErrorMessage(e) || t('login.failed')); });
+}
+
+/* Role change goes through set_member_role() — never a direct PATCH on
+   shop_members (file 02 forbids it). The RPC keeps the staff row in sync
+   and writes the audit row; its error (self-change, last-owner demotion,
+   admin granting owner, branch-less cashier) is shown as-is. */
+function changeStaffRole(staffId, newRole, sel){
+  if(deny('staff_manage')){ if(sel) renderSettingsForm(); return; }
+  const m = DB.staff.find(function(x){ return x.id === staffId; });
+  if(!m || !m.authUid) return;
+  const member = memberForStaff(m);
+  const branchId = (member && member.branch_id) || m.branchId || null;
+  sbRpc('set_member_role', { p_shop_id: activeShopId, p_user_id: m.authUid, p_role: newRole, p_branch_id: branchId }).then(function(){
+    if(member){ member.role = newRole; if(branchId) member.branch_id = branchId; }
+    m.role = newRole === 'manager' ? 'Manager' : newRole === 'cashier' ? 'Cashier' : 'Admin';
+    if(branchId) m.branchId = branchId;
+    save(); renderSettingsForm(); toast(t('staff.roleChanged'));
+  }).catch(function(e){
+    toast(rpcErrorMessage(e) || t('login.failed'));
+    renderSettingsForm(); /* put the select back to the true role */
+  });
+}
+
+function suspendStaff(m){
+  if(deny('staff_manage')) return;
+  if(!m.authUid) return;
+  sbRpc('suspend_member', { p_shop_id: activeShopId, p_user_id: m.authUid }).then(function(){
+    const member = memberForStaff(m);
+    if(member) member.active = false;
+    m.active = false; /* the RPC deactivates the linked staff row too */
+    save(); renderSettingsForm(); toast(t('staff.suspended'));
+  }).catch(function(e){ toast(rpcErrorMessage(e) || t('login.failed')); });
+}
+
+function reactivateStaff(m){
+  if(deny('staff_manage')) return;
+  if(!m.authUid) return;
+  sbRpc('reactivate_member', { p_shop_id: activeShopId, p_user_id: m.authUid }).then(function(){
+    const member = memberForStaff(m);
+    if(member) member.active = true;
+    m.active = true;
+    save(); renderSettingsForm(); toast(t('staff.reactivated'));
+  }).catch(function(e){ toast(rpcErrorMessage(e) || t('login.failed')); });
+}
+
 function openStaffForm(){
+  if(deny('staff_manage')) return;
+  const branchOpts = function(){
+    return '<option value="">—</option>' + shopBranchesCache.map(function(b){
+      return '<option value="' + esc(b.id) + '">' + esc(b.name) + '</option>';
+    }).join('');
+  };
   openModal(
     '<header><h2>' + esc(t('staff.add')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
     fieldHtml(t('common.name'), '<input type="text" id="sfName">') +
     fieldHtml(t('staff.role'), '<select id="sfRole"><option value="Admin">' + esc(t('staff.admin')) + '</option><option value="Manager">' + esc(t('staff.manager')) + '</option><option value="Cashier" selected>' + esc(t('staff.cashier')) + '</option></select>') +
+    fieldHtml(t('staff.branch'), '<select id="sfBranch">' + branchOpts() + '</select>') +
     fieldHtml('Email', '<input type="email" id="sfEmail">') +
     '<div class="form-actions"><button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
     '<button class="btn primary" type="button" id="sfSave">' + esc(t('common.save')) + '</button></div>'
   );
+  /* The branch list loads after login; if it never arrived (offline),
+     try once more now so a cashier can still be given a branch. */
+  if(!shopBranchesCache.length){
+    refreshShopDirectory().then(function(){
+      const sel = document.getElementById('sfBranch');
+      if(sel) sel.innerHTML = branchOpts();
+    });
+  }
   document.getElementById('sfSave').addEventListener('click', function(){
+    if(deny('staff_manage')) return;
     const name = document.getElementById('sfName').value.trim();
+    const role = document.getElementById('sfRole').value;
+    const branchId = document.getElementById('sfBranch').value || null;
+    const email = document.getElementById('sfEmail').value.trim();
     if(!name){ toast(t('common.required')); return; }
-    DB.staff.push({ id: uid('s'), name: name, role: document.getElementById('sfRole').value, email: document.getElementById('sfEmail').value.trim(), active: true });
-    save(); closeModal(); renderSettingsForm(); toast(t('staff.saved'));
+    /* A cashier must have a branch (the server CHECK enforces it too);
+       the form must not let an owner create one and fail mysteriously. */
+    if(role === 'Cashier' && !branchId){ toast(t('common.required')); return; }
+    DB.staff.push({ id: uid('s'), name: name, role: role, email: email, active: true, branchId: branchId, authUid: '' });
+    save(); closeModal(); renderSettingsForm();
+    if(email) toast(t('staff.linkHint', {email: email}));
+    else toast(t('staff.saved'));
   });
 }
 
 function saveSettings(){
+  if(deny('settings_shop')) return;
   DB.settings.storeName = document.getElementById('setStoreName').value.trim() || DB.settings.storeName;
   DB.settings.address = document.getElementById('setAddress').value.trim();
   DB.settings.phone = document.getElementById('setPhone').value.trim();

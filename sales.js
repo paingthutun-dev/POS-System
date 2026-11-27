@@ -219,6 +219,7 @@ function renderCart(){
 /* ================= checkout & receipt ================= */
 
 function openCheckout(){
+  if(deny('sell')) return;
   if(cart.length === 0) return;
   const tot = cartTotals();
   const tax = round2(tot.subtotal * DB.settings.taxRate / 100);
@@ -291,6 +292,7 @@ function openCheckout(){
     });
   });
   document.getElementById('coComplete').addEventListener('click', function(){
+    if(deny('sell')) return;
     const r = recalc();
     if(payMethod === 'Cash' && r.received < r.total){ toast(t('checkout.notEnough')); return; }
     mintOrderNumber().then(function(orderNum){
@@ -331,14 +333,20 @@ function localOrderNumber(){
 
 function completeSale(payMethod, customerId, discount, r, orderNum){
   const tot = cartTotals();
-  const cashier = (DB.staff.find(function(s){ return s.role === 'Cashier' && s.active; }) || DB.staff[0] || {name: 'Admin'}).name;
+  /* The cashier is the signed-in user: the linked staff name, else the
+     profile display name, else 'Admin'. Never the first Cashier row —
+     that mis-attributed the owner's sales to a staff member. The staff_id
+     is what the cashier-own-orders RLS reads: a NULL staff_id would make
+     a cashier's own order invisible to them. */
+  const mem = loadMembership();
+  const cashier = (mem && mem.staffName) || (authSession && authSession.displayName) || 'Admin';
   const items = cart.map(function(l){
     const p = prodById(l.productId);
     const price = effPrice(p);
     return { productId: p.id, productName: p.name, sku: p.sku, quantity: l.qty, unitPrice: price, discount: 0, lineTotal: round2(price * l.qty) };
   });
   const order = {
-    id: uid('o'), orderNumber: orderNum, customerId: customerId || 'c4', cashier: cashier,
+    id: uid('o'), orderNumber: orderNum, customerId: customerId || 'c4', cashier: cashier, staffId: (mem && mem.staffId) || null,
     subtotal: tot.subtotal, discount: discount, tax: r.tax, total: r.total,
     paymentMethod: payMethod, amountReceived: r.received, changeAmount: round2(Math.max(0, r.received - r.total)),
     status: 'Completed', createdAt: Date.now(), items: items

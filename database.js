@@ -104,6 +104,8 @@ function sbRpc(fn, params){
     headers: sbHeaders(true),
     body: JSON.stringify(params || {})
   }).then(function(r){
+    if(r.status === 401) handleAuthError(401);
+    else if(r.status === 403) handleAuthError(403);
     if(!r.ok) return r.text().then(function(t){ throw new Error('rpc ' + fn + ' ' + r.status + ' ' + (t || '')); });
     return r.json();
   });
@@ -117,8 +119,14 @@ function sbGet(table){
   if(!authSession) return Promise.reject(new Error('no session'));
   return ensureShop().then(function(shopId){
     if(!shopId) throw new Error('no shop resolved');
-    return fetch(SB_URL + '/rest/v1/' + table + '?select=*&order=id&limit=1000&shop_id=eq.' + encodeURIComponent(shopId), { headers: sbHeaders(false) })
+    /* Cashiers read the products_public view, never the products table:
+       the view has no cost_price column, so nothing downstream can leak
+       it. The view carries shop_id, so the same shop filter applies. */
+    const source = (table === 'products' && !can('cost_prices')) ? 'products_public' : table;
+    return fetch(SB_URL + '/rest/v1/' + source + '?select=*&order=id&limit=1000&shop_id=eq.' + encodeURIComponent(shopId), { headers: sbHeaders(false) })
       .then(function(r){
+        if(r.status === 401){ handleAuthError(401); throw new Error('sb 401'); }
+        if(r.status === 403){ handleAuthError(403); throw new Error('sb 403'); }
         if(!r.ok) throw new Error('sb ' + r.status);
         return r.json();
       });
@@ -132,7 +140,11 @@ function sbUpsert(table, rows, conflict){
     method: 'POST',
     headers: Object.assign(sbHeaders(true), { 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
     body: JSON.stringify(rows)
-  }).then(function(r){ if(!r.ok) throw new Error('sb ' + r.status); });
+  }).then(function(r){
+    if(r.status === 401){ handleAuthError(401); throw new Error('sb 401'); }
+    if(r.status === 403){ handleAuthError(403); throw new Error('sb 403'); }
+    if(!r.ok) throw new Error('sb ' + r.status);
+  });
 }
 /* The `photo` column on products holds the public Storage URL of the photo
    (SQL: alter table products add column if not exists photo text;). Until
@@ -155,9 +167,15 @@ function sbUpsertProducts(rows){
     });
   };
   const stripPhoto = function(list){ return list.map(function(r){ const c = Object.assign({}, r); delete c.photo; return c; }); };
-  if(!PHOTO_SUPPORTED) return send(stripPhoto(rows)).then(function(r){ if(!r.ok) throw new Error('sb ' + r.status); });
+  if(!PHOTO_SUPPORTED) return send(stripPhoto(rows)).then(function(r){
+    if(r.status === 401){ handleAuthError(401); throw new Error('sb 401'); }
+    if(r.status === 403){ handleAuthError(403); throw new Error('sb 403'); }
+    if(!r.ok) throw new Error('sb ' + r.status);
+  });
   return send(rows).then(function(r){
     if(r.ok) return;
+    if(r.status === 401){ handleAuthError(401); throw new Error('sb 401'); }
+    if(r.status === 403){ handleAuthError(403); throw new Error('sb 403'); }
     return r.text().then(function(txt){
       if(r.status === 400 && txt && txt.indexOf('photo') >= 0){
         PHOTO_SUPPORTED = false;
@@ -272,13 +290,20 @@ function withShop(row, branchScoped){
   return row;
 }
 
-function toProductRow(p){ return withShop({ id:p.id, name:p.name, sku:p.sku || null, barcode:p.barcode || null, category:p.category, brand:p.brand || null, cost_price:p.costPrice || 0, selling_price:p.sellingPrice || 0, discount_price:(p.discountPrice == null ? null : p.discountPrice), stock:p.stock || 0, min_stock:p.minStock || 0, unit:p.unit || 'pc', description:p.description || null, supplier:p.supplier || null, active:(p.active !== false), photo:((p.photo && p.photo.indexOf('data:') === 0) ? null : (p.photo || null)) }, false); }
+function toProductRow(p){
+  const row = withShop({ id:p.id, name:p.name, sku:p.sku || null, barcode:p.barcode || null, category:p.category, brand:p.brand || null, selling_price:p.sellingPrice || 0, discount_price:(p.discountPrice == null ? null : p.discountPrice), stock:p.stock || 0, min_stock:p.minStock || 0, unit:p.unit || 'pc', description:p.description || null, supplier:p.supplier || null, active:(p.active !== false), photo:((p.photo && p.photo.indexOf('data:') === 0) ? null : (p.photo || null)) }, false);
+  /* Defence in depth: a cashier never sends a cost price (they cannot save
+     a product at all — §3 — and the push skips products for them; this
+     makes sure a stale local cost can never overwrite the cloud value). */
+  if(can('cost_prices')) row.cost_price = p.costPrice || 0;
+  return row;
+}
 
 function toCustomerRow(c){ return withShop({ id:c.id, name:c.name, phone:c.phone || null, email:c.email || null, address:c.address || null, notes:c.notes || null }, false); }
 
-function toStaffRow(m){ return withShop({ id:m.id, name:m.name, role:m.role, email:m.email || null, active:(m.active !== false) }, false); }
+function toStaffRow(m){ return withShop({ id:m.id, name:m.name, role:m.role, email:m.email || null, active:(m.active !== false), auth_uid:m.authUid || null, branch_id:m.branchId || null }, false); }
 
-function toOrderRow(o){ return withShop({ id:o.id, order_number:o.orderNumber, customer_id:o.customerId || null, cashier:o.cashier || null, subtotal:o.subtotal || 0, discount:o.discount || 0, tax:o.tax || 0, total:o.total || 0, payment_method:o.paymentMethod || null, amount_received:o.amountReceived || 0, change_amount:o.changeAmount || 0, status:o.status || 'Completed', items:o.items || [], created_at:toISO(o.createdAt) }, true); }
+function toOrderRow(o){ return withShop({ id:o.id, order_number:o.orderNumber, customer_id:o.customerId || null, cashier:o.cashier || null, staff_id:o.staffId || null, subtotal:o.subtotal || 0, discount:o.discount || 0, tax:o.tax || 0, total:o.total || 0, payment_method:o.paymentMethod || null, amount_received:o.amountReceived || 0, change_amount:o.changeAmount || 0, status:o.status || 'Completed', items:o.items || [], created_at:toISO(o.createdAt) }, true); }
 
 function toExpenseRow(e){ return withShop({ id:e.id, name:e.name, category:e.category, amount:e.amount || 0, payment_method:e.paymentMethod || null, note:e.note || null, date:toISO(e.date) }, true); }
 
@@ -296,9 +321,9 @@ function fromProductRow(r){ return { id:r.id, name:r.name, sku:r.sku || '', barc
 
 function fromCustomerRow(r){ return { id:r.id, name:r.name, phone:r.phone || '', email:r.email || '', address:r.address || '', notes:r.notes || '' }; }
 
-function fromStaffRow(r){ return { id:r.id, name:r.name, role:r.role, email:r.email || '', active:(r.active !== false) }; }
+function fromStaffRow(r){ return { id:r.id, name:r.name, role:r.role, email:r.email || '', active:(r.active !== false), authUid:r.auth_uid || '', branchId:r.branch_id || null }; }
 
-function fromOrderRow(r){ return { id:r.id, orderNumber:r.order_number, customerId:r.customer_id || '', cashier:r.cashier || '', subtotal:Number(r.subtotal) || 0, discount:Number(r.discount) || 0, tax:Number(r.tax) || 0, total:Number(r.total) || 0, paymentMethod:r.payment_method || '', amountReceived:Number(r.amount_received) || 0, changeAmount:Number(r.change_amount) || 0, status:r.status || 'Completed', items:r.items || [], createdAt:fromTS(r.created_at) }; }
+function fromOrderRow(r){ return { id:r.id, orderNumber:r.order_number, customerId:r.customer_id || '', cashier:r.cashier || '', staffId:r.staff_id || null, subtotal:Number(r.subtotal) || 0, discount:Number(r.discount) || 0, tax:Number(r.tax) || 0, total:Number(r.total) || 0, paymentMethod:r.payment_method || '', amountReceived:Number(r.amount_received) || 0, changeAmount:Number(r.change_amount) || 0, status:r.status || 'Completed', items:r.items || [], createdAt:fromTS(r.created_at) }; }
 
 function fromExpenseRow(r){ return { id:r.id, name:r.name, category:r.category, amount:Number(r.amount) || 0, paymentMethod:r.payment_method || '', note:r.note || '', date:fromTS(r.date) }; }
 

@@ -102,6 +102,13 @@ function renderProducts(){
   const q = (document.getElementById('productSearch').value || '').trim().toLowerCase();
   const f = document.getElementById('productFilter').value;
   const sort = document.getElementById('productSort').value;
+  /* Cashiers read the catalog but never manage it: the add / import /
+     template buttons go away here (the handlers are guarded too). */
+  const canManage = can('products_manage');
+  ['addProductBtn','templateCsvBtn','importCsvBtn'].forEach(function(id){
+    const el = document.getElementById(id);
+    if(el) el.style.display = canManage ? '' : 'none';
+  });
   let list = DB.products.filter(function(p){
     if(q && (p.name + ' ' + p.sku + ' ' + (p.barcode || '')).toLowerCase().indexOf(q) < 0) return false;
     if(f === 'low' && !(p.stock <= p.minStock)) return false;
@@ -139,8 +146,9 @@ function renderProducts(){
       '<div class="c-price">' + money(effPrice(p)) + '</div>' +
       '<div class="c-stock"><span class="stock-num' + stockCls + '">' + p.stock + '</span></div>' +
       '<div class="c-status">' + status + '</div>' +
-      '<div class="c-actions"><button class="btn icon-btn" type="button" data-edit-product="' + p.id + '" aria-label="Edit">✎</button>' +
-      '<button class="btn icon-btn del" type="button" data-delete-product="' + p.id + '" aria-label="Delete">' + TRASH_SVG + '</button></div></div>';
+      '<div class="c-actions">' + (canManage ?
+        '<button class="btn icon-btn" type="button" data-edit-product="' + p.id + '" aria-label="Edit">✎</button>' +
+        '<button class="btn icon-btn del" type="button" data-delete-product="' + p.id + '" aria-label="Delete">' + TRASH_SVG + '</button>' : '') + '</div></div>';
   };
   let pagesHtml = '';
   for(let pi = 0; pi < totalPages; pi++){
@@ -162,6 +170,7 @@ function renderProducts(){
   document.querySelectorAll('[data-delete-product]').forEach(function(b){
     b.addEventListener('click', function(){
       if(prodDragged) return;
+      if(deny('products_manage')) return;
       const p = prodById(b.dataset.deleteProduct);
       if(!p) return;
       if(!confirm(t('common.confirmDelete'))) return;
@@ -174,6 +183,7 @@ function renderProducts(){
 }
 
 function openProductForm(id){
+  if(deny('products_manage')) return;
   const p = id ? prodById(id) : null;
   let photoData = (p && (p.photoPending || p.photo)) ? (p.photoPending || p.photo) : ''; /* staged photo; saved only on Save */
   let photoBlob = null; /* compressed Blob of a newly picked photo; null when the photo is unchanged */
@@ -196,7 +206,10 @@ function openProductForm(id){
     fieldHtml(t('products.barcode'), '<div class="row" style="gap:8px"><input type="text" id="pfBarcode" value="' + esc(p ? (p.barcode || '') : '') + '" style="flex:1;min-width:0"><button class="btn icon-btn" type="button" id="pfScanBtn" aria-label="Scan">📷</button></div>') +
     fieldHtml(t('products.category'), '<select id="pfCat">' + catOpts + '</select>') +
     fieldHtml(t('products.brand'), '<input type="text" id="pfBrand" value="' + esc(p ? p.brand : '') + '">') +
-    fieldHtml(t('products.costPrice'), '<input type="number" id="pfCost" min="0" step="any" value="' + (p ? p.costPrice : '') + '">') +
+    /* The cost field is hidden for roles that may not see cost prices
+       (cashiers never reach this form at all — the add/edit buttons are
+       hidden and the handler is guarded — this is defence in depth). */
+    (can('cost_prices') ? fieldHtml(t('products.costPrice'), '<input type="number" id="pfCost" min="0" step="any" value="' + (p ? p.costPrice : '') + '">') : '') +
     fieldHtml(t('products.sellingPrice'), '<input type="number" id="pfPrice" min="0" step="any" value="' + (p ? p.sellingPrice : '') + '">') +
     fieldHtml(t('products.discountPrice'), '<input type="number" id="pfDisc" min="0" step="any" value="' + (p && p.discountPrice != null ? p.discountPrice : '') + '">') +
     fieldHtml(t('products.stockQty'), '<input type="number" id="pfStock" min="0" step="1" value="' + (p ? p.stock : 0) + '">') +
@@ -208,17 +221,19 @@ function openProductForm(id){
     '<button class="btn primary" type="button" id="pfSave">' + esc(t('common.save')) + '</button></div>'
   );
   document.getElementById('pfSave').addEventListener('click', function(){
+    if(deny('products_manage')) return;
     const name = document.getElementById('pfName').value.trim();
     const price = parseFloat(document.getElementById('pfPrice').value);
     if(!name || !(price >= 0)){ toast(t('common.required')); return; }
     const disc = parseFloat(document.getElementById('pfDisc').value);
+    const costEl = document.getElementById('pfCost');
     const data = {
       name: name,
       sku: document.getElementById('pfSku').value.trim() || ('SKU-' + Date.now().toString(36).toUpperCase()),
       barcode: document.getElementById('pfBarcode').value.trim(),
       category: document.getElementById('pfCat').value,
       brand: document.getElementById('pfBrand').value.trim(),
-      costPrice: parseFloat(document.getElementById('pfCost').value) || 0,
+      costPrice: costEl ? (parseFloat(costEl.value) || 0) : (p ? p.costPrice : 0),
       sellingPrice: price,
       discountPrice: (isFinite(disc) && disc > 0) ? disc : null,
       stock: Math.max(0, parseInt(document.getElementById('pfStock').value, 10) || 0),
@@ -266,6 +281,7 @@ function openProductForm(id){
   document.getElementById('pfPhotoRemove').addEventListener('click', function(){ photoData = ''; photoBlob = null; updatePhotoPreview(); });
   const del = document.getElementById('pfDelete');
   if(del) del.addEventListener('click', function(){
+    if(deny('products_manage')) return;
     if(!confirm(t('common.confirmDelete'))) return;
     if(p.photo) sbStorageDelete(photoPathFromUrl(p.photo));
     DB.products = DB.products.filter(function(x){ return x.id !== p.id; });
@@ -382,6 +398,7 @@ function showImportSummary(plan){
 }
 
 function doImportProducts(plan){
+  if(deny('products_manage')) return;
   plan.adds.forEach(function(d){
     if(!d.sku) d.sku = 'SKU-' + Date.now().toString(36).toUpperCase() + Math.floor(Math.random()*1296).toString(36).toUpperCase();
     DB.products.push(Object.assign({ id: uid('p'), unit: 'pc', description: '', supplier: '', active: true }, d));
@@ -400,6 +417,7 @@ function onImportCsvPicked(e){
   const file = e.target.files && e.target.files[0];
   e.target.value = '';
   if(!file) return;
+  if(deny('products_manage')) return;
   const reader = new FileReader();
   reader.onload = function(){
     const plan = parseCsvProducts(String(reader.result || ''));
@@ -416,6 +434,11 @@ function onImportCsvPicked(e){
 function renderInventory(){
   document.getElementById('invCount').textContent = DB.products.filter(function(p){ return p.active; }).length;
   document.getElementById('invValue').textContent = money(DB.products.reduce(function(s,p){ return s + p.costPrice * p.stock; }, 0));
+  /* The stock-value metric is a cost total: roles that may not see cost
+     prices never see it (their pulled costs are 0 anyway — this keeps the
+     UI from showing a meaningless 0). */
+  const invValueMetric = document.getElementById('invValue').closest('.metric');
+  if(invValueMetric) invValueMetric.style.display = can('cost_prices') ? '' : 'none';
   const low = DB.products.filter(function(p){ return p.active && p.stock <= p.minStock; });
   document.getElementById('invLow').textContent = low.length;
   document.getElementById('stockList').innerHTML = DB.products.map(function(p){
@@ -428,6 +451,8 @@ function renderInventory(){
   }).join('');
   document.querySelectorAll('[data-stock]').forEach(function(b){
     b.addEventListener('click', function(){
+      /* Cashiers see the list read-only: tapping a row opens nothing. */
+      if(!can('stock_manage')) return;
       moveProductId = b.dataset.stock;
       const p = prodById(moveProductId);
       document.getElementById('moveForm').classList.remove('hidden');
@@ -449,6 +474,7 @@ function renderInventory(){
 }
 
 function saveMovement(){
+  if(deny('stock_manage')) return;
   const p = prodById(moveProductId); if(!p) return;
   const type = document.getElementById('moveType').value;
   const qty = Math.max(1, parseInt(document.getElementById('moveQty').value, 10) || 1);

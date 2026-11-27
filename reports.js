@@ -235,6 +235,7 @@ function curMonthStr(){
 }
 
 function exportMonthExcel(){
+  if(deny('reports')) return false;
   const monthVal = document.getElementById('exportMonth').value;
   const blob = buildSalesXlsx(monthVal);
   if(!blob) return false;
@@ -280,6 +281,12 @@ function renderDashboard(){
 /* ================= POS ================= */
 
 function renderOrders(){
+  /* The Excel export is a report: hidden for cashiers (the handler is
+     guarded too — hiding alone is never the check). */
+  const expBtn = document.getElementById('exportExcelBtn');
+  if(expBtn) expBtn.style.display = can('reports') ? '' : 'none';
+  const expMonth = document.getElementById('exportMonth');
+  if(expMonth) expMonth.style.display = can('reports') ? '' : 'none';
   const q = (document.getElementById('orderSearch').value || '').trim().toLowerCase();
   const f = document.getElementById('orderStatusFilter').value;
   const list = DB.orders.filter(function(o){
@@ -313,10 +320,11 @@ function renderExpenses(){
     return '<div class="list-row"><div class="avatar" style="border-radius:8px;background:#fdf0d3;color:var(--warn)">💸</div>' +
       '<div class="grow"><strong>' + esc(e.name) + '</strong><small>' + esc(tExpCat(e.category)) + ' · ' + fmtDay(e.date) + (e.note ? ' · ' + esc(e.note) : '') + '</small></div>' +
       '<div class="amt">' + money(e.amount) + '</div>' +
-      '<button class="btn icon-btn" type="button" data-del-expense="' + e.id + '" aria-label="Delete">✕</button></div>';
+      (can('expenses_manage') ? '<button class="btn icon-btn" type="button" data-del-expense="' + e.id + '" aria-label="Delete">✕</button>' : '') + '</div>';
   }).join('');
   document.querySelectorAll('[data-del-expense]').forEach(function(b){
     b.addEventListener('click', function(){
+      if(deny('expenses_manage')) return;
       if(!confirm(t('common.confirmDelete'))) return;
       DB.expenses = DB.expenses.filter(function(x){ return x.id !== b.dataset.delExpense; });
       sbDelete('expenses', b.dataset.delExpense);

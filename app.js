@@ -21,8 +21,8 @@ en: {
   "customers.eyebrow":"Relationships","customers.title":"Customers","customers.detail":"Profiles, contact details, and purchase history.","customers.add":"Add customer","customers.saved":"Customer saved","customers.name":"Name","customers.phone":"Phone","customers.totalPurchases":"Total purchases","customers.orders":"Orders","customers.deleted":"Customer deleted",
   "expenses.eyebrow":"Operating costs","expenses.title":"Expenses","expenses.detail":"{amount} recorded in the current period.","expenses.add":"Add expense","expenses.recorded":"Expense recorded","expenses.name":"Expense name","expenses.save":"Save expense","expenses.deleted":"Expense deleted",
   "expenseCategory.Rent":"Rent","expenseCategory.Electricity":"Electricity","expenseCategory.Water":"Water","expenseCategory.Salary":"Salary","expenseCategory.Transportation":"Transportation","expenseCategory.Supplies":"Supplies","expenseCategory.Marketing":"Marketing","expenseCategory.Other":"Other",
-  "staff.title":"Staff & permissions","staff.detail":"Role-based access for register and back-office work.","staff.add":"Add staff","staff.admin":"Admin","staff.manager":"Manager","staff.cashier":"Cashier","staff.role":"Role","staff.saved":"Staff saved","staff.deleted":"Staff deleted",
-  "settings.eyebrow":"Store configuration","settings.title":"Settings","settings.detail":"Receipt, tax, language, currency, and appearance.","settings.storeProfile":"Store profile","settings.storeName":"Store name","settings.currency":"Currency","settings.taxRate":"Tax rate (%)","settings.receiptFormat":"Receipt format","settings.languageAppearance":"Language & appearance","settings.languageHelp":"Changes immediately and is saved on this device.","settings.appearance":"Appearance","settings.light":"Light","settings.dark":"Dark","settings.save":"Save settings","settings.saved":"Settings saved","settings.thb":"THB — Thai Baht","settings.mmk":"MMK — Myanmar Kyat","settings.usd":"USD — US Dollar","settings.sgd":"SGD — Singapore Dollar","settings.data":"Data","settings.dataDetail":"Everything is saved on this device.","settings.exportBackup":"Backup","settings.resetDemo":"Restore demo data","settings.resetDone":"Demo data restored","settings.resetConfirm":"Restore the demo data? Current data will be replaced.","backup.restoreBtn":"Restore","backup.invalid":"This is not a valid POS backup file. Nothing was changed.","backup.summaryTitle":"Restore this backup?","backup.exportedAt":"Backed up on {date}","backup.exportedUnknown":"Backup date unknown","backup.replaceWarning":"Current data on this device will be replaced.","backup.safetyNote":"A safety copy of your current data will be downloaded first.","backup.confirm":"Restore","backup.restored":"Backup restored.","backup.restoredSyncFailed":"Restored on this device, but cloud sync failed — it will retry on the next change.","backup.settingsIncluded":"Store settings included","backup.count.products":"Products","backup.count.customers":"Customers","backup.count.staff":"Staff","backup.count.orders":"Orders","backup.count.expenses":"Expenses","backup.count.movements":"Stock movements","settings.sync":"Cloud sync","settings.about":"About","settings.version":"Version","sync.syncing":"Syncing…","sync.synced":"Synced • {time}","sync.offline":"Offline — changes saved on this device","sync.failed":"Sync failed — will retry on next change","login.subtitle":"Sign in to open the register.","login.email":"Email","login.password":"Password","login.button":"Log in","login.signingIn":"Signing in…","login.signOut":"Sign out","login.signedInAs":"Signed in as {email}","login.invalid":"Email or password is incorrect. Please try again.","login.failed":"Could not sign in. Check your connection and try again.","login.signupButton":"Create account","login.signingUp":"Creating account…","login.signupSubtitle":"Create your shop account to get started.","login.toSignup":"Don't have an account? Sign up","login.toSignin":"Already have an account? Sign in","login.confirmPw":"Confirm password","login.signupFailed":"Could not create the account. Check your connection and try again.","login.alreadyRegistered":"This email is already registered. Please sign in instead.","login.confirmEmailSent":"Confirmation email sent — check your inbox, tap the link, then sign in.","login.invalidEmail":"Enter a valid email address.","login.changePassword":"Change password","login.newPassword":"New password","login.confirmPassword":"Confirm new password","login.changePwBtn":"Save new password","login.changingPw":"Saving…","login.pwTooShort":"Password must be at least 6 characters.","login.pwMismatch":"The two passwords do not match.","login.pwChanged":"Password changed.","login.pwChangeFailed":"Could not change the password. Check your connection and try again.","login.pwSessionExpired":"Your session has expired. Please sign in again.","scan.button":"Scan","scan.title":"Scan barcode","scan.hint":"Point the camera at a barcode","scan.added":"{name} added to cart","scan.notFound":"No product with this barcode","scan.keepScanning":"Keep scanning","scan.cameraDenied":"Camera access was denied. Allow the camera and try again.","scan.unsupported":"Barcode scan is not supported on this device or browser. Open the live POS link in Chrome.","scan.needHttps":"Camera scan needs the live link (HTTPS). Open the POS link in Chrome.","scan.barcodeFilled":"Barcode filled: {code}","products.barcode":"Barcode","products.importBtn":"Import CSV","products.templateBtn":"Template","products.importSummaryTitle":"Import these products?","products.importAdd":"New products","products.importUpdate":"Products to update","products.importSkip":"Skipped rows","products.importDup":"{count} duplicate SKU(s) in the file — last row wins.","products.importUpdateNote":"Products with a matching SKU will be updated with the new details.","products.importInvalid":"This is not a valid product CSV file. Check the header row and try again.","products.importNoRows":"No product rows found in this file.","products.imported":"Imported: {added} added, {updated} updated, {skipped} skipped.","products.importReasonNoName":"missing name","products.importReasonBadPrice":"missing or invalid selling price","products.importSkippedRow":"Row {row}: {reason}","products.importAndMore":"…and {count} more","drawer.title":"Cash drawer","drawer.open":"Open drawer","drawer.connect":"Connect printer","drawer.disconnect":"Disconnect","drawer.autoOpen":"Open drawer automatically after a cash sale","drawer.autoOpenHelp":"Only for cash sales. Needs a USB receipt printer connected on desktop Chrome.","drawer.statusConnected":"Printer: connected — {name}","drawer.statusSaved":"Printer: {name} (not connected)","drawer.statusNotConnected":"Printer: not connected","drawer.unsupported":"Cash drawer needs desktop Chrome on the live link (HTTPS) with a USB receipt printer.","drawer.opened":"Cash drawer opened.","drawer.notConnected":"Printer not connected — connect it in Settings → Hardware.","drawer.kickFailed":"Drawer did not open — printer not connected.","drawer.connected":"Printer connected.","drawer.disconnected":"Printer disconnected.","drawer.connectFailed":"Could not connect to the printer."
+  "staff.title":"Staff & permissions","staff.detail":"Role-based access for register and back-office work.","staff.add":"Add staff","staff.admin":"Admin","staff.manager":"Manager","staff.cashier":"Cashier","staff.role":"Role","staff.saved":"Staff saved","staff.deleted":"Staff deleted","staff.owner":"Owner","staff.branch":"Branch","staff.linkAccount":"Link login account","staff.notSignedUp":"This person hasn't signed up yet.","staff.linked":"Login account linked.","staff.suspend":"Suspend","staff.reactivate":"Reactivate","staff.suspended":"Suspended.","staff.reactivated":"Reactivated.","staff.roleChanged":"Role updated.","staff.deleteNote":"Deleting the staff row does not remove their login access — suspend the membership to remove access.","staff.linkHint":"Ask this person to open the POS link and sign up with {email} — their account links automatically on first sign-in.","staff.linkEmail":"Login email",
+  "settings.eyebrow":"Store configuration","settings.title":"Settings","settings.detail":"Receipt, tax, language, currency, and appearance.","settings.storeProfile":"Store profile","settings.storeName":"Store name","settings.currency":"Currency","settings.taxRate":"Tax rate (%)","settings.receiptFormat":"Receipt format","settings.languageAppearance":"Language & appearance","settings.languageHelp":"Changes immediately and is saved on this device.","settings.appearance":"Appearance","settings.light":"Light","settings.dark":"Dark","settings.save":"Save settings","settings.saved":"Settings saved","settings.thb":"THB — Thai Baht","settings.mmk":"MMK — Myanmar Kyat","settings.usd":"USD — US Dollar","settings.sgd":"SGD — Singapore Dollar","settings.data":"Data","settings.dataDetail":"Everything is saved on this device.","settings.exportBackup":"Backup","settings.resetDemo":"Restore demo data","settings.resetDone":"Demo data restored","settings.resetConfirm":"Restore the demo data? Current data will be replaced.","backup.restoreBtn":"Restore","backup.invalid":"This is not a valid POS backup file. Nothing was changed.","backup.summaryTitle":"Restore this backup?","backup.exportedAt":"Backed up on {date}","backup.exportedUnknown":"Backup date unknown","backup.replaceWarning":"Current data on this device will be replaced.","backup.safetyNote":"A safety copy of your current data will be downloaded first.","backup.confirm":"Restore","backup.restored":"Backup restored.","backup.restoredSyncFailed":"Restored on this device, but cloud sync failed — it will retry on the next change.","backup.settingsIncluded":"Store settings included","backup.count.products":"Products","backup.count.customers":"Customers","backup.count.staff":"Staff","backup.count.orders":"Orders","backup.count.expenses":"Expenses","backup.count.movements":"Stock movements","settings.sync":"Cloud sync","settings.about":"About","settings.version":"Version","sync.syncing":"Syncing…","sync.synced":"Synced • {time}","sync.offline":"Offline — changes saved on this device","sync.failed":"Sync failed — will retry on next change","login.subtitle":"Sign in to open the register.","login.email":"Email","login.password":"Password","login.button":"Log in","login.signingIn":"Signing in…","login.signOut":"Sign out","login.signedInAs":"Signed in as {email}","login.invalid":"Email or password is incorrect. Please try again.","login.failed":"Could not sign in. Check your connection and try again.","login.signupButton":"Create account","login.signingUp":"Creating account…","login.signupSubtitle":"Create your shop account to get started.","login.toSignup":"Don't have an account? Sign up","login.toSignin":"Already have an account? Sign in","login.confirmPw":"Confirm password","login.signupFailed":"Could not create the account. Check your connection and try again.","login.alreadyRegistered":"This email is already registered. Please sign in instead.","login.confirmEmailSent":"Confirmation email sent — check your inbox, tap the link, then sign in.","login.invalidEmail":"Enter a valid email address.","login.changePassword":"Change password","login.newPassword":"New password","login.confirmPassword":"Confirm new password","login.changePwBtn":"Save new password","login.changingPw":"Saving…","login.pwTooShort":"Password must be at least 6 characters.","login.pwMismatch":"The two passwords do not match.","login.pwChanged":"Password changed.","login.pwChangeFailed":"Could not change the password. Check your connection and try again.","login.pwSessionExpired":"Your session has expired. Please sign in again.","login.displayName":"Display name","login.sendingLink":"Sending…","login.resettingPw":"Saving…","auth.notAllowed":"You don't have permission to do this.","auth.noAccess":"This account has no shop access yet. Ask your shop owner to add you as staff.","auth.accountDeactivated":"This account has been deactivated. Ask your shop owner for help.","auth.switchShop":"Switch shop","auth.chooseShop":"Choose a shop","auth.forgotPassword":"Forgot password?","auth.sendResetLink":"Send reset link","auth.resetLinkSent":"If this email is registered, a reset link was sent — check your inbox.","auth.resetPassword":"Set a new password","auth.resetDone":"Password updated — please sign in.","auth.resetExpired":"This reset link has expired — request a new one.","auth.createShop":"Create a new shop","auth.creatingShop":"Creating shop…","auth.shopCreated":"Shop created.","scan.button":"Scan","scan.title":"Scan barcode","scan.hint":"Point the camera at a barcode","scan.added":"{name} added to cart","scan.notFound":"No product with this barcode","scan.keepScanning":"Keep scanning","scan.cameraDenied":"Camera access was denied. Allow the camera and try again.","scan.unsupported":"Barcode scan is not supported on this device or browser. Open the live POS link in Chrome.","scan.needHttps":"Camera scan needs the live link (HTTPS). Open the POS link in Chrome.","scan.barcodeFilled":"Barcode filled: {code}","products.barcode":"Barcode","products.importBtn":"Import CSV","products.templateBtn":"Template","products.importSummaryTitle":"Import these products?","products.importAdd":"New products","products.importUpdate":"Products to update","products.importSkip":"Skipped rows","products.importDup":"{count} duplicate SKU(s) in the file — last row wins.","products.importUpdateNote":"Products with a matching SKU will be updated with the new details.","products.importInvalid":"This is not a valid product CSV file. Check the header row and try again.","products.importNoRows":"No product rows found in this file.","products.imported":"Imported: {added} added, {updated} updated, {skipped} skipped.","products.importReasonNoName":"missing name","products.importReasonBadPrice":"missing or invalid selling price","products.importSkippedRow":"Row {row}: {reason}","products.importAndMore":"…and {count} more","drawer.title":"Cash drawer","drawer.open":"Open drawer","drawer.connect":"Connect printer","drawer.disconnect":"Disconnect","drawer.autoOpen":"Open drawer automatically after a cash sale","drawer.autoOpenHelp":"Only for cash sales. Needs a USB receipt printer connected on desktop Chrome.","drawer.statusConnected":"Printer: connected — {name}","drawer.statusSaved":"Printer: {name} (not connected)","drawer.statusNotConnected":"Printer: not connected","drawer.unsupported":"Cash drawer needs desktop Chrome on the live link (HTTPS) with a USB receipt printer.","drawer.opened":"Cash drawer opened.","drawer.notConnected":"Printer not connected — connect it in Settings → Hardware.","drawer.kickFailed":"Drawer did not open — printer not connected.","drawer.connected":"Printer connected.","drawer.disconnected":"Printer disconnected.","drawer.connectFailed":"Could not connect to the printer."
 },
 my: {
   "nav.dashboard":"ဒက်ရှ်ဘုတ်","nav.pos":"အရောင်းအသစ်","nav.products":"ကုန်ပစ္စည်းများ","nav.inventory":"စတော့စာရင်း","nav.orders":"အရောင်းစာရင်း","nav.customers":"ဖောက်သည်များ","nav.expenses":"အသုံးစရိတ်များ","nav.settings":"ဆက်တင်များ","nav.more":"နောက်ထပ်",
@@ -40,8 +40,8 @@ my: {
   "customers.eyebrow":"ဖောက်သည်ဆက်ဆံရေး","customers.title":"ဖောက်သည်များ","customers.detail":"ဖောက်သည်အချက်အလက်နှင့် ဝယ်ယူမှုမှတ်တမ်းများ။","customers.add":"ဖောက်သည်ထည့်ရန်","customers.saved":"ဖောက်သည်အချက်အလက် သိမ်းပြီးပါပြီ","customers.name":"အမည်","customers.phone":"ဖုန်း","customers.totalPurchases":"စုစုပေါင်းဝယ်ယူမှု","customers.orders":"အရောင်းအရေအတွက်","customers.deleted":"ဖောက်သည် ဖျက်ပြီးပါပြီ",
   "expenses.eyebrow":"လုပ်ငန်းကုန်ကျစရိတ်","expenses.title":"အသုံးစရိတ်များ","expenses.detail":"ယခုကာလတွင် {amount} မှတ်တမ်းတင်ထားသည်။","expenses.add":"အသုံးစရိတ်ထည့်ရန်","expenses.recorded":"အသုံးစရိတ် မှတ်တမ်းတင်ပြီးပါပြီ","expenses.name":"အသုံးစရိတ်အမည်","expenses.save":"အသုံးစရိတ်သိမ်းရန်","expenses.deleted":"အသုံးစရိတ် ဖျက်ပြီးပါပြီ",
   "expenseCategory.Rent":"အိမ်ငှားခ","expenseCategory.Electricity":"မီတာခ","expenseCategory.Water":"ရေဖိုး","expenseCategory.Salary":"လစာ","expenseCategory.Transportation":"သယ်ယူပို့ဆောင်ခ","expenseCategory.Supplies":"အသုံးအဆောင်","expenseCategory.Marketing":"ကြော်ငြာစရိတ်","expenseCategory.Other":"အခြား",
-  "staff.title":"ဝန်ထမ်းနှင့် လုပ်ပိုင်ခွင့်များ","staff.detail":"ကောင်တာနှင့် စီမံခန့်ခွဲမှုအလုပ်များအတွက် ရာထူးအလိုက် အသုံးပြုခွင့်။","staff.add":"ဝန်ထမ်းထည့်ရန်","staff.admin":"စီမံခန့်ခွဲသူ","staff.manager":"မန်နေဂျာ","staff.cashier":"ငွေကိုင်","staff.role":"ရာထူး","staff.saved":"ဝန်ထမ်းအသုံးပြုခွင့် သိမ်းပြီးပါပြီ","staff.deleted":"ဝန်ထမ်း ဖျက်ပြီးပါပြီ",
-  "settings.eyebrow":"ဆိုင်ဆက်တင်","settings.title":"ဆက်တင်များ","settings.detail":"ပြေစာ၊ အခွန်၊ ဘာသာစကား၊ ငွေကြေးနှင့် မျက်နှာပြင်ပုံစံ။","settings.storeProfile":"ဆိုင်အချက်အလက်","settings.storeName":"ဆိုင်အမည်","settings.currency":"ငွေကြေး","settings.taxRate":"အခွန်နှုန်း (%)","settings.receiptFormat":"ပြေစာပုံစံ","settings.languageAppearance":"ဘာသာစကားနှင့် မျက်နှာပြင်","settings.languageHelp":"ချက်ချင်းပြောင်းလဲပြီး ဤစက်တွင် မှတ်ထားမည်။","settings.appearance":"မျက်နှာပြင်","settings.light":"အလင်း","settings.dark":"အမှောင်","settings.save":"ဆက်တင်သိမ်းရန်","settings.saved":"ဆက်တင်များ သိမ်းပြီးပါပြီ","settings.thb":"THB — ထိုင်းဘတ်","settings.mmk":"MMK — မြန်မာကျပ်","settings.usd":"USD — အမေရိကန်ဒေါ်လာ","settings.sgd":"SGD — စင်ကာပူဒေါ်လာ","settings.data":"ဒေတာ","settings.dataDetail":"အချက်အလက်အားလုံးကို ဤစက်တွင် သိမ်းထားသည်။","settings.exportBackup":"အရန်သိမ်းမယ်","settings.resetDemo":"Demo ဒေတာ ပြန်ထည့်ရန်","settings.resetDone":"Demo ဒေတာ ပြန်ထည့်ပြီးပါပြီ","settings.resetConfirm":"Demo ဒေတာ ပြန်ထည့်မည်လား? လက်ရှိဒေတာ အစားထိုးသွားမည်။","backup.restoreBtn":"ပြန်ယူမယ်","backup.invalid":"ဤဖိုင်သည် POS အရန်သိမ်းဆည်းဖိုင် အမှန်မဟုတ်ပါ။ ဘာမှမပြောင်းလဲပါ။","backup.summaryTitle":"ဤအရန်ဖိုင်ကို ပြန်ယူမည်လား?","backup.exportedAt":"အရန်သိမ်းသည့်ရက် {date}","backup.exportedUnknown":"အရန်သိမ်းသည့်ရက် မသိပါ","backup.replaceWarning":"ဤစက်ပေါ်ရှိ လက်ရှိဒေတာ အစားထိုးသွားမည်။","backup.safetyNote":"လက်ရှိဒေတာကို အရင် အရန်အဖြစ် ဒေါင်းလုဒ်လုပ်ပေးမည်။","backup.confirm":"ပြန်ယူမည်","backup.restored":"အရန်ဖိုင်ကို ပြန်ယူပြီးပါပြီ။","backup.restoredSyncFailed":"ဤစက်တွင် ပြန်ယူပြီးပါပြီ၊ သို့သော် cloud စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်။","backup.settingsIncluded":"ဆိုင်ဆက်တင် ပါဝင်သည်","backup.count.products":"ကုန်ပစ္စည်းများ","backup.count.customers":"ဖောက်သည်များ","backup.count.staff":"ဝန်ထမ်းများ","backup.count.orders":"အော်ဒါများ","backup.count.expenses":"အသုံးစရိတ်များ","backup.count.movements":"စတော့ အပြောင်းအလဲများ","settings.sync":"Cloud ချိတ်ဆက်မှု","settings.about":"အကြောင်း","settings.version":"ဗားရှင်း","sync.syncing":"စင့်ခ်လုပ်နေသည်…","sync.synced":"စင့်ခ်ပြီးပြီ • {time}","sync.offline":"အင်တာနက်မရှိ — ဒီစက်မှာပဲ သိမ်းထားသည်","sync.failed":"စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်","login.subtitle":"ကောင်တာဖွင့်ရန် ဝင်ရောက်ပါ။","login.email":"အီးမေးလ်","login.password":"စကားဝှက်","login.button":"ဝင်ရောက်ရန်","login.signingIn":"ဝင်ရောက်နေသည်…","login.signOut":"ထွက်ရန်","login.signedInAs":"ဝင်ရောက်ထားသည်: {email}","login.invalid":"အီးမေးလ် သို့မဟုတ် စကားဝှက်မှားနေပါသည်။ ထပ်ကြိုးစားပါ။","login.failed":"ဝင်ရောက်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.signupButton":"အကောင့်ဖွင့်ရန်","login.signingUp":"အကောင့်ဖွင့်နေသည်…","login.signupSubtitle":"ဆိုင်အကောင့်အသစ် ဖွင့်ရန်","login.toSignup":"အကောင့်မရှိသေးဘူးလား? အကောင့်ဖွင့်ရန်","login.toSignin":"အကောင့်ရှိပြီးသားလား? ဝင်ရောက်ရန်","login.confirmPw":"စကားဝှက် အတည်ပြုရန်","login.signupFailed":"အကောင့်ဖွင့်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.alreadyRegistered":"ဤအီးမေးလ်သည် မှတ်ပုံတင်ပြီးသားဖြစ်သည်။ ဝင်ရောက်ပါ။","login.confirmEmailSent":"အတည်ပြုအီးမေးလ် ပို့ပြီးပါပြီ — အီးမေးလ်ထဲမှာ လင့်ခ်ကို နှိပ်ပြီး ဝင်ရောက်ပါ။","login.invalidEmail":"မှန်ကန်သော အီးမေးလ်လိပ်စာ ထည့်ပါ။","login.changePassword":"စကားဝှက် ပြောင်းရန်","login.newPassword":"စကားဝှက် အသစ်","login.confirmPassword":"စကားဝှက် အသစ် အတည်ပြုရန်","login.changePwBtn":"စကားဝှက် အသစ် သိမ်းရန်","login.changingPw":"သိမ်းနေသည်…","login.pwTooShort":"စကားဝှက်သည် အနည်းဆုံး ၆ လုံးရှိရမည်။","login.pwMismatch":"စကားဝှက် နှစ်ခု မတူညီပါ။","login.pwChanged":"စကားဝှက် ပြောင်းပြီးပါပြီ။","login.pwChangeFailed":"စကားဝှက် ပြောင်း၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.pwSessionExpired":"အချိန်ကုန်သွားပါပြီ။ ပြန်ဝင်ရောက်ပါ။","scan.button":"စကင်","scan.title":"ဘားကုဒ် စကင်ဖတ်ရန်","scan.hint":"ကင်မရာကို ဘားကုဒ်ဘက်သို့ ချိန်ပါ","scan.added":"{name} ကို စျေးခြင်းထဲ ထည့်ပြီးပါပြီ","scan.notFound":"ဤဘားကုဒ်နှင့် ကုန်ပစ္စည်း မရှိပါ","scan.keepScanning":"ဆက်စကင်ဖတ်ရန်","scan.cameraDenied":"ကင်မရာ ခွင့်ပြုချက် မရပါ။ ကင်မရာကို ခွင့်ပြုပြီး ထပ်ကြိုးစားပါ။","scan.unsupported":"ဤစက် သို့မဟုတ် ဘရောက်ဆာတွင် ဘားကုဒ်စကင် မရပါ။ Live POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.needHttps":"ကင်မရာစကင်အတွက် live link (HTTPS) လိုပါသည်။ POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.barcodeFilled":"ဘားကုဒ် ထည့်ပြီးပါပြီ: {code}","products.barcode":"ဘားကုဒ်","products.importBtn":"CSV သွင်းရန်","products.templateBtn":"နမူနာဖိုင်","products.importSummaryTitle":"ဤကုန်ပစ္စည်းများကို သွင်းမည်လား?","products.importAdd":"အသစ်ထည့်မည့် ပစ္စည်း","products.importUpdate":"ပြင်ဆင်မည့် ပစ္စည်း","products.importSkip":"ကျော်သွားမည့် အတန်း","products.importDup":"ဖိုင်တွင် SKU {count} ခု ထပ်နေသည် — နောက်ဆုံးအတန်းကို ယူမည်။","products.importUpdateNote":"SKU တူသော ပစ္စည်းများသည် အချက်အလက်အသစ်ဖြင့် ပြင်ဆင်သွားမည်။","products.importInvalid":"ဤဖိုင်သည် မှန်ကန်သော ကုန်ပစ္စည်း CSV ဖိုင် မဟုတ်ပါ။ ခေါင်းစဉ်အတန်းကို စစ်ပြီး ထပ်ကြိုးစားပါ။","products.importNoRows":"ဤဖိုင်တွင် ကုန်ပစ္စည်းအတန်း မတွေ့ပါ။","products.imported":"သွင်းပြီးပါပြီ: {added} ခု အသစ်၊ {updated} ခု ပြင်ဆင်၊ {skipped} ခု ကျော်။","products.importReasonNoName":"အမည် မပါ","products.importReasonBadPrice":"ရောင်းဈေး မပါ သို့မဟုတ် မှားနေသည်","products.importSkippedRow":"အတန်း {row}: {reason}","products.importAndMore":"…နောက်ထပ် {count} ခု","drawer.title":"ငွေသေတ္တာ","drawer.open":"ငွေသေတ္တာ ဖွင့်ရန်","drawer.connect":"ပရင်တာ ချိတ်ဆက်ရန်","drawer.disconnect":"ချိတ်ဆက်မှု ဖြုတ်ရန်","drawer.autoOpen":"ငွေသားဖြင့် ရောင်းပြီးတိုင်း ငွေသေတ္တာကို အလိုအလျောက် ဖွင့်ရန်","drawer.autoOpenHelp":"ငွေသားအရောင်းအတွက်သာ။ Desktop Chrome တွင် USB ပရင်တာ ချိတ်ဆက်ထားရန် လိုသည်။","drawer.statusConnected":"ပရင်တာ: ချိတ်ဆက်ထားသည် — {name}","drawer.statusSaved":"ပရင်တာ: {name} (မချိတ်ဆက်ရသေးပါ)","drawer.statusNotConnected":"ပရင်တာ: မချိတ်ဆက်ရသေးပါ","drawer.unsupported":"ငွေသေတ္တာအတွက် live link (HTTPS) ကို desktop Chrome တွင် USB ပရင်တာဖြင့် ဖွင့်ရန် လိုသည်။","drawer.opened":"ငွေသေတ္တာ ဖွင့်ပြီးပါပြီ။","drawer.notConnected":"ပရင်တာ မချိတ်ဆက်ရသေးပါ — Settings → Hardware တွင် ချိတ်ဆက်ပါ။","drawer.kickFailed":"ငွေသေတ္တာ မပွင့်ပါ — ပရင်တာ မချိတ်ဆက်ရသေးပါ။","drawer.connected":"ပရင်တာ ချိတ်ဆက်ပြီးပါပြီ။","drawer.disconnected":"ပရင်တာ ချိတ်ဆက်မှု ဖြုတ်ပြီးပါပြီ။","drawer.connectFailed":"ပရင်တာ ချိတ်ဆက်၍မရပါ။"
+  "staff.title":"ဝန်ထမ်းနှင့် လုပ်ပိုင်ခွင့်များ","staff.detail":"ကောင်တာနှင့် စီမံခန့်ခွဲမှုအလုပ်များအတွက် ရာထူးအလိုက် အသုံးပြုခွင့်။","staff.add":"ဝန်ထမ်းထည့်ရန်","staff.admin":"စီမံခန့်ခွဲသူ","staff.manager":"မန်နေဂျာ","staff.cashier":"ငွေကိုင်","staff.role":"ရာထူး","staff.saved":"ဝန်ထမ်းအသုံးပြုခွင့် သိမ်းပြီးပါပြီ","staff.deleted":"ဝန်ထမ်း ဖျက်ပြီးပါပြီ","staff.owner":"ပိုင်ရှင်","staff.branch":"ဌာနခွဲ","staff.linkAccount":"လော့ဂ်အင် အကောင့် ချိတ်ဆက်ရန်","staff.notSignedUp":"ဤသူသည် အကောင့် မဖွင့်ရသေးပါ။","staff.linked":"လော့ဂ်အင် အကောင့် ချိတ်ဆက်ပြီးပါပြီ။","staff.suspend":"ရပ်ဆိုင်းရန်","staff.reactivate":"ပြန်ဖွင့်ရန်","staff.suspended":"ရပ်ဆိုင်းပြီးပါပြီ။","staff.reactivated":"ပြန်ဖွင့်ပြီးပါပြီ။","staff.roleChanged":"အခန်းကဏ္ဍ ပြောင်းပြီးပါပြီ။","staff.deleteNote":"ဝန်ထမ်းအတန်းကို ဖျက်ခြင်းသည် လော့ဂ်အင် ဝင်ရောက်ခွင့်ကို မဖျက်ပါ — ဝင်ရောက်ခွင့်ကို ဖျက်ရန် membership ကို ရပ်ဆိုင်းပါ။","staff.linkHint":"ဤသူကို POS link ဖွင့်ပြီး {email} ဖြင့် အကောင့်ဖွင့်ခိုင်းပါ — ပထမဆုံးဝင်ရောက်ချိန်တွင် အလိုအလျောက် ချိတ်ဆက်သွားမည်။","staff.linkEmail":"လော့ဂ်အင် အီးမေးလ်",
+  "settings.eyebrow":"ဆိုင်ဆက်တင်","settings.title":"ဆက်တင်များ","settings.detail":"ပြေစာ၊ အခွန်၊ ဘာသာစကား၊ ငွေကြေးနှင့် မျက်နှာပြင်ပုံစံ။","settings.storeProfile":"ဆိုင်အချက်အလက်","settings.storeName":"ဆိုင်အမည်","settings.currency":"ငွေကြေး","settings.taxRate":"အခွန်နှုန်း (%)","settings.receiptFormat":"ပြေစာပုံစံ","settings.languageAppearance":"ဘာသာစကားနှင့် မျက်နှာပြင်","settings.languageHelp":"ချက်ချင်းပြောင်းလဲပြီး ဤစက်တွင် မှတ်ထားမည်။","settings.appearance":"မျက်နှာပြင်","settings.light":"အလင်း","settings.dark":"အမှောင်","settings.save":"ဆက်တင်သိမ်းရန်","settings.saved":"ဆက်တင်များ သိမ်းပြီးပါပြီ","settings.thb":"THB — ထိုင်းဘတ်","settings.mmk":"MMK — မြန်မာကျပ်","settings.usd":"USD — အမေရိကန်ဒေါ်လာ","settings.sgd":"SGD — စင်ကာပူဒေါ်လာ","settings.data":"ဒေတာ","settings.dataDetail":"အချက်အလက်အားလုံးကို ဤစက်တွင် သိမ်းထားသည်။","settings.exportBackup":"အရန်သိမ်းမယ်","settings.resetDemo":"Demo ဒေတာ ပြန်ထည့်ရန်","settings.resetDone":"Demo ဒေတာ ပြန်ထည့်ပြီးပါပြီ","settings.resetConfirm":"Demo ဒေတာ ပြန်ထည့်မည်လား? လက်ရှိဒေတာ အစားထိုးသွားမည်။","backup.restoreBtn":"ပြန်ယူမယ်","backup.invalid":"ဤဖိုင်သည် POS အရန်သိမ်းဆည်းဖိုင် အမှန်မဟုတ်ပါ။ ဘာမှမပြောင်းလဲပါ။","backup.summaryTitle":"ဤအရန်ဖိုင်ကို ပြန်ယူမည်လား?","backup.exportedAt":"အရန်သိမ်းသည့်ရက် {date}","backup.exportedUnknown":"အရန်သိမ်းသည့်ရက် မသိပါ","backup.replaceWarning":"ဤစက်ပေါ်ရှိ လက်ရှိဒေတာ အစားထိုးသွားမည်။","backup.safetyNote":"လက်ရှိဒေတာကို အရင် အရန်အဖြစ် ဒေါင်းလုဒ်လုပ်ပေးမည်။","backup.confirm":"ပြန်ယူမည်","backup.restored":"အရန်ဖိုင်ကို ပြန်ယူပြီးပါပြီ။","backup.restoredSyncFailed":"ဤစက်တွင် ပြန်ယူပြီးပါပြီ၊ သို့သော် cloud စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်။","backup.settingsIncluded":"ဆိုင်ဆက်တင် ပါဝင်သည်","backup.count.products":"ကုန်ပစ္စည်းများ","backup.count.customers":"ဖောက်သည်များ","backup.count.staff":"ဝန်ထမ်းများ","backup.count.orders":"အော်ဒါများ","backup.count.expenses":"အသုံးစရိတ်များ","backup.count.movements":"စတော့ အပြောင်းအလဲများ","settings.sync":"Cloud ချိတ်ဆက်မှု","settings.about":"အကြောင်း","settings.version":"ဗားရှင်း","sync.syncing":"စင့်ခ်လုပ်နေသည်…","sync.synced":"စင့်ခ်ပြီးပြီ • {time}","sync.offline":"အင်တာနက်မရှိ — ဒီစက်မှာပဲ သိမ်းထားသည်","sync.failed":"စင့်ခ်မအောင်မြင်ပါ — နောက်ပြောင်းလဲမှုတွင် ထပ်ကြိုးစားမည်","login.subtitle":"ကောင်တာဖွင့်ရန် ဝင်ရောက်ပါ။","login.email":"အီးမေးလ်","login.password":"စကားဝှက်","login.button":"ဝင်ရောက်ရန်","login.signingIn":"ဝင်ရောက်နေသည်…","login.signOut":"ထွက်ရန်","login.signedInAs":"ဝင်ရောက်ထားသည်: {email}","login.invalid":"အီးမေးလ် သို့မဟုတ် စကားဝှက်မှားနေပါသည်။ ထပ်ကြိုးစားပါ။","login.failed":"ဝင်ရောက်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.signupButton":"အကောင့်ဖွင့်ရန်","login.signingUp":"အကောင့်ဖွင့်နေသည်…","login.signupSubtitle":"ဆိုင်အကောင့်အသစ် ဖွင့်ရန်","login.toSignup":"အကောင့်မရှိသေးဘူးလား? အကောင့်ဖွင့်ရန်","login.toSignin":"အကောင့်ရှိပြီးသားလား? ဝင်ရောက်ရန်","login.confirmPw":"စကားဝှက် အတည်ပြုရန်","login.signupFailed":"အကောင့်ဖွင့်၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.alreadyRegistered":"ဤအီးမေးလ်သည် မှတ်ပုံတင်ပြီးသားဖြစ်သည်။ ဝင်ရောက်ပါ။","login.confirmEmailSent":"အတည်ပြုအီးမေးလ် ပို့ပြီးပါပြီ — အီးမေးလ်ထဲမှာ လင့်ခ်ကို နှိပ်ပြီး ဝင်ရောက်ပါ။","login.invalidEmail":"မှန်ကန်သော အီးမေးလ်လိပ်စာ ထည့်ပါ။","login.changePassword":"စကားဝှက် ပြောင်းရန်","login.newPassword":"စကားဝှက် အသစ်","login.confirmPassword":"စကားဝှက် အသစ် အတည်ပြုရန်","login.changePwBtn":"စကားဝှက် အသစ် သိမ်းရန်","login.changingPw":"သိမ်းနေသည်…","login.pwTooShort":"စကားဝှက်သည် အနည်းဆုံး ၆ လုံးရှိရမည်။","login.pwMismatch":"စကားဝှက် နှစ်ခု မတူညီပါ။","login.pwChanged":"စကားဝှက် ပြောင်းပြီးပါပြီ။","login.pwChangeFailed":"စကားဝှက် ပြောင်း၍မရပါ။ အင်တာနက်စစ်ပြီး ထပ်ကြိုးစားပါ။","login.pwSessionExpired":"အချိန်ကုန်သွားပါပြီ။ ပြန်ဝင်ရောက်ပါ။","login.displayName":"အမည်","login.sendingLink":"ပို့နေသည်…","login.resettingPw":"သိမ်းနေသည်…","auth.notAllowed":"ဤလုပ်ဆောင်ချက်ကို လုပ်ခွင့်မရှိပါ။","auth.noAccess":"ဤအကောင့်တွင် ဆိုင်ဝင်ရောက်ခွင့် မရှိသေးပါ။ ဆိုင်ပိုင်ရှင်ကို ဝန်ထမ်းအဖြစ် ထည့်ပေးရန် တောင်းဆိုပါ။","auth.accountDeactivated":"ဤအကောင့်ကို ပိတ်ထားပါသည်။ ဆိုင်ပိုင်ရှင်ကို ဆက်သွယ်ပါ။","auth.switchShop":"ဆိုင်ပြောင်းရန်","auth.chooseShop":"ဆိုင်ရွေးချယ်ပါ","auth.forgotPassword":"စကားဝှက် မေ့သွားလား?","auth.sendResetLink":"ပြန်လည်သတ်မှတ်ရန် လင့်ခ် ပို့မယ်","auth.resetLinkSent":"ဤအီးမေးလ် မှတ်ပုံတင်ထားပါက ပြန်လည်သတ်မှတ်ရန် လင့်ခ် ပို့ပြီးပါပြီ — အီးမေးလ်ကို စစ်ပါ။","auth.resetPassword":"စကားဝှက် အသစ် သတ်မှတ်ပါ","auth.resetDone":"စကားဝှက် ပြောင်းပြီးပါပြီ — ဝင်ရောက်ပါ။","auth.resetExpired":"ဤလင့်ခ် သက်တမ်းကုန်သွားပါပြီ — အသစ် တောင်းပါ။","auth.createShop":"ဆိုင်အသစ် ဖွင့်ရန်","auth.creatingShop":"ဆိုင်ဖွင့်နေသည်…","auth.shopCreated":"ဆိုင်ဖွင့်ပြီးပါပြီ။","scan.button":"စကင်","scan.title":"ဘားကုဒ် စကင်ဖတ်ရန်","scan.hint":"ကင်မရာကို ဘားကုဒ်ဘက်သို့ ချိန်ပါ","scan.added":"{name} ကို စျေးခြင်းထဲ ထည့်ပြီးပါပြီ","scan.notFound":"ဤဘားကုဒ်နှင့် ကုန်ပစ္စည်း မရှိပါ","scan.keepScanning":"ဆက်စကင်ဖတ်ရန်","scan.cameraDenied":"ကင်မရာ ခွင့်ပြုချက် မရပါ။ ကင်မရာကို ခွင့်ပြုပြီး ထပ်ကြိုးစားပါ။","scan.unsupported":"ဤစက် သို့မဟုတ် ဘရောက်ဆာတွင် ဘားကုဒ်စကင် မရပါ။ Live POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.needHttps":"ကင်မရာစကင်အတွက် live link (HTTPS) လိုပါသည်။ POS link ကို Chrome မှာ ဖွင့်ပါ။","scan.barcodeFilled":"ဘားကုဒ် ထည့်ပြီးပါပြီ: {code}","products.barcode":"ဘားကုဒ်","products.importBtn":"CSV သွင်းရန်","products.templateBtn":"နမူနာဖိုင်","products.importSummaryTitle":"ဤကုန်ပစ္စည်းများကို သွင်းမည်လား?","products.importAdd":"အသစ်ထည့်မည့် ပစ္စည်း","products.importUpdate":"ပြင်ဆင်မည့် ပစ္စည်း","products.importSkip":"ကျော်သွားမည့် အတန်း","products.importDup":"ဖိုင်တွင် SKU {count} ခု ထပ်နေသည် — နောက်ဆုံးအတန်းကို ယူမည်။","products.importUpdateNote":"SKU တူသော ပစ္စည်းများသည် အချက်အလက်အသစ်ဖြင့် ပြင်ဆင်သွားမည်။","products.importInvalid":"ဤဖိုင်သည် မှန်ကန်သော ကုန်ပစ္စည်း CSV ဖိုင် မဟုတ်ပါ။ ခေါင်းစဉ်အတန်းကို စစ်ပြီး ထပ်ကြိုးစားပါ။","products.importNoRows":"ဤဖိုင်တွင် ကုန်ပစ္စည်းအတန်း မတွေ့ပါ။","products.imported":"သွင်းပြီးပါပြီ: {added} ခု အသစ်၊ {updated} ခု ပြင်ဆင်၊ {skipped} ခု ကျော်။","products.importReasonNoName":"အမည် မပါ","products.importReasonBadPrice":"ရောင်းဈေး မပါ သို့မဟုတ် မှားနေသည်","products.importSkippedRow":"အတန်း {row}: {reason}","products.importAndMore":"…နောက်ထပ် {count} ခု","drawer.title":"ငွေသေတ္တာ","drawer.open":"ငွေသေတ္တာ ဖွင့်ရန်","drawer.connect":"ပရင်တာ ချိတ်ဆက်ရန်","drawer.disconnect":"ချိတ်ဆက်မှု ဖြုတ်ရန်","drawer.autoOpen":"ငွေသားဖြင့် ရောင်းပြီးတိုင်း ငွေသေတ္တာကို အလိုအလျောက် ဖွင့်ရန်","drawer.autoOpenHelp":"ငွေသားအရောင်းအတွက်သာ။ Desktop Chrome တွင် USB ပရင်တာ ချိတ်ဆက်ထားရန် လိုသည်။","drawer.statusConnected":"ပရင်တာ: ချိတ်ဆက်ထားသည် — {name}","drawer.statusSaved":"ပရင်တာ: {name} (မချိတ်ဆက်ရသေးပါ)","drawer.statusNotConnected":"ပရင်တာ: မချိတ်ဆက်ရသေးပါ","drawer.unsupported":"ငွေသေတ္တာအတွက် live link (HTTPS) ကို desktop Chrome တွင် USB ပရင်တာဖြင့် ဖွင့်ရန် လိုသည်။","drawer.opened":"ငွေသေတ္တာ ဖွင့်ပြီးပါပြီ။","drawer.notConnected":"ပရင်တာ မချိတ်ဆက်ရသေးပါ — Settings → Hardware တွင် ချိတ်ဆက်ပါ။","drawer.kickFailed":"ငွေသေတ္တာ မပွင့်ပါ — ပရင်တာ မချိတ်ဆက်ရသေးပါ။","drawer.connected":"ပရင်တာ ချိတ်ဆက်ပြီးပါပြီ။","drawer.disconnected":"ပရင်တာ ချိတ်ဆက်မှု ဖြုတ်ပြီးပါပြီ။","drawer.connectFailed":"ပရင်တာ ချိတ်ဆက်၍မရပါ။"
 }};
 
 function t(k, vars){
@@ -58,7 +58,13 @@ function tExpCat(c){ return t('expenseCategory.' + c) || c; }
 
 function tStatus(s){ return s === 'Completed' ? t('orders.completed') : s === 'Refunded' ? t('orders.refunded') : t('orders.cancelled'); }
 
-function tRole(r){ return r === 'Admin' ? t('staff.admin') : r === 'Manager' ? t('staff.manager') : t('staff.cashier'); }
+function tRole(r){
+  const k = String(r || '').toLowerCase();
+  if(k === 'owner') return t('staff.owner');
+  if(k === 'admin') return t('staff.admin');
+  if(k === 'manager') return t('staff.manager');
+  return t('staff.cashier');
+}
 
 /* ================= state ================= */
 
@@ -136,7 +142,7 @@ function atDay(offset, h, m){
 
 /* ================= seed demo data (mirrors hosted POS demo) ================= */
 
-const APP_VERSION = '1.0.7'; /* shown on the login screen and in Settings → About */
+const APP_VERSION = '1.0.8'; /* shown on the login screen and in Settings → About */
 
 function toast(msg){
   const el = document.getElementById('toast');
@@ -173,8 +179,15 @@ const NAV = [
 
 const BOTTOM_NAV = ['dashboard','pos','products','orders','more'];
 
+/* Which permission opens each view (STEP 3 matrix §3). A view the active
+   role cannot open is hidden from the nav and refused by showView. */
+const VIEW_PERMS = { dashboard:'reports', pos:'sell', products:'products_read', inventory:'inventory_read', orders:'view_own_orders', customers:'customers_add', expenses:'expenses_add', settings:'settings_device' };
+
+function landingView(){ return can('reports') ? 'dashboard' : 'pos'; }
+
 function showView(id){
   if(id === 'more'){ document.getElementById('moreSheet').classList.toggle('hidden'); return; }
+  if(VIEW_PERMS[id] && !can(VIEW_PERMS[id])){ toast(t('auth.notAllowed')); id = landingView(); }
   document.getElementById('moreSheet').classList.add('hidden');
   document.getElementById('posMenu').classList.add('hidden');
   curView = id;
@@ -188,10 +201,16 @@ function showView(id){
 }
 
 function buildNav(){
-  document.getElementById('sideNavBtns').innerHTML = NAV.map(function(n){
+  const navList = NAV.filter(function(n){ return can(VIEW_PERMS[n.id]); });
+  document.getElementById('sideNavBtns').innerHTML = navList.map(function(n){
     return '<button type="button" data-nav="' + n.id + '"><span class="ico">' + NAV_SVG[n.id] + '</span><span data-t="nav.' + n.id + '">' + t('nav.' + n.id) + '</span></button>';
   }).join('');
-  document.getElementById('bottomNav').innerHTML = BOTTOM_NAV.map(function(id){
+  const moreVisible = ['inventory','customers','expenses','settings'].some(function(id){ return can(VIEW_PERMS[id]); });
+  const bottomList = BOTTOM_NAV.filter(function(id){
+    if(id === 'more') return moreVisible;
+    return can(VIEW_PERMS[id]);
+  });
+  document.getElementById('bottomNav').innerHTML = bottomList.map(function(id){
     if(id === 'more') return '<button type="button" data-nav="more"><span class="ico">⋯</span><span data-t="nav.more">' + t('nav.more') + '</span></button>';
     const n = NAV.find(function(x){ return x.id === id; });
     return '<button type="button" data-nav="' + id + '"><span class="ico">' + n.icon + '</span><span data-t="nav.' + id + '">' + t('nav.' + id) + '</span></button>';
@@ -199,12 +218,57 @@ function buildNav(){
   document.querySelectorAll('#sideNavBtns [data-nav], #bottomNav [data-nav]').forEach(function(el){
     el.addEventListener('click', function(){ showView(el.dataset.nav); });
   });
+  /* Rebuilding the rails wipes the .active marker showView() set on the
+     old buttons — re-apply it to the current view, or no nav button looks
+     active after login / language change. */
+  document.querySelectorAll('#sideNavBtns button, #bottomNav button').forEach(function(b){ b.classList.toggle('active', b.dataset.nav === curView); });
 }
 
 function bindStaticNav(){
   document.querySelectorAll('#posMenu [data-nav], #moreSheet [data-nav]').forEach(function(el){
     el.addEventListener('click', function(){ showView(el.dataset.nav); });
   });
+}
+
+/* Re-apply the role to every static nav item and header control after the
+   membership resolves (or changes): hidden nav for forbidden views, the
+   shop switcher only for multi-shop users, the branch name for cashiers
+   (no switcher — they have exactly one branch), the branch switcher only
+   for owner/admin/manager with more than one branch. Idempotent; safe to
+   call on every language change. */
+function applyRoleUI(){
+  buildNav();
+  document.querySelectorAll('#posMenu [data-nav]').forEach(function(b){
+    const perm = VIEW_PERMS[b.dataset.nav];
+    b.style.display = (!perm || can(perm)) ? '' : 'none';
+  });
+  document.querySelectorAll('#moreSheet [data-nav]').forEach(function(b){
+    const perm = VIEW_PERMS[b.dataset.nav];
+    b.style.display = (!perm || can(perm)) ? '' : 'none';
+  });
+  const m = loadMembership();
+  const swBtn = document.getElementById('posSwitchShopBtn');
+  if(swBtn) swBtn.classList.toggle('hidden', !(m && m.shops && m.shops.length > 1));
+  const brBtn = document.getElementById('posBranchBtn');
+  if(brBtn){
+    const label = brBtn.querySelector('span');
+    if(m && activeRole() === 'cashier' && m.branchName){
+      brBtn.classList.remove('hidden');
+      brBtn.disabled = true;
+      if(label) label.textContent = '📍 ' + m.branchName;
+    } else if(m && shopBranchesCache.length > 1 && !m.branchId){
+      brBtn.classList.remove('hidden');
+      brBtn.disabled = false;
+      if(label) label.textContent = '📍 ' + (m.branchName || '');
+    } else {
+      brBtn.classList.add('hidden');
+    }
+  }
+  const sub = document.getElementById('posSubtitle');
+  if(sub && m && activeRole() === 'cashier' && m.branchName) sub.textContent = m.branchName;
+  /* The role may have resolved after the app already landed somewhere:
+     a cashier sitting on the dashboard is moved to POS. */
+  if(curView && VIEW_PERMS[curView] && !can(VIEW_PERMS[curView])) showView(landingView());
 }
 
 function applyLang(){
@@ -226,6 +290,7 @@ function applyLang(){
   renderCurrent();
   setSyncStatus(syncState);
   updateAuthUI();
+  applyRoleUI();
 }
 
 function setLang(lang){
@@ -283,6 +348,10 @@ function fieldHtml(label, inner){
 
 function renderCurrent(){
   if(!DB) return;
+  /* The role may have resolved after landing: never render a view the
+     active role cannot open (a cashier's dashboard would show cost-derived
+     totals from pulled rows). */
+  if(curView && VIEW_PERMS[curView] && !can(VIEW_PERMS[curView])){ showView(landingView()); return; }
   if(curView === 'dashboard') renderDashboard();
   else if(curView === 'pos') renderPos();
   else if(curView === 'products') renderProducts();
@@ -301,6 +370,9 @@ function init(){
   DB = load() || seedData();
   save();
   authSession = loadAuth();
+  /* A password-recovery link lands here with #type=recovery: show the
+     reset form BEFORE the normal login gate — never enter the app. */
+  const recovery = handleRecoveryHash();
   /* Gate the app behind login BEFORE showing anything: with no session the
      app shell stays hidden and only the login screen is shown. */
   if(!authValid(authSession)) document.body.classList.add('logged-out');
@@ -308,16 +380,19 @@ function init(){
   bindStaticNav();
   bindAuthUI();
   applyLang();
-  if(authValid(authSession)){
+  if(recovery){
+    showLoginScreen();
+    showLoginBox('reset');
+  } else if(authValid(authSession)){
     enterApp();
   } else {
     showLoginScreen();
     if(authSession){
       /* Session exists but is expired: try a silent refresh, stay on login if it fails. */
-      authRefresh().then(function(s){ if(s) enterApp(); });
+      authRefresh().then(function(s){ if(s) enterApp(); else showLoginExpired(); });
     }
   }
-  document.getElementById('posBackBtn').addEventListener('click', function(){ showView('dashboard'); });
+  document.getElementById('posBackBtn').addEventListener('click', function(){ showView(landingView()); });
   // Rotation / resize can change the grid's column count, which changes the
   // page size — re-render the POS grid so the pager stays correct.
   let posResizeTimer = null;
@@ -334,6 +409,14 @@ function init(){
   document.getElementById('posMenuBtn').addEventListener('click', function(e){
     e.stopPropagation();
     document.getElementById('posMenu').classList.toggle('hidden');
+  });
+  document.getElementById('posSwitchShopBtn').addEventListener('click', function(){
+    document.getElementById('posMenu').classList.add('hidden');
+    openShopSwitcher();
+  });
+  document.getElementById('posBranchBtn').addEventListener('click', function(){
+    document.getElementById('posMenu').classList.add('hidden');
+    openBranchSwitcher();
   });
   document.addEventListener('click', function(e){
     if(!e.target.closest('.menu-wrap')) document.getElementById('posMenu').classList.add('hidden');
@@ -516,16 +599,19 @@ function init(){
   });
   document.getElementById('modalBackdrop').addEventListener('click', closeModal);
   document.getElementById('exportDataBtn').addEventListener('click', function(){
+    if(deny('backup_restore')) return;
     downloadJson(backupFilename('pos-backup'), backupEnvelope());
   });
   document.getElementById('restoreDataBtn').addEventListener('click', function(){
+    if(deny('backup_restore')) return;
     showBackupMsg('');
     document.getElementById('restoreFileInput').click();
   });
   document.getElementById('restoreFileInput').addEventListener('change', onRestoreFilePicked);
   document.getElementById('resetDemoBtn').addEventListener('click', function(){
+    if(deny('backup_restore')) return;
     if(!confirm(t('settings.resetConfirm'))) return;
-    DB = seedData(); save(); cart = []; applyLang(); showView('dashboard');
+    DB = seedData(); save(); cart = []; clearPushed(); applyLang(); showView(landingView());
     pendingWipe = true; pushCloud();
     toast(t('settings.resetDone'));
   });
