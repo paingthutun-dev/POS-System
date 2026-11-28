@@ -340,7 +340,9 @@ function completeSaleRpc(payMethod, customerId, discount, r){
     const p = prodById(l.productId);
     return { product_id: p.id, quantity: l.qty, unit_price: effPrice(p) };
   });
-  const checkoutKey = uid('ck-');
+  const checkoutKey = uuidv4(); /* MUST be a real UUID: complete_sale()
+    declares p_idempotency_key uuid — uid('ck-...') text is rejected by
+    PostgREST before the function runs (every 1.0.9 online sale failed). */
   const payload = {
     p_shop_id: activeShopId, p_branch_id: activeBranchId,
     p_items: items, p_customer_id: (customerId && customerId !== 'c4' ? customerId : null),

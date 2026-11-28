@@ -738,7 +738,7 @@ function openSupplierForm(id){
     if(!name){ toast(t('common.required')); return; }
     const data = { name: name, phone: document.getElementById('supPhone').value.trim(), email: document.getElementById('supEmail').value.trim(), address: document.getElementById('supAddress').value.trim(), notes: document.getElementById('supNotes').value.trim(), active: true };
     if(s) Object.assign(s, data);
-    else (DB.suppliers = DB.suppliers || []).push(Object.assign({ id: uid('sup') }, data));
+    else (DB.suppliers = DB.suppliers || []).push(Object.assign({ id: uuidv4() }, data)); /* suppliers.id is uuid — uid('sup') text is rejected on push */
     save(); closeModal(); renderSuppliers(); toast(t('inventory.updated'));
   });
   const del = document.getElementById('supDelete');
@@ -830,14 +830,14 @@ function openPoForm(id){
       const qty = Math.max(1, parseInt(row.querySelector('[data-po-qty]').value, 10) || 1);
       const cost = parseFloat(row.querySelector('[data-po-cost]').value) || 0;
       const p = prodById(pid);
-      newLines.push({ id: uid('poi'), purchaseOrderId: po ? po.id : null, productId: pid, productName: p ? p.name : '', quantity: qty, unitCost: cost, receivedQty: 0, lineTotal: round2(qty * cost) });
+      newLines.push({ id: uuidv4(), purchaseOrderId: po ? po.id : null, productId: pid, productName: p ? p.name : '', quantity: qty, unitCost: cost, receivedQty: 0, lineTotal: round2(qty * cost) }); /* purchase_order_items.id is uuid */
     });
     if(!newLines.length){ toast(t('common.required')); return; }
     const total = round2(newLines.reduce(function(s, l){ return s + l.lineTotal; }, 0));
     const saveLocal = function(poNumber){
       let savedPo = po;
       if(!savedPo){
-        savedPo = { id: uid('po'), poNumber: poNumber, supplierId: supId, status: status, orderDate: Date.now(), expectedDate: '', receivedDate: null, total: total, notes: '', createdBy: (loadMembership() && loadMembership().staffId) || null };
+        savedPo = { id: uuidv4(), poNumber: poNumber, supplierId: supId, status: status, orderDate: Date.now(), expectedDate: '', receivedDate: null, total: total, notes: '', createdBy: (loadMembership() && loadMembership().staffId) || null }; /* purchase_orders.id is uuid — uid('po') text is rejected on push and on receive_purchase_order */
         (DB.purchaseOrders = DB.purchaseOrders || []).push(savedPo);
       } else {
         savedPo.supplierId = supId; savedPo.status = status; savedPo.total = total;

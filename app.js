@@ -99,6 +99,17 @@ function prodTile(p){
 let curView = 'dashboard';
 
 function uid(p){ return p + Date.now().toString(36) + Math.floor(Math.random()*1296).toString(36); }
+/* Real UUID v4 — complete_sale() declares p_idempotency_key uuid, and
+   PostgREST rejects a non-UUID text (e.g. uid('ck-...')) before the
+   function even runs. Use this for every idempotency key sent to an
+   RPC; uid() stays for local-only ids. */
+function uuidv4(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
 
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
@@ -142,7 +153,7 @@ function atDay(offset, h, m){
 
 /* ================= seed demo data (mirrors hosted POS demo) ================= */
 
-const APP_VERSION = '1.0.9'; /* shown on the login screen and in Settings → About */
+const APP_VERSION = '1.0.10'; /* shown on the login screen and in Settings → About */
 
 function toast(msg){
   const el = document.getElementById('toast');
