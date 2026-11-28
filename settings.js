@@ -355,6 +355,8 @@ function renderSettingsForm(){
     if(preview) preview.textContent = t('settings.invoicePrefixPreview', {preview: ((s.invoicePrefix || 'NS').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6) || 'NS') + '-' + new Date().getFullYear() + '-000001'});
   }
   document.getElementById('setVersion').textContent = APP_VERSION;
+  const updBtn = document.getElementById('checkUpdateBtn');
+  if(updBtn) updBtn.onclick = checkForUpdate;
   document.querySelectorAll('#setLangToggle button').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === s.lang); });
   document.querySelectorAll('#setThemeToggle button').forEach(function(b){ b.classList.toggle('active', b.dataset.theme === currentTheme()); });
   document.getElementById('staffList').innerHTML = DB.staff.map(function(m){
@@ -568,3 +570,32 @@ function saveSettings(){
 }
 
 /* ================= init ================= */
+
+/* One-tap update check (Settings → About → "Check for update"): ask the
+   service worker to re-fetch sw.js. If a new worker is found, reload
+   once it is ready — the new worker's cache holds the fresh files, so
+   the new version appears without touching the browser's settings.
+   Without this, a release only arrives when the browser happens to
+   re-check the worker — which is why updates used to need a manual
+   cache clear. (The worker cache name is also bumped every release;
+   see sw.js.) */
+function checkForUpdate(){
+  const btn = document.getElementById('checkUpdateBtn');
+  if(btn) btn.disabled = true;
+  const done = function(msg){
+    if(btn) btn.disabled = false;
+    if(msg) toast(msg);
+  };
+  if(!('serviceWorker' in navigator)){ done(t('settings.updateUnsupported')); return; }
+  navigator.serviceWorker.getRegistration().then(function(reg){
+    if(!reg){ done(t('settings.updateUnsupported')); return; }
+    let found = false;
+    reg.addEventListener('updatefound', function(){ found = true; });
+    reg.update().then(function(){
+      setTimeout(function(){
+        if(found) location.reload();
+        else done(t('settings.updateLatest'));
+      }, 3000);
+    }).catch(function(){ done(t('settings.updateCheckFailed')); });
+  }).catch(function(){ done(t('settings.updateCheckFailed')); });
+}

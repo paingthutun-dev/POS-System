@@ -2,10 +2,13 @@
    Navigation (index.html) is network-first so updates appear on the next
    open when online, with the cached copy as the offline fallback.
    Static assets are cache-first. Only same-origin GETs are handled;
-   Supabase API calls pass through untouched. Bump CACHE on SW changes.
-   Split build (1.0.6): caches every file of the multi-file project, so an
-   offline open still gets the whole app, not just the shell. */
-const CACHE = 'pos-system-v2';
+   Supabase API calls pass through untouched.
+   ⚠️ RULE: bump CACHE on EVERY release (v2 → v3 → …). The browser only
+   installs a new worker when sw.js bytes change, and the old worker
+   keeps serving its old cache-first files — so a release that does not
+   bump CACHE never reaches the phone, and the user has to clear the
+   browser cache by hand. The activate handler below deletes old caches. */
+const CACHE = 'pos-system-v3';
 const ASSETS = [
   'index.html',
   'styles.css',
