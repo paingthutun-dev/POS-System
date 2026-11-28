@@ -20,11 +20,14 @@ function pullCloud(){
 }
 
 /* Pushed-ids watermark: rows a role may INSERT but not UPDATE (a
-   cashier's orders / expenses / movements) are sent only while they are
-   new. Once a row is pushed, its id is recorded here (per shop) so a
-   later push never re-sends it as an upsert — a re-send would be an
-   UPDATE and RLS would reject it with 403, failing the whole chain.
-   Cleared on shop switch, restore, and wipe. */
+   cashier's expenses) are sent only while they are new. Once a row is
+   pushed, its id is recorded here (per shop) so a later push never
+   re-sends it as an upsert — a re-send would be an UPDATE and RLS would
+   reject it with 403, failing the whole chain.
+   Cleared on shop switch, restore, and wipe. NOTE (Stage 4): orders and
+   movements are server-owned now and are never pushed, so their
+   watermark keys are dead — kept in the shape only so an older saved
+   watermark still parses. */
 const PUSHED_KEY = 'posHtmlPushed.v1';
 function loadPushed(){
   try{
@@ -38,6 +41,37 @@ function savePushed(ids){
 }
 function clearPushed(){ try{ localStorage.removeItem(PUSHED_KEY); }catch(e){} }
 
+/* Held-sale outbox (Stage 4 fallback, temporary — Stage 5b builds the
+   real offline outbox that flushes this). When a sale cannot reach the
+   server because the network is down, sales.js records the order locally
+   as Pending and stores the RPC payload + idempotency key here. NOTHING
+   flushes this list yet: a held sale must be re-sent by hand (Stage 5b)
+   and must never be re-entered manually, or the shop sells the same
+   goods twice. The idempotency key is what makes the later flush safe —
+   replaying it returns the original order instead of a second one. */
+const OUTBOX_KEY = 'posHtmlOutbox.v1';
+function loadOutbox(){
+  try{
+    const d = JSON.parse(localStorage.getItem(OUTBOX_KEY) || 'null');
+    if(d && d.shopId === activeShopId && Array.isArray(d.items)) return d.items;
+  }catch(e){}
+  return [];
+}
+function queueHeldSale(item){
+  try{
+    const items = loadOutbox();
+    if(items.some(function(x){ return x.key === item.key; })) return;
+    items.push(item);
+    localStorage.setItem(OUTBOX_KEY, JSON.stringify({ shopId: activeShopId, items: items }));
+  }catch(e){}
+}
+function removeHeldSale(key){
+  try{
+    const items = loadOutbox().filter(function(x){ return x.key !== key; });
+    localStorage.setItem(OUTBOX_KEY, JSON.stringify({ shopId: activeShopId, items: items }));
+  }catch(e){}
+}
+
 function pushCloud(){
   if(!DB || !authSession) return Promise.resolve(false);
   return ensureShop().then(function(shopId){
@@ -48,9 +82,18 @@ function pushCloud(){
     }
     /* Role-aware jobs: a role only pushes the tables it may write. Without
        this, the chain would fail at the first forbidden table
-       (app_settings for a cashier) and no order would ever sync —
-       breaking "everyone sells". Insert-only tables send new rows only
-       (see the watermark above); the rest send everything, as before. */
+       (app_settings for a cashier) and the cashier's expenses would never
+       sync. SERVER-OWNED tables are NEVER pushed: orders, order_items,
+       payments, inventory_movements and stock_balances are written by the
+       server RPCs only (complete_sale, record_stock_movement, …) — pushing
+       them would be rejected by RLS (orders are INSERT-by-owner only for a
+       refund/void path that does not exist yet; inventory_movements is
+       INSERT-only; stock_balances is INSERT-zero-only since Stage 4 04n)
+       and would raise an error for a fully valid sale. Sales reach the
+       server through the complete_sale() RPC in sales.js; stock changes
+       through the inventory RPCs in inventory.js. Insert-only tables send
+       new rows only (see the watermark above); the rest send everything,
+       as before. */
     const pushed = loadPushed();
     const isNew = function(table, id){ return pushed[table].indexOf(id) < 0; };
     const jobs = [];
@@ -58,9 +101,10 @@ function pushCloud(){
     if(can('products_manage')) jobs.push({ table:'products', rows:DB.products.map(toProductRow), conflict:'id', mark:null });
     jobs.push({ table:'customers', rows:DB.customers.map(toCustomerRow), conflict:'id', mark:null });
     if(can('staff_manage')) jobs.push({ table:'staff', rows:DB.staff.map(toStaffRow), conflict:'id', mark:null });
-    jobs.push({ table:'orders', rows:(can('orders_manage') ? DB.orders : DB.orders.filter(function(o){ return isNew('orders', o.id); })).map(toOrderRow), conflict:'id', mark:can('orders_manage') ? null : 'orders' });
     jobs.push({ table:'expenses', rows:(can('expenses_manage') ? DB.expenses : DB.expenses.filter(function(e){ return isNew('expenses', e.id); })).map(toExpenseRow), conflict:'id', mark:can('expenses_manage') ? null : 'expenses' });
-    jobs.push({ table:'movements', rows:(can('stock_manage') ? DB.movements : DB.movements.filter(function(m){ return isNew('movements', m.id); })).map(toMovementRow), conflict:'id', mark:can('stock_manage') ? null : 'movements' });
+    if(can('stock_manage')) jobs.push({ table:'suppliers', rows:(DB.suppliers || []).map(toSupplierRow), conflict:'id', mark:null });
+    if(can('stock_manage')) jobs.push({ table:'purchase_orders', rows:(DB.purchaseOrders || []).map(toPurchaseOrderRow), conflict:'id', mark:null });
+    if(can('stock_manage')) jobs.push({ table:'purchase_order_items', rows:(DB.purchaseOrderItems || []).map(toPurchaseOrderItemRow), conflict:'id', mark:null });
     let chain = Promise.resolve();
     jobs.forEach(function(job){
       chain = chain.then(function(){

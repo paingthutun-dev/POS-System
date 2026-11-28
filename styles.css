@@ -287,6 +287,12 @@ body.logged-out .scan-wrap{display:none!important}
 .summary-box>div{display:flex;justify-content:space-between;font-size:13px;margin:6px 0;color:var(--dim)}
 .summary-box>div strong{color:var(--text)}
 .success-mark{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:#dcfce7;color:#15803d;font-size:24px;font-weight:900;margin:0 auto 14px}
+/* Held-offline sale notice on the receipt (Stage 4 fallback): amber, not
+   green — the sale happened at the counter but is not on the server yet. */
+.pending-banner{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:12px;padding:10px 14px;margin:0 0 14px;text-align:center}
+.pending-banner strong{display:block;font-size:15px;margin-bottom:2px}
+.pending-banner p{margin:0;font-size:13px;line-height:1.45}
+html.dark .pending-banner{background:#451a03;color:#fcd34d;border-color:#92400e}
 
 /* ---------- receipt ---------- */
 .receipt-paper{width:min(360px,100%);margin:auto;background:#fff;color:#111;padding:24px 22px;font-size:11px;line-height:1.5}

@@ -206,12 +206,23 @@ function openProductForm(id){
     fieldHtml(t('products.barcode'), '<div class="row" style="gap:8px"><input type="text" id="pfBarcode" value="' + esc(p ? (p.barcode || '') : '') + '" style="flex:1;min-width:0"><button class="btn icon-btn" type="button" id="pfScanBtn" aria-label="Scan">📷</button></div>') +
     fieldHtml(t('products.category'), '<select id="pfCat">' + catOpts + '</select>') +
     fieldHtml(t('products.brand'), '<input type="text" id="pfBrand" value="' + esc(p ? p.brand : '') + '">') +
+    /* Supplier picker (STEP 5 §9.1): the product keeps the supplier's name
+       in `supplier` and the link in `supplierId`. A supplier typed by hand
+       in an older build shows as no selection until it is picked. */
+    fieldHtml(t('inventory.suppliers'), '<select id="pfSupplier"><option value="">—</option>' + (DB.suppliers || []).map(function(s){
+      return '<option value="' + esc(s.id) + '"' + (p && (p.supplierId === s.id || (!p.supplierId && p.supplier === s.name)) ? ' selected' : '') + '>' + esc(s.name) + '</option>';
+    }).join('') + '</select>') +
     /* The cost field is hidden for roles that may not see cost prices
        (cashiers never reach this form at all — the add/edit buttons are
        hidden and the handler is guarded — this is defence in depth). */
     (can('cost_prices') ? fieldHtml(t('products.costPrice'), '<input type="number" id="pfCost" min="0" step="any" value="' + (p ? p.costPrice : '') + '">') : '') +
     fieldHtml(t('products.sellingPrice'), '<input type="number" id="pfPrice" min="0" step="any" value="' + (p ? p.sellingPrice : '') + '">') +
     fieldHtml(t('products.discountPrice'), '<input type="number" id="pfDisc" min="0" step="any" value="' + (p && p.discountPrice != null ? p.discountPrice : '') + '">') +
+    /* Stock (STEP 5 §9.3): the number here is display only — a new product
+       starts at 0 and an existing product keeps its stock. Stock only ever
+       changes through a movement (Inventory → tap a product), a sale, or a
+       purchase-order receive, so the ledger can never disagree with the
+       number on the card. */
     fieldHtml(t('products.stockQty'), '<input type="number" id="pfStock" min="0" step="1" value="' + (p ? p.stock : 0) + '">') +
     fieldHtml(t('products.minStock'), '<input type="number" id="pfMin" min="0" step="1" value="' + (p ? p.minStock : 5) + '">') +
     '</div>' +
@@ -227,6 +238,9 @@ function openProductForm(id){
     if(!name || !(price >= 0)){ toast(t('common.required')); return; }
     const disc = parseFloat(document.getElementById('pfDisc').value);
     const costEl = document.getElementById('pfCost');
+    const supEl = document.getElementById('pfSupplier');
+    const sup = supEl ? (DB.suppliers || []).find(function(s){ return s.id === supEl.value; }) : null;
+    const minStock = Math.max(0, parseInt(document.getElementById('pfMin').value, 10) || 0);
     const data = {
       name: name,
       sku: document.getElementById('pfSku').value.trim() || ('SKU-' + Date.now().toString(36).toUpperCase()),
@@ -236,8 +250,12 @@ function openProductForm(id){
       costPrice: costEl ? (parseFloat(costEl.value) || 0) : (p ? p.costPrice : 0),
       sellingPrice: price,
       discountPrice: (isFinite(disc) && disc > 0) ? disc : null,
-      stock: Math.max(0, parseInt(document.getElementById('pfStock').value, 10) || 0),
-      minStock: Math.max(0, parseInt(document.getElementById('pfMin').value, 10) || 0),
+      /* stock: ignored on save (STEP 5 §9.3) — a new product starts at 0,
+         an existing product keeps the stock the ledger says it has. */
+      stock: p ? p.stock : 0,
+      minStock: minStock,
+      supplier: sup ? sup.name : (p ? p.supplier : ''),
+      supplierId: sup ? sup.id : '',
       /* Photo (Storage): a newly picked photo is staged as a pending data URI
          and uploaded by retryPendingPhotos() (triggered by save()); the old
          URL stays until the upload succeeds. Removing clears both and
@@ -251,9 +269,22 @@ function openProductForm(id){
       if(p && p.photo) sbStorageDelete(photoPathFromUrl(p.photo));
       data.photo = ''; data.photoPending = '';
     }
+    const oldMin = p ? p.minStock : null;
     if(p) Object.assign(p, data);
     else DB.products.push(Object.assign({ id: uid('p'), barcode: '', unit: 'pc', description: '', supplier: '', active: true }, data));
+    const savedProduct = p || DB.products[DB.products.length - 1];
     save(); closeModal(); renderProducts(); toast(t('products.saved'));
+    /* Min stock lives on the server (set_min_stock RPC) as well as in the
+       local row: send it when it changed, and create the zero balance for
+       a new product so it shows in the branch ledger. Both are best
+       effort — the product itself is already saved. */
+    if(savedProduct){
+      if(!p || minStock !== oldMin){
+        sbRpc('set_min_stock', { p_shop_id: activeShopId, p_branch_id: activeBranchId, p_product_id: savedProduct.id, p_min_stock: minStock })
+          .catch(function(err){ if(!isNetworkError(err)) toast(mapRpcError(err)); });
+      }
+      if(!p) ensureZeroBalance(savedProduct.id);
+    }
   });
   document.getElementById('pfScanBtn').addEventListener('click', function(){ openScanner('product'); });
   /* Photo: file input with accept="image/*" and NO capture attribute, so
@@ -431,7 +462,39 @@ function onImportCsvPicked(e){
 
 /* ================= inventory ================= */
 
+let invTab = 'stock';
+let invTabsBound = false;
+let invValuationCache = null;
+let invValuationAt = 0;
+
+function staffById(id){ return DB.staff.find(function(s){ return s.id === id; }); }
+
 function renderInventory(){
+  /* Sub-tabs (Stock / Suppliers / Purchase Orders) — bound once; the
+     buttons live in the static Inventory view, not in this render. */
+  if(!invTabsBound){
+    invTabsBound = true;
+    document.querySelectorAll('[data-invtab]').forEach(function(b){
+      b.addEventListener('click', function(){
+        invTab = b.dataset.invtab;
+        document.querySelectorAll('[data-invtab]').forEach(function(x){ x.classList.toggle('active', x === b); });
+        document.getElementById('invStockPanel').classList.toggle('hidden', invTab !== 'stock');
+        document.getElementById('invSuppliersPanel').classList.toggle('hidden', invTab !== 'suppliers');
+        document.getElementById('invPosPanel').classList.toggle('hidden', invTab !== 'pos');
+        if(invTab === 'suppliers') renderSuppliers();
+        if(invTab === 'pos') renderPurchaseOrders();
+      });
+    });
+    const tsBtn = document.getElementById('transferStockBtn');
+    if(tsBtn) tsBtn.addEventListener('click', openTransferModal);
+    const asBtn = document.getElementById('addSupplierBtn');
+    if(asBtn) asBtn.addEventListener('click', function(){ openSupplierForm(null); });
+    const apBtn = document.getElementById('addPoBtn');
+    if(apBtn) apBtn.addEventListener('click', function(){ openPoForm(null); });
+  }
+  /* Branch transfer needs a second branch to go to. */
+  const tsBtn = document.getElementById('transferStockBtn');
+  if(tsBtn) tsBtn.classList.toggle('hidden', !(can('stock_manage') && shopBranchesCache.length > 1));
   document.getElementById('invCount').textContent = DB.products.filter(function(p){ return p.active; }).length;
   document.getElementById('invValue').textContent = money(DB.products.reduce(function(s,p){ return s + p.costPrice * p.stock; }, 0));
   /* The stock-value metric is a cost total: roles that may not see cost
@@ -460,37 +523,378 @@ function renderInventory(){
       document.getElementById('moveProductStock').textContent = t('inventory.current', {count: p.stock});
       document.getElementById('moveQty').value = '1';
       document.getElementById('moveNote').value = '';
+      const uc = document.getElementById('moveUnitCost'); if(uc) uc.value = '';
     });
   });
-  const typeLabel = { sale: t('inventory.sale'), stock_in: t('inventory.stockIn'), stock_out: t('inventory.stockOut'), adjustment: t('inventory.adjustment'), refund: t('orders.refund') };
+  const typeLabel = { sale: t('inventory.sale'), stock_in: t('inventory.stockIn'), stock_out: t('inventory.stockOut'), adjust_in: t('inventory.adjustIncrease'), adjust_out: t('inventory.adjustDecrease'), transfer_in: t('inventory.transferIn'), transfer_out: t('inventory.transferOut'), reversal: t('inventory.reversal'), refund: t('orders.refund') };
+  /* A movement is already reversed when another movement points at it
+     (the reversal row carries related_movement_id = the original id). */
+  const reversedIds = {};
+  DB.movements.forEach(function(m){ if(m.relatedMovementId) reversedIds[m.relatedMovementId] = true; });
   const hist = DB.movements.slice(0, 30);
   document.getElementById('moveHistory').innerHTML = hist.length ? hist.map(function(m){
     const p = prodById(m.productId);
     const sign = m.quantity > 0 ? '+' : '';
+    const staff = m.staffId ? staffById(m.staffId) : null;
+    const reversible = can('stock_manage') && ['stock_in','stock_out','adjust_in','adjust_out'].indexOf(m.type) >= 0 && !reversedIds[m.id] && m.type !== 'reversal';
     return '<div class="list-row"><div class="avatar" style="border-radius:8px">' + prodTile(p) + '</div>' +
-      '<div class="grow"><strong>' + esc(p ? p.name : '—') + '</strong><small>' + esc(typeLabel[m.type] || m.type) + ' · ' + esc(m.reference || '') + (m.note ? ' · ' + esc(m.note) : '') + '<br>' + fmtDate(m.createdAt) + '</small></div>' +
-      '<div class="amt" style="color:' + (m.quantity > 0 ? 'var(--good)' : 'var(--danger)') + '">' + sign + m.quantity + '<small style="display:block;color:var(--dim);font-weight:400">' + m.previousStock + ' → ' + m.newStock + '</small></div></div>';
+      '<div class="grow"><strong>' + esc(p ? p.name : '—') + '</strong><small>' + esc(typeLabel[m.type] || m.type) + ' · ' + esc(m.reference || '') + (m.note ? ' · ' + esc(m.note) : '') + (staff ? ' · ' + esc(t('inventory.byStaff', {name: staff.name})) : '') + (reversedIds[m.id] ? ' · ' + esc(t('inventory.reversed')) : '') + '<br>' + fmtDate(m.createdAt) + '</small></div>' +
+      '<div class="amt" style="color:' + (m.quantity > 0 ? 'var(--good)' : 'var(--danger)') + '">' + sign + m.quantity + '<small style="display:block;color:var(--dim);font-weight:400">' + m.previousStock + ' → ' + m.newStock + '</small></div>' +
+      (reversible ? '<button type="button" class="btn" data-reverse="' + m.id + '">' + esc(t('inventory.reverse')) + '</button>' : '') + '</div>';
   }).join('') : '<div class="empty"><p>' + esc(t('inventory.noHistory')) + '</p></div>';
+  document.querySelectorAll('[data-reverse]').forEach(function(b){
+    b.addEventListener('click', function(){
+      const reason = prompt(t('inventory.reverseReason'));
+      if(reason === null) return;
+      if(!reason.trim()){ toast(t('inventory.reasonRequired')); return; }
+      reverseMovement(b.dataset.reverse, reason.trim());
+    });
+  });
+  refreshValuation();
 }
 
+/* Stock value from the server's stock_valuation view (quantity on hand ×
+   weighted-average cost, this branch) — cached 60s, local rollup while it
+   loads or when it fails. Cost roles only; the metric is hidden otherwise. */
+function refreshValuation(){
+  const el = document.getElementById('invValue');
+  if(!el) return;
+  if(!can('cost_prices') || !authSession || !activeShopId || !activeBranchId) return;
+  const now = Date.now();
+  if(invValuationCache !== null && now - invValuationAt < 60000){
+    el.textContent = money(invValuationCache);
+    return;
+  }
+  fetch(SB_URL + '/rest/v1/stock_valuation?select=stock_value&shop_id=eq.' + encodeURIComponent(activeShopId) + '&branch_id=eq.' + encodeURIComponent(activeBranchId), { headers: sbHeaders(false) })
+    .then(function(r){ if(!r.ok) throw new Error('sb ' + r.status); return r.json(); })
+    .then(function(rows){
+      const total = rows.reduce(function(s, row){ return s + (Number(row.stock_value) || 0); }, 0);
+      invValuationCache = total; invValuationAt = Date.now();
+      el.textContent = money(total);
+    })
+    .catch(function(){ /* keep the local rollup */ });
+}
+
+/* Create the zero balance for a new product in the active branch, so it
+   shows in the branch ledger before its first movement. Best effort: the
+   stock_balances INSERT-zero policy allows it for manager+; a failure
+   (e.g. offline) is silent — the balance appears with the first stock
+   movement instead. */
+function ensureZeroBalance(productId){
+  if(!authSession || !activeShopId || !activeBranchId) return;
+  sbUpsert('stock_balances', [{ shop_id: activeShopId, branch_id: activeBranchId, product_id: productId, quantity: 0, min_stock: 0 }], 'branch_id,product_id').catch(function(){});
+}
+
+/* Stock movement through the server (STEP 5 §5): record_stock_movement()
+   is the only writer of stock now. The server locks the balance, rejects
+   a stock-out that would go negative (no silent clamp to zero — the old
+   bug), recalculates the weighted-average cost and writes the movement
+   row. The local mirror is updated from the reply (previous/new stock);
+   the next cloud pull replaces it with the server's own row. */
 function saveMovement(){
   if(deny('stock_manage')) return;
   const p = prodById(moveProductId); if(!p) return;
   const type = document.getElementById('moveType').value;
   const qty = Math.max(1, parseInt(document.getElementById('moveQty').value, 10) || 1);
   const note = document.getElementById('moveNote').value.trim();
-  const prev = p.stock;
-  let delta = 0, newStock = prev;
-  if(type === 'stock_in'){ delta = qty; newStock = prev + qty; }
-  else if(type === 'stock_out'){ delta = -qty; newStock = Math.max(0, prev - qty); }
-  else { delta = qty; newStock = Math.max(0, prev + qty); }
-  if(type === 'stock_out' && prev - qty < 0){ delta = -prev; newStock = 0; }
-  p.stock = newStock;
-  DB.movements.unshift({ id: uid('m'), productId: p.id, type: type, quantity: delta, previousStock: prev, newStock: newStock, reference: 'ADJ-' + Date.now().toString(36).toUpperCase(), note: note, createdAt: Date.now() });
-  save();
-  document.getElementById('moveForm').classList.add('hidden');
-  moveProductId = null;
-  renderInventory(); toast(t('inventory.updated'));
+  const unitCostEl = document.getElementById('moveUnitCost');
+  const unitCost = unitCostEl ? (parseFloat(unitCostEl.value) || null) : null;
+  if((type === 'adjust_in' || type === 'adjust_out') && !note){ toast(t('inventory.reasonRequired')); return; }
+  const btn = document.getElementById('moveSaveBtn');
+  if(btn) btn.disabled = true;
+  sbRpc('record_stock_movement', { p_shop_id: activeShopId, p_branch_id: activeBranchId, p_product_id: p.id, p_type: type, p_qty: qty, p_unit_cost: unitCost, p_reference: null, p_note: (note || null) })
+    .then(function(res){
+      p.stock = Number(res.new_stock);
+      DB.movements.unshift({ id: res.movement_id, productId: p.id, type: res.type, quantity: Number(res.quantity), previousStock: Number(res.previous_stock), newStock: Number(res.new_stock), reference: res.reference || '', note: note, staffId: (loadMembership() && loadMembership().staffId) || null, unitCost: (res.avg_cost != null ? Number(res.avg_cost) : null), createdAt: Date.now() });
+      save();
+      document.getElementById('moveForm').classList.add('hidden');
+      moveProductId = null;
+      renderInventory(); toast(t('inventory.updated'));
+    })
+    .catch(function(err){
+      console.warn('[inventory] record_stock_movement failed', err);
+      toast(mapRpcError(err));
+    })
+    .finally(function(){ if(btn) btn.disabled = false; });
+}
+
+/* Reverse one movement (STEP 5 §6): the server writes a compensating
+   movement and never touches the original row — history stays immutable. */
+function reverseMovement(movementId, reason){
+  if(deny('stock_manage')) return;
+  sbRpc('reverse_movement', { p_shop_id: activeShopId, p_movement_id: movementId, p_reason: reason })
+    .then(function(res){
+      /* The server's reply names the reversal rows; the local mirror
+         refreshes from the next pull, but show the reversal at once. Each
+         reversed[] entry carries the reversal's own movement id and the
+         signed quantity (-original). */
+      const orig = DB.movements.find(function(m){ return m.id === movementId; });
+      if(orig){
+        (res.reversed || []).forEach(function(rv){
+          DB.movements.unshift({ id: rv.reversal_movement_id || uid('m'), productId: orig.productId, type: 'reversal', quantity: Number(rv.quantity) || 0, previousStock: null, newStock: (rv.new_stock != null ? Number(rv.new_stock) : null), reference: res.reference || '', note: reason, staffId: (loadMembership() && loadMembership().staffId) || null, relatedMovementId: movementId, createdAt: Date.now() });
+        });
+        /* One leg (the usual case): the server's new_stock is authoritative
+           for this product in this branch. A transfer reversal has two
+           legs in two branches — leave the local stock to the next pull. */
+        if(res.reversed && res.reversed.length === 1 && res.reversed[0].new_stock != null){
+          const p = prodById(orig.productId);
+          if(p) p.stock = Number(res.reversed[0].new_stock);
+        }
+        save(); renderInventory();
+      }
+      toast(t('inventory.reversedDone'));
+    })
+    .catch(function(err){
+      console.warn('[inventory] reverse_movement failed', err);
+      toast(mapRpcError(err));
+    });
+}
+
+/* ================= branch transfer ================= */
+
+function openTransferModal(){
+  if(deny('stock_manage')) return;
+  if(shopBranchesCache.length < 2){ toast(t('sale.invalidBranch')); return; }
+  const prodOpts = DB.products.filter(function(p){ return p.active; }).map(function(p){
+    return '<option value="' + esc(p.id) + '">' + esc(p.name) + ' (' + p.stock + ')</option>';
+  }).join('');
+  const branchOpts = function(selectedId){
+    return shopBranchesCache.map(function(b){
+      return '<option value="' + esc(b.id) + '"' + (b.id === selectedId ? ' selected' : '') + '>' + esc(b.name) + '</option>';
+    }).join('');
+  };
+  openModal(
+    '<header><h2>' + esc(t('inventory.transfer')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    fieldHtml(t('products.productName'), '<select id="trProduct">' + prodOpts + '</select>') +
+    '<div class="form-grid">' +
+    fieldHtml(t('inventory.transferFrom'), '<select id="trFrom">' + branchOpts(activeBranchId) + '</select>') +
+    fieldHtml(t('inventory.transferTo'), '<select id="trTo">' + branchOpts(shopBranchesCache.find(function(b){ return b.id !== activeBranchId; }).id) + '</select>') +
+    '</div>' +
+    fieldHtml(t('inventory.quantity'), '<input type="number" id="trQty" min="1" step="1" value="1">') +
+    fieldHtml(t('inventory.reason'), '<input type="text" id="trNote">') +
+    '<div class="form-actions"><button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
+    '<button class="btn primary" type="button" id="trSave">' + esc(t('common.save')) + '</button></div>'
+  );
+  document.getElementById('trSave').addEventListener('click', function(){
+    if(deny('stock_manage')) return;
+    const pid = document.getElementById('trProduct').value;
+    const from = document.getElementById('trFrom').value;
+    const to = document.getElementById('trTo').value;
+    const qty = Math.max(1, parseInt(document.getElementById('trQty').value, 10) || 1);
+    const note = document.getElementById('trNote').value.trim();
+    if(from === to){ toast(t('sale.invalidBranch')); return; }
+    const btn = document.getElementById('trSave');
+    btn.disabled = true;
+    sbRpc('transfer_stock', { p_shop_id: activeShopId, p_from_branch_id: from, p_to_branch_id: to, p_product_id: pid, p_qty: qty, p_note: (note || null) })
+      .then(function(res){
+        const p = prodById(pid);
+        if(p && from === activeBranchId) p.stock = Number(res.source_stock_after);
+        save(); closeModal(); renderInventory(); toast(t('inventory.transferDone'));
+      })
+      .catch(function(err){
+        console.warn('[inventory] transfer_stock failed', err);
+        toast(mapRpcError(err));
+      })
+      .finally(function(){ btn.disabled = false; });
+  });
+}
+
+/* ================= suppliers ================= */
+
+function renderSuppliers(){
+  const list = document.getElementById('supplierList');
+  if(!list) return;
+  const sups = DB.suppliers || [];
+  list.innerHTML = sups.length ? sups.map(function(s){
+    return '<div class="list-row"><div class="avatar">' + esc((s.name || '?').slice(0, 1).toUpperCase()) + '</div>' +
+      '<div class="grow"><strong>' + esc(s.name) + '</strong><small>' + esc([s.phone, s.email].filter(Boolean).join(' · ') || s.address || '') + '</small></div>' +
+      '<button type="button" class="btn" data-supplier="' + s.id + '">' + esc(t('common.edit')) + '</button></div>';
+  }).join('') : '<div class="empty"><p>' + esc(t('inventory.noHistory')) + '</p></div>';
+  list.querySelectorAll('[data-supplier]').forEach(function(b){
+    b.addEventListener('click', function(){ openSupplierForm(b.dataset.supplier); });
+  });
+}
+
+function openSupplierForm(id){
+  if(deny('stock_manage')) return;
+  const s = id ? (DB.suppliers || []).find(function(x){ return x.id === id; }) : null;
+  openModal(
+    '<header><h2>' + esc(s ? s.name : t('inventory.suppliers')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    fieldHtml(t('products.productName'), '<input type="text" id="supName" value="' + esc(s ? s.name : '') + '">') +
+    '<div class="form-grid">' +
+    fieldHtml(t('common.phone'), '<input type="tel" id="supPhone" value="' + esc(s ? s.phone : '') + '">') +
+    fieldHtml('Email', '<input type="email" id="supEmail" value="' + esc(s ? s.email : '') + '">') +
+    '</div>' +
+    fieldHtml(t('common.address'), '<input type="text" id="supAddress" value="' + esc(s ? s.address : '') + '">') +
+    fieldHtml(t('common.note'), '<input type="text" id="supNotes" value="' + esc(s ? s.notes : '') + '">') +
+    '<div class="form-actions">' +
+    (s ? '<button class="btn danger" type="button" id="supDelete" style="margin-right:auto">' + esc(t('common.delete')) + '</button>' : '') +
+    '<button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
+    '<button class="btn primary" type="button" id="supSave">' + esc(t('common.save')) + '</button></div>'
+  );
+  document.getElementById('supSave').addEventListener('click', function(){
+    if(deny('stock_manage')) return;
+    const name = document.getElementById('supName').value.trim();
+    if(!name){ toast(t('common.required')); return; }
+    const data = { name: name, phone: document.getElementById('supPhone').value.trim(), email: document.getElementById('supEmail').value.trim(), address: document.getElementById('supAddress').value.trim(), notes: document.getElementById('supNotes').value.trim(), active: true };
+    if(s) Object.assign(s, data);
+    else (DB.suppliers = DB.suppliers || []).push(Object.assign({ id: uid('sup') }, data));
+    save(); closeModal(); renderSuppliers(); toast(t('inventory.updated'));
+  });
+  const del = document.getElementById('supDelete');
+  if(del) del.addEventListener('click', function(){
+    if(deny('stock_manage')) return;
+    if(!confirm(t('common.confirmDelete'))) return;
+    DB.suppliers = DB.suppliers.filter(function(x){ return x.id !== s.id; });
+    sbDelete('suppliers', s.id);
+    save(); closeModal(); renderSuppliers(); toast(t('products.deleted'));
+  });
+}
+
+/* ================= purchase orders ================= */
+
+const PO_STATUS_LABEL = { draft: 'inventory.poDraft', ordered: 'inventory.poOrdered', partially_received: 'inventory.poPartial', received: 'inventory.poReceived', cancelled: 'inventory.poCancelled' };
+
+function renderPurchaseOrders(){
+  const list = document.getElementById('poList');
+  if(!list) return;
+  const pos = DB.purchaseOrders || [];
+  list.innerHTML = pos.length ? pos.map(function(po){
+    const sup = (DB.suppliers || []).find(function(s){ return s.id === po.supplierId; });
+    const canReceive = can('stock_manage') && ['ordered','partially_received'].indexOf(po.status) >= 0;
+    return '<div class="list-row"><div class="avatar">📦</div>' +
+      '<div class="grow"><strong>' + esc(po.poNumber) + '</strong><small>' + esc(sup ? sup.name : '') + ' · ' + esc(t(PO_STATUS_LABEL[po.status] || 'inventory.poStatus')) + ' · ' + money(po.total) + '<br>' + fmtDate(po.orderDate) + '</small></div>' +
+      (canReceive ? '<button type="button" class="btn primary" data-po-receive="' + po.id + '">' + esc(t('inventory.receive')) + '</button>' : '') +
+      '<button type="button" class="btn" data-po="' + po.id + '">' + esc(t('common.edit')) + '</button></div>';
+  }).join('') : '<div class="empty"><p>' + esc(t('inventory.noHistory')) + '</p></div>';
+  list.querySelectorAll('[data-po]').forEach(function(b){
+    b.addEventListener('click', function(){ openPoForm(b.dataset.po); });
+  });
+  list.querySelectorAll('[data-po-receive]').forEach(function(b){
+    b.addEventListener('click', function(){ receivePo(b.dataset.poReceive); });
+  });
+}
+
+function openPoForm(id){
+  if(deny('stock_manage')) return;
+  const po = id ? (DB.purchaseOrders || []).find(function(x){ return x.id === id; }) : null;
+  const supOpts = (DB.suppliers || []).map(function(s){
+    return '<option value="' + esc(s.id) + '"' + (po && po.supplierId === s.id ? ' selected' : '') + '>' + esc(s.name) + '</option>';
+  }).join('');
+  const prodOpts = DB.products.filter(function(p){ return p.active; }).map(function(p){
+    return '<option value="' + esc(p.id) + '">' + esc(p.name) + '</option>';
+  }).join('');
+  const lines = po ? (DB.purchaseOrderItems || []).filter(function(it){ return it.purchaseOrderId === po.id; }) : [];
+  openModal(
+    '<header><h2>' + esc(po ? po.poNumber : t('inventory.purchaseOrders')) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>' +
+    fieldHtml(t('inventory.suppliers'), '<select id="poSupplier">' + supOpts + '</select>') +
+    /* Status is server-driven (receive_po moves it to partially_received /
+       received); the form only ever creates a draft or marks it ordered.
+       An existing PO shows its status read-only so editing can never
+       reset it to draft. */
+    (po
+      ? fieldHtml(t('inventory.poStatus'), '<input type="text" value="' + esc(t(PO_STATUS_LABEL[po.status] || 'inventory.poStatus')) + '" disabled>')
+      : fieldHtml(t('inventory.poStatus'), '<select id="poStatus">' +
+          ['draft','ordered'].map(function(st){ return '<option value="' + st + '">' + esc(t(PO_STATUS_LABEL[st])) + '</option>'; }).join('') + '</select>')) +
+    '<div class="panel-head" style="margin-top:8px"><div><h2>' + esc(t('products.title')) + '</h2></div></div>' +
+    '<div id="poLines">' + lines.map(function(it, i){
+      return '<div class="form-grid" data-po-line="' + i + '">' +
+        fieldHtml(t('products.productName'), '<select data-po-product>' + DB.products.filter(function(p){ return p.active; }).map(function(p){ return '<option value="' + esc(p.id) + '"' + (it.productId === p.id ? ' selected' : '') + '>' + esc(p.name) + '</option>'; }).join('') + '</select>') +
+        fieldHtml(t('inventory.quantity'), '<input type="number" data-po-qty min="1" step="1" value="' + it.quantity + '">') +
+        fieldHtml(t('products.costPrice'), '<input type="number" data-po-cost min="0" step="any" value="' + it.unitCost + '">') +
+        '</div>';
+    }).join('') + '</div>' +
+    '<button class="btn" type="button" id="poAddLine">＋ ' + esc(t('products.title')) + '</button>' +
+    '<div class="form-actions" style="margin-top:12px">' +
+    (po && po.status === 'draft' ? '<button class="btn danger" type="button" id="poDelete" style="margin-right:auto">' + esc(t('common.delete')) + '</button>' : '') +
+    '<button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
+    '<button class="btn primary" type="button" id="poSave">' + esc(t('common.save')) + '</button></div>'
+  );
+  document.getElementById('poAddLine').addEventListener('click', function(){
+    const wrap = document.getElementById('poLines');
+    const div = document.createElement('div');
+    div.className = 'form-grid'; div.setAttribute('data-po-line', String(wrap.children.length));
+    div.innerHTML = fieldHtml(t('products.productName'), '<select data-po-product>' + prodOpts + '</select>') +
+      fieldHtml(t('inventory.quantity'), '<input type="number" data-po-qty min="1" step="1" value="1">') +
+      fieldHtml(t('products.costPrice'), '<input type="number" data-po-cost min="0" step="any" value="0">');
+    wrap.appendChild(div);
+  });
+  document.getElementById('poSave').addEventListener('click', function(){
+    if(deny('stock_manage')) return;
+    const supId = document.getElementById('poSupplier').value || null;
+    const statusEl = document.getElementById('poStatus');
+    const status = po ? po.status : (statusEl ? statusEl.value : 'draft');
+    const newLines = [];
+    document.querySelectorAll('#poLines [data-po-line]').forEach(function(row){
+      const pid = row.querySelector('[data-po-product]').value;
+      const qty = Math.max(1, parseInt(row.querySelector('[data-po-qty]').value, 10) || 1);
+      const cost = parseFloat(row.querySelector('[data-po-cost]').value) || 0;
+      const p = prodById(pid);
+      newLines.push({ id: uid('poi'), purchaseOrderId: po ? po.id : null, productId: pid, productName: p ? p.name : '', quantity: qty, unitCost: cost, receivedQty: 0, lineTotal: round2(qty * cost) });
+    });
+    if(!newLines.length){ toast(t('common.required')); return; }
+    const total = round2(newLines.reduce(function(s, l){ return s + l.lineTotal; }, 0));
+    const saveLocal = function(poNumber){
+      let savedPo = po;
+      if(!savedPo){
+        savedPo = { id: uid('po'), poNumber: poNumber, supplierId: supId, status: status, orderDate: Date.now(), expectedDate: '', receivedDate: null, total: total, notes: '', createdBy: (loadMembership() && loadMembership().staffId) || null };
+        (DB.purchaseOrders = DB.purchaseOrders || []).push(savedPo);
+      } else {
+        savedPo.supplierId = supId; savedPo.status = status; savedPo.total = total;
+      }
+      newLines.forEach(function(l){ l.purchaseOrderId = savedPo.id; });
+      DB.purchaseOrderItems = (DB.purchaseOrderItems || []).filter(function(it){ return it.purchaseOrderId !== savedPo.id; }).concat(newLines);
+      save(); closeModal(); renderPurchaseOrders(); toast(t('inventory.updated'));
+    };
+    if(po) saveLocal(po.poNumber);
+    else if(authSession && activeShopId){
+      /* A draft PO gets its number from the server (next_doc_number) so
+         two devices can never mint the same PO number. Offline, a local
+         number is used and the server re-numbers it on the next sync. */
+      sbRpc('next_doc_number', { p_shop_id: activeShopId, p_kind: 'po', p_prefix: (DB.settings.invoicePrefix || null) })
+        .then(function(num){ saveLocal(num); })
+        .catch(function(){ saveLocal('PO-' + new Date().getFullYear() + '-' + String(1000 + (DB.purchaseOrders || []).length + 1).slice(1)); });
+    } else saveLocal('PO-' + new Date().getFullYear() + '-' + String(1000 + (DB.purchaseOrders || []).length + 1).slice(1));
+  });
+  const del = document.getElementById('poDelete');
+  if(del) del.addEventListener('click', function(){
+    if(deny('stock_manage')) return;
+    if(!confirm(t('common.confirmDelete'))) return;
+    DB.purchaseOrders = DB.purchaseOrders.filter(function(x){ return x.id !== po.id; });
+    DB.purchaseOrderItems = (DB.purchaseOrderItems || []).filter(function(it){ return it.purchaseOrderId !== po.id; });
+    sbDelete('purchase_orders', po.id);
+    save(); closeModal(); renderPurchaseOrders(); toast(t('products.deleted'));
+  });
+}
+
+/* Receive a PO (STEP 5 §8): the server adds the stock (weighted-average
+   cost), marks lines received and moves the PO to received /
+   partially_received. The local rows refresh from the next pull; the
+   received quantities are shown at once from the reply. */
+function receivePo(poId){
+  if(deny('stock_manage')) return;
+  const po = (DB.purchaseOrders || []).find(function(x){ return x.id === poId; });
+  if(!po) return;
+  const lines = (DB.purchaseOrderItems || []).filter(function(it){ return it.purchaseOrderId === poId; });
+  const open = lines.filter(function(it){ return it.receivedQty < it.quantity; });
+  if(!open.length){ toast(t('inventory.receiveDone')); return; }
+  const payload = open.map(function(it){ return { purchase_order_item_id: it.id, qty: it.quantity - it.receivedQty }; });
+  sbRpc('receive_purchase_order', { p_shop_id: activeShopId, p_po_id: poId, p_branch_id: activeBranchId, p_lines: payload, p_note: null })
+    .then(function(res){
+      po.status = res.status;
+      if(res.status === 'received') po.receivedDate = Date.now();
+      (res.lines || []).forEach(function(rl){
+        const it = lines.find(function(x){ return x.id === rl.purchase_order_item_id; });
+        /* The reply's received_qty is THIS receive only — add it to the
+           running total, do not replace it. */
+        if(it) it.receivedQty = (it.receivedQty || 0) + (Number(rl.received_qty) || 0);
+      });
+      save(); renderPurchaseOrders(); renderInventory(); toast(t('inventory.receiveDone'));
+    })
+    .catch(function(err){
+      console.warn('[inventory] receive_purchase_order failed', err);
+      toast(mapRpcError(err));
+    });
 }
 
 /* ================= orders ================= */

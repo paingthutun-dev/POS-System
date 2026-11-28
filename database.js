@@ -51,13 +51,27 @@ function seedData(){
     {id:'m2', productId:'p4', type:'sale', quantity:-1, previousStock:5, newStock:4, reference:'NS-2601003', note:'Sale completed', createdAt:atDay(1,15,20)},
     {id:'m3', productId:'p7', type:'sale', quantity:-1, previousStock:1, newStock:0, reference:'NS-2601004', note:'Sale completed', createdAt:atDay(2,13,10)},
     {id:'m4', productId:'p5', type:'stock_in', quantity:20, previousStock:18, newStock:38, reference:'STK-26041', note:'Supplier delivery', createdAt:atDay(5,10,0)},
-    {id:'m5', productId:'p3', type:'adjustment', quantity:1, previousStock:5, newStock:6, reference:'ADJ-26009', note:'Count correction', createdAt:atDay(4,10,0)}
+    {id:'m5', productId:'p3', type:'adjust_in', quantity:1, previousStock:5, newStock:6, reference:'ADJ-26009', note:'Count correction', createdAt:atDay(4,10,0)}
   ];
   return {
-    settings: { storeName:'Mercury Mobile Accessories', address:'Central Bangkok', phone:'02-555-0188', currency:'THB', lang:'my', taxRate:7, receiptSize:'80mm' },
+    settings: { storeName:'Mercury Mobile Accessories', address:'Central Bangkok', phone:'02-555-0188', currency:'THB', lang:'my', taxRate:7, receiptSize:'80mm', invoicePrefix:'' },
     products: products, customers: customers, staff: staff, orders: orders, expenses: expenses, movements: movements,
+    suppliers: [], purchaseOrders: [], purchaseOrderItems: [],
     nextOrderSeq: 5
   };
+}
+
+/* Collections added after the first release (suppliers, purchase orders)
+   do not exist in a DB saved by an older build — fill them in so every
+   reader can use DB.suppliers / DB.purchaseOrders without a guard. */
+function ensureCollections(db){
+  if(!db) return db;
+  if(!Array.isArray(db.suppliers)) db.suppliers = [];
+  if(!Array.isArray(db.purchaseOrders)) db.purchaseOrders = [];
+  if(!Array.isArray(db.purchaseOrderItems)) db.purchaseOrderItems = [];
+  if(!Array.isArray(db.movements)) db.movements = [];
+  if(db.settings && typeof db.settings.invoicePrefix !== 'string') db.settings.invoicePrefix = '';
+  return db;
 }
 
 function persistLocal(){
@@ -73,7 +87,7 @@ function save(){
 function load(){
   try{
     const raw = localStorage.getItem(KEY);
-    if(raw){ const d = JSON.parse(raw); if(d && d.products && d.settings) return d; }
+    if(raw){ const d = JSON.parse(raw); if(d && d.products && d.settings) return ensureCollections(d); }
   }catch(e){}
   return null;
 }
@@ -87,7 +101,10 @@ const SB_URL = 'https://lvvulqjawnowqhiulmow.supabase.co';
 
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2dnVscWphd25vd3FoaXVsbW93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1MzU2MDksImV4cCI6MjExMTExMTYwOX0.nB-3sc9m938ZC6tex0xUsOB69hQyj3dwmb9v2deavFA';
 
-const SB_TABLES = ['products','customers','staff','orders','expenses','movements','app_settings'];
+/* Tables the pull fetches (server-owned tables are READ here — the app
+   never writes them; see sync.js pushCloud). 'movements' is gone: the
+   table was renamed to inventory_movements in Stage 4 (04o). */
+const SB_TABLES = ['products','customers','staff','orders','expenses','inventory_movements','suppliers','purchase_orders','purchase_order_items','app_settings'];
 
 function sbHeaders(json){
   const h = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + (authSession ? authSession.access_token : SB_KEY) };
@@ -291,7 +308,7 @@ function withShop(row, branchScoped){
 }
 
 function toProductRow(p){
-  const row = withShop({ id:p.id, name:p.name, sku:p.sku || null, barcode:p.barcode || null, category:p.category, brand:p.brand || null, selling_price:p.sellingPrice || 0, discount_price:(p.discountPrice == null ? null : p.discountPrice), stock:p.stock || 0, min_stock:p.minStock || 0, unit:p.unit || 'pc', description:p.description || null, supplier:p.supplier || null, active:(p.active !== false), photo:((p.photo && p.photo.indexOf('data:') === 0) ? null : (p.photo || null)) }, false);
+  const row = withShop({ id:p.id, name:p.name, sku:p.sku || null, barcode:p.barcode || null, category:p.category, brand:p.brand || null, selling_price:p.sellingPrice || 0, discount_price:(p.discountPrice == null ? null : p.discountPrice), stock:p.stock || 0, min_stock:p.minStock || 0, unit:p.unit || 'pc', description:p.description || null, supplier:p.supplier || null, supplier_id:(p.supplierId || null), active:(p.active !== false), photo:((p.photo && p.photo.indexOf('data:') === 0) ? null : (p.photo || null)) }, false);
   /* Defence in depth: a cashier never sends a cost price (they cannot save
      a product at all — §3 — and the push skips products for them; this
      makes sure a stale local cost can never overwrite the cloud value). */
@@ -307,17 +324,26 @@ function toOrderRow(o){ return withShop({ id:o.id, order_number:o.orderNumber, c
 
 function toExpenseRow(e){ return withShop({ id:e.id, name:e.name, category:e.category, amount:e.amount || 0, payment_method:e.paymentMethod || null, note:e.note || null, date:toISO(e.date) }, true); }
 
-function toMovementRow(m){ return withShop({ id:m.id, product_id:m.productId, type:m.type, quantity:m.quantity || 0, previous_stock:(m.previousStock == null ? null : m.previousStock), new_stock:(m.newStock == null ? null : m.newStock), reference:m.reference || null, note:m.note || null, created_at:toISO(m.createdAt) }, true); }
+/* The local mirror of inventory_movements (server-owned): the app reads
+   it for display and never writes it — stock changes go through the RPCs.
+   staff_id / unit_cost / related_movement_id arrived with Stage 4 (04m). */
+function toMovementRow(m){ return withShop({ id:m.id, product_id:m.productId, type:m.type, quantity:m.quantity || 0, previous_stock:(m.previousStock == null ? null : m.previousStock), new_stock:(m.newStock == null ? null : m.newStock), reference:m.reference || null, note:m.note || null, staff_id:(m.staffId || null), unit_cost:(m.unitCost == null ? null : m.unitCost), related_movement_id:(m.relatedMovementId || null), created_at:toISO(m.createdAt) }, true); }
+
+function toSupplierRow(s){ return withShop({ id:s.id, name:s.name, phone:s.phone || null, email:s.email || null, address:s.address || null, notes:s.notes || null, active:(s.active !== false) }, false); }
+
+function toPurchaseOrderRow(po){ return withShop({ id:po.id, po_number:po.poNumber, supplier_id:(po.supplierId || null), status:po.status || 'draft', order_date:toISO(po.orderDate), expected_date:(po.expectedDate || null), received_date:(po.receivedDate ? toISO(po.receivedDate) : null), total:po.total || 0, notes:po.notes || null, created_by:(po.createdBy || null) }, true); }
+
+function toPurchaseOrderItemRow(it){ return withShop({ id:it.id, purchase_order_id:it.purchaseOrderId, product_id:it.productId || null, product_name:it.productName, quantity:it.quantity || 0, unit_cost:it.unitCost || 0, received_qty:it.receivedQty || 0, line_total:it.lineTotal || 0 }, false); }
 /* The shop's settings live in app_settings now (one row per shop, keyed by
    shop_id — upserted on shop_id, so no id is needed). The legacy `settings`
    table is frozen: the app never writes it again. No next_order_seq here —
    app_settings has no such column, and order numbers come from the server. */
 
-function toAppSettingsRow(db){ const s = db.settings; return { shop_id: activeShopId, store_name:s.storeName, address:s.address || null, phone:s.phone || null, currency:s.currency || 'THB', lang:s.lang || 'my', tax_rate:(s.taxRate == null ? 0 : s.taxRate), receipt_size:s.receiptSize || '80mm', updated_at:new Date().toISOString() }; }
+function toAppSettingsRow(db){ const s = db.settings; return { shop_id: activeShopId, store_name:s.storeName, address:s.address || null, phone:s.phone || null, currency:s.currency || 'THB', lang:s.lang || 'my', tax_rate:(s.taxRate == null ? 0 : s.taxRate), receipt_size:s.receiptSize || '80mm', invoice_prefix:((s.invoicePrefix || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6) || null), updated_at:new Date().toISOString() }; }
 
 /* Supabase row (snake_case) -> local (camelCase) */
 
-function fromProductRow(r){ return { id:r.id, name:r.name, sku:r.sku || '', barcode:r.barcode || '', category:r.category, brand:r.brand || '', costPrice:Number(r.cost_price) || 0, sellingPrice:Number(r.selling_price) || 0, discountPrice:(r.discount_price == null ? null : Number(r.discount_price)), stock:Number(r.stock) || 0, minStock:Number(r.min_stock) || 0, unit:r.unit || 'pc', description:r.description || '', supplier:r.supplier || '', active:(r.active !== false), photo:((r.photo && r.photo.indexOf('data:') === 0) ? '' : (r.photo || '')) }; }
+function fromProductRow(r){ return { id:r.id, name:r.name, sku:r.sku || '', barcode:r.barcode || '', category:r.category, brand:r.brand || '', costPrice:Number(r.cost_price) || 0, sellingPrice:Number(r.selling_price) || 0, discountPrice:(r.discount_price == null ? null : Number(r.discount_price)), stock:Number(r.stock) || 0, minStock:Number(r.min_stock) || 0, unit:r.unit || 'pc', description:r.description || '', supplier:r.supplier || '', supplierId:r.supplier_id || '', active:(r.active !== false), photo:((r.photo && r.photo.indexOf('data:') === 0) ? '' : (r.photo || '')) }; }
 
 function fromCustomerRow(r){ return { id:r.id, name:r.name, phone:r.phone || '', email:r.email || '', address:r.address || '', notes:r.notes || '' }; }
 
@@ -327,7 +353,13 @@ function fromOrderRow(r){ return { id:r.id, orderNumber:r.order_number, customer
 
 function fromExpenseRow(r){ return { id:r.id, name:r.name, category:r.category, amount:Number(r.amount) || 0, paymentMethod:r.payment_method || '', note:r.note || '', date:fromTS(r.date) }; }
 
-function fromMovementRow(r){ return { id:r.id, productId:r.product_id, type:r.type, quantity:Number(r.quantity) || 0, previousStock:(r.previous_stock == null ? null : Number(r.previous_stock)), newStock:(r.new_stock == null ? null : Number(r.new_stock)), reference:r.reference || '', note:r.note || '', createdAt:fromTS(r.created_at) }; }
+function fromMovementRow(r){ return { id:r.id, productId:r.product_id, type:r.type, quantity:Number(r.quantity) || 0, previousStock:(r.previous_stock == null ? null : Number(r.previous_stock)), newStock:(r.new_stock == null ? null : Number(r.new_stock)), reference:r.reference || '', note:r.note || '', staffId:r.staff_id || null, unitCost:(r.unit_cost == null ? null : Number(r.unit_cost)), relatedMovementId:r.related_movement_id || null, createdAt:fromTS(r.created_at) }; }
+
+function fromSupplierRow(r){ return { id:r.id, name:r.name, phone:r.phone || '', email:r.email || '', address:r.address || '', notes:r.notes || '', active:(r.active !== false) }; }
+
+function fromPurchaseOrderRow(r){ return { id:r.id, poNumber:r.po_number, supplierId:r.supplier_id || null, status:r.status || 'draft', orderDate:fromTS(r.order_date), expectedDate:(r.expected_date || ''), receivedDate:(r.received_date ? fromTS(r.received_date) : null), total:Number(r.total) || 0, notes:r.notes || '', createdBy:r.created_by || null }; }
+
+function fromPurchaseOrderItemRow(r){ return { id:r.id, purchaseOrderId:r.purchase_order_id, productId:r.product_id || null, productName:r.product_name, quantity:Number(r.quantity) || 0, unitCost:Number(r.unit_cost) || 0, receivedQty:Number(r.received_qty) || 0, lineTotal:Number(r.line_total) || 0 }; }
 
 function cloudHasRows(cloud){
   /* app_settings does not count: it is a singleton config row (created by
@@ -342,8 +374,8 @@ function cloudToLocal(cloud){
      to the first row, then to the local settings. */
   const s = (cloud.app_settings && (cloud.app_settings.find(function(r){ return r.shop_id === activeShopId; }) || cloud.app_settings[0])) || null;
   return {
-    settings: s ? { storeName:s.store_name || '', address:s.address || '', phone:s.phone || '', currency:s.currency || 'THB', lang:s.lang || 'my', taxRate:Number(s.tax_rate) || 0, receiptSize:s.receipt_size || '80mm' }
-                : { storeName:DB.settings.storeName, address:DB.settings.address, phone:DB.settings.phone, currency:DB.settings.currency, lang:DB.settings.lang, taxRate:DB.settings.taxRate, receiptSize:DB.settings.receiptSize },
+    settings: s ? { storeName:s.store_name || '', address:s.address || '', phone:s.phone || '', currency:s.currency || 'THB', lang:s.lang || 'my', taxRate:Number(s.tax_rate) || 0, receiptSize:s.receipt_size || '80mm', invoicePrefix:(s.invoice_prefix || '') }
+                : { storeName:DB.settings.storeName, address:DB.settings.address, phone:DB.settings.phone, currency:DB.settings.currency, lang:DB.settings.lang, taxRate:DB.settings.taxRate, receiptSize:DB.settings.receiptSize, invoicePrefix:(DB.settings.invoicePrefix || '') },
     products: cloud.products.map(function(r){
       const pr = fromProductRow(r);
       /* A photo still waiting to upload (offline, or bucket not set up yet)
@@ -358,7 +390,10 @@ function cloudToLocal(cloud){
     staff: cloud.staff.map(fromStaffRow),
     orders: cloud.orders.map(fromOrderRow),
     expenses: cloud.expenses.map(fromExpenseRow),
-    movements: cloud.movements.map(fromMovementRow),
+    movements: (cloud.inventory_movements || []).map(fromMovementRow),
+    suppliers: (cloud.suppliers || []).map(fromSupplierRow),
+    purchaseOrders: (cloud.purchase_orders || []).map(fromPurchaseOrderRow),
+    purchaseOrderItems: (cloud.purchase_order_items || []).map(fromPurchaseOrderItemRow),
     nextOrderSeq: (typeof DB.nextOrderSeq === 'number' ? DB.nextOrderSeq : 5)
   };
 }

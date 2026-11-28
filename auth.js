@@ -177,6 +177,84 @@ function rpcErrorMessage(e){
   }
   return msg;
 }
+/* Split an RPC exception ("CODE: detail") into its code and detail.
+   PostgREST returns the exception as HTTP 400 with the message in the
+   body, so the code is the text before the first ':' of rpcErrorMessage().
+   A fetch that never reached the server has no code at all. */
+function rpcErrorCode(e){
+  const m = rpcErrorMessage(e);
+  if(!m) return '';
+  const i = m.indexOf(':');
+  if(i <= 0) return '';
+  const code = m.slice(0, i).trim();
+  return /^[A-Z][A-Z0-9_]+$/.test(code) ? code : '';
+}
+function rpcErrorDetail(e){
+  const m = rpcErrorMessage(e);
+  const i = m.indexOf(':');
+  return (i >= 0) ? m.slice(i + 1).trim() : m;
+}
+/* True when the call never reached the server (offline / DNS / proxy):
+   fetch rejects with a TypeError, never with an 'rpc <fn> <status>'
+   error. Business errors (HTTP 400/403 from the RPC) are NOT network
+   errors — the server answered, and the sale must not be held. */
+function isNetworkError(e){
+  const msg = (e && e.message) || '';
+  return msg.indexOf('rpc ') !== 0 && msg !== 'no session' &&
+    (e instanceof TypeError || /failed to fetch|networkerror|network request failed|load failed/i.test(msg));
+}
+/* Map an RPC failure to what the cashier sees (Burmese + English, via the
+   locale dictionaries) and what they do next. The {name} / {count} values
+   come from the RPC detail after the 'CODE:' prefix — the raw English
+   detail is never shown to a Myanmar user. Unknown codes fall back to the
+   generic message; the server text stays in the console only. */
+function mapRpcError(e){
+  const code = rpcErrorCode(e);
+  const detail = rpcErrorDetail(e);
+  /* "NAME — only N left" / "NAME costs X in the shop, the till sent Y" /
+     "NAME has no stock record at this branch" — the name is the text up
+     to the first ' — ' or ' has no '. */
+  const nameOf = function(d){
+    const cut = d.split(' — ')[0].split(' has no ')[0].split(' costs ')[0];
+    return cut.replace(/^"+|"+$/g, '').trim();
+  };
+  const countOf = function(d){
+    const m = d.match(/only (\d+)/);
+    return m ? m[1] : '';
+  };
+  switch(code){
+    case 'NOT_AUTHENTICATED': return t('sale.sessionExpired');
+    case 'FORBIDDEN': return t('sale.forbidden');
+    case 'INVALID_BRANCH': return t('sale.invalidBranch');
+    case 'INVALID_SHOP': return t('sale.forbidden');
+    case 'EMPTY_CART': return t('sale.emptyCart');
+    case 'INVALID_ITEM': return t('sale.productGone');
+    case 'PRODUCT_NOT_FOUND': return t('sale.productGone');
+    case 'PRODUCT_INACTIVE': return t('inventory.productInactive');
+    case 'PRICE_MISMATCH': return t('sale.priceChanged', {name: nameOf(detail)});
+    case 'TOTAL_MISMATCH': return t('sale.totalChanged');
+    case 'INSUFFICIENT_STOCK': return t('sale.outOfStockNamed', {name: nameOf(detail), count: countOf(detail)});
+    case 'NOT_STOCKED_AT_BRANCH': return t('sale.notStockedAtBranch', {name: nameOf(detail)});
+    case 'INVALID_DISCOUNT': return t('sale.invalidDiscount');
+    case 'INVALID_PAYMENT_METHOD': return t('sale.invalidPayment');
+    case 'INSUFFICIENT_CASH': return t('sale.notEnoughCash');
+    case 'ZERO_TOTAL': return t('sale.zeroTotal');
+    case 'CUSTOMER_NOT_FOUND': return t('sale.customerGone');
+    case 'PO_OVER_RECEIVE': return t('inventory.overReceive');
+    case 'PO_WRONG_STATUS': return t('inventory.poWrongStatus');
+    case 'PO_LINE_NOT_FOUND': case 'PO_NOT_FOUND': return t('inventory.poGone');
+    case 'ALREADY_REVERSED': return t('inventory.alreadyReversed');
+    case 'CANNOT_REVERSE': return t('inventory.cannotReverse');
+    case 'INVALID_REASON': return t('inventory.reasonRequired');
+    case 'INVALID_QTY': return t('inventory.invalidQty');
+    case 'INVALID_TYPE': case 'INVALID_COST': case 'INVALID_KIND': case 'INVALID_MIN_STOCK':
+      return t('inventory.invalidQty');
+    case 'MOVEMENT_NOT_FOUND': return t('inventory.movementGone');
+    case 'REFUND_NOT_FOUND': return t('sale.generic');
+    case 'IDEMPOTENCY_KEY_REQUIRED': return t('sale.generic');
+    default: return t('sale.generic');
+  }
+}
 /* 401 → the session is dead: clear it and send the user back to sign-in
    with the expiry message (never silently stay in the app). 403 → the
    role may not do that: a toast, never a re-login. Shown once per

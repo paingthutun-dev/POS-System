@@ -18,13 +18,22 @@ function cartQty(pid){
   return line ? line.qty : 0;
 }
 
-function cartTotals(){
+/* The one totals rule for the whole app (STEP 4 §2): tax is charged on
+   the DISCOUNTED subtotal — subtotal − discount, then tax, then total.
+   The cart view, the checkout sheet and the sale RPC call all read from
+   here, so the number on the screen is always the number sent to the
+   server. The server recomputes the same rule and rejects the sale when
+   the totals differ by more than 0.01 (TOTAL_MISMATCH). */
+function cartTotals(discount){
   let sub = 0;
   cart.forEach(function(l){
     const p = prodById(l.productId); if(p) sub += effPrice(p) * l.qty;
   });
   sub = round2(sub);
-  return { subtotal: sub };
+  const disc = round2(Math.max(0, Math.min(sub, discount || 0)));
+  const taxable = round2(sub - disc);
+  const tax = round2(taxable * DB.settings.taxRate / 100);
+  return { subtotal: sub, discount: disc, taxable: taxable, tax: tax, total: round2(taxable + tax) };
 }
 
 function addToCart(pid){
@@ -193,11 +202,11 @@ function renderCart(){
     (cart.length ? '<button class="btn icon-btn cart-clear-btn" type="button" aria-label="' + esc(t('cart.clear')) + '">' + TRASH_SVG + '</button>' : '') + '</div>' +
     '<div class="cart-items">' + itemsHtml + '</div>' +
     '<div class="totals"><div><span>' + esc(t('cart.subtotal')) + '</span><strong>' + money(tot.subtotal) + '</strong></div>' +
-    '<div><span>' + esc(t('cart.tax', {rate: DB.settings.taxRate})) + '</span><strong>' + money(round2(tot.subtotal * DB.settings.taxRate / 100)) + '</strong></div>' +
-    '<div class="grand"><span>' + esc(t('cart.total')) + '</span><strong>' + money(round2(tot.subtotal * (1 + DB.settings.taxRate / 100))) + '</strong></div></div>' +
+    '<div><span>' + esc(t('cart.tax', {rate: DB.settings.taxRate})) + '</span><strong>' + money(tot.tax) + '</strong></div>' +
+    '<div class="grand"><span>' + esc(t('cart.total')) + '</span><strong>' + money(tot.total) + '</strong></div></div>' +
     '<div class="cart-actions">' +
     (cart.length ? '<button class="cart-clear-btn" type="button">' + TRASH_SVG + '<span>' + esc(t('cart.clear')) + '</span></button>' : '') +
-    '<button class="charge-btn" type="button" id="chargeBtn"' + (cart.length === 0 ? ' disabled' : '') + '><span>' + esc(t('cart.charge')) + '</span><span>' + money(round2(tot.subtotal * (1 + DB.settings.taxRate / 100))) + '</span></button></div>';
+    '<button class="charge-btn" type="button" id="chargeBtn"' + (cart.length === 0 ? ' disabled' : '') + '><span>' + esc(t('cart.charge')) + '</span><span>' + money(tot.total) + '</span></button></div>';
   panel.querySelectorAll('.cart-clear-btn').forEach(function(b){ b.addEventListener('click', function(){ cart = []; renderCart(); }); });
   const chargeBtn = document.getElementById('chargeBtn');
   if(chargeBtn) chargeBtn.addEventListener('click', openCheckout);
@@ -222,8 +231,6 @@ function openCheckout(){
   if(deny('sell')) return;
   if(cart.length === 0) return;
   const tot = cartTotals();
-  const tax = round2(tot.subtotal * DB.settings.taxRate / 100);
-  const total = round2(tot.subtotal + tax);
   const custOpts = DB.customers.map(function(c){
     return '<option value="' + c.id + '">' + esc(c.name) + (c.phone ? ' · ' + esc(c.phone) : '') + '</option>';
   }).join('');
@@ -232,13 +239,13 @@ function openCheckout(){
   }).join('');
   openModal(
     '<header class="co-head"><button class="btn icon-btn" type="button" data-close aria-label="Back">' + BACK_SVG + '</button><h2>' + esc(t('checkout.title')) + '</h2></header>' +
-    '<div class="total-banner"><span class="total-banner-ico">' + CART_SVG + '</span><div class="total-banner-text"><span>' + esc(t('checkout.totalAmount')) + '</span><strong id="coTotalBanner">' + money(total) + '</strong></div></div>' +
+    '<div class="total-banner"><span class="total-banner-ico">' + CART_SVG + '</span><div class="total-banner-text"><span>' + esc(t('checkout.totalAmount')) + '</span><strong id="coTotalBanner">' + money(tot.total) + '</strong></div></div>' +
     '<div class="co-grid"><div class="co-col">' +
     '<div class="field"><span>' + esc(t('checkout.customer')) + '</span><select id="coCustomer">' + custOpts + '</select></div>' +
     '<div class="field"><span>' + esc(t('checkout.orderDiscount')) + '</span><input type="number" id="coDiscount" min="0" step="any" value="0"></div>' +
     '<div class="summary-box"><div><span>' + esc(t('cart.subtotal')) + '</span><strong id="coSub">' + money(tot.subtotal) + '</strong></div>' +
     '<div><span>' + esc(t('checkout.orderDiscount')) + '</span><strong id="coDiscVal">' + money(0) + '</strong></div>' +
-    '<div><span>' + esc(t('cart.tax', {rate: DB.settings.taxRate})) + '</span><strong id="coTax">' + money(tax) + '</strong></div>' +
+    '<div><span>' + esc(t('cart.tax', {rate: DB.settings.taxRate})) + '</span><strong id="coTax">' + money(tot.tax) + '</strong></div>' +
     '<div><span>' + esc(t('checkout.change')) + '</span><strong id="coChange">' + money(0) + '</strong></div></div>' +
     '</div><div class="co-col">' +
     '<div class="field"><span>' + esc(t('checkout.paymentMethod')) + '</span><div class="payment-methods">' + payBtns + '</div></div>' +
@@ -257,15 +264,13 @@ function openCheckout(){
   let discount = 0;
   function recalc(){
     discount = Math.max(0, Math.min(tot.subtotal, parseFloat(document.getElementById('coDiscount').value) || 0));
-    const taxable = round2(tot.subtotal - discount);
-    const tx = round2(taxable * DB.settings.taxRate / 100);
-    const tt = round2(taxable + tx);
-    document.getElementById('coDiscVal').textContent = money(discount);
-    document.getElementById('coTax').textContent = money(tx);
-    document.getElementById('coTotalBanner').textContent = money(tt);
-    const recv = payMethod === 'Cash' ? (parseFloat(document.getElementById('coReceived').value) || 0) : tt;
-    document.getElementById('coChange').textContent = money(Math.max(0, round2(recv - tt)));
-    return { taxable: taxable, tax: tx, total: tt, received: recv };
+    const t = cartTotals(discount);
+    document.getElementById('coDiscVal').textContent = money(t.discount);
+    document.getElementById('coTax').textContent = money(t.tax);
+    document.getElementById('coTotalBanner').textContent = money(t.total);
+    const recv = payMethod === 'Cash' ? (parseFloat(document.getElementById('coReceived').value) || 0) : t.total;
+    document.getElementById('coChange').textContent = money(Math.max(0, round2(recv - t.total)));
+    return { taxable: t.taxable, tax: t.tax, total: t.total, received: recv };
   }
   document.getElementById('coDiscount').addEventListener('input', recalc);
   document.getElementById('coReceived').addEventListener('input', recalc);
@@ -293,11 +298,13 @@ function openCheckout(){
   });
   document.getElementById('coComplete').addEventListener('click', function(){
     if(deny('sell')) return;
+    const btn = document.getElementById('coComplete');
+    if(btn.disabled) return; /* double-tap guard (STEP 10): one Confirm = one sale — the server also dedupes by idempotency key, but the button must never send twice */
     const r = recalc();
     if(payMethod === 'Cash' && r.received < r.total){ toast(t('checkout.notEnough')); return; }
-    mintOrderNumber().then(function(orderNum){
-      completeSale(payMethod, document.getElementById('coCustomer').value, discount, r, orderNum);
-    });
+    btn.disabled = true;
+    completeSaleRpc(payMethod, document.getElementById('coCustomer').value, discount, r)
+      .finally(function(){ if(btn.isConnected) btn.disabled = false; });
   });
   document.getElementById('coReceived').addEventListener('keydown', function(e){
     if(e.key === 'Enter') document.getElementById('coComplete').click();
@@ -306,24 +313,12 @@ function openCheckout(){
   recalc();
 }
 
-/* Mint the next order number on the server (next_order_number RPC: atomic,
-   per-shop, continues the sequence the migration seeded). Offline fallback:
-   the local counter — used ONLY when the RPC cannot be reached, so a sale
-   never blocks on connectivity. The counter is advanced past any server
-   number seen, so the fallback cannot re-mint a number the server already
-   issued. The fallback goes away with the Stage 4 sale RPC + offline
-   outbox, which hold offline sales as Pending without a number. */
-function mintOrderNumber(){
-  if(typeof DB.nextOrderSeq !== 'number') DB.nextOrderSeq = 5;
-  if(!authSession || !activeShopId) return Promise.resolve(localOrderNumber());
-  return sbRpc('next_order_number', { p_shop_id: activeShopId }).then(function(num){
-    if(typeof num !== 'string' || !num) throw new Error('bad order number');
-    const m = num.match(/(\d+)$/);
-    if(m){ const seq = parseInt(m[1], 10); if(seq >= DB.nextOrderSeq) DB.nextOrderSeq = seq + 1; }
-    return num;
-  }).catch(function(){ return localOrderNumber(); });
-}
-
+/* Local order numbers (NS-2601…) are the OFFLINE FALLBACK only: when the
+   sale RPC cannot be reached at all, the sale is recorded locally as
+   Pending with one of these numbers and queued in the outbox (Stage 5b
+   flushes it — the server then replaces it with the real number). The
+   server mints the real number (PREFIX-YEAR-000001) for every online
+   sale; nothing here calls next_order_number() any more. */
 function localOrderNumber(){
   if(typeof DB.nextOrderSeq !== 'number') DB.nextOrderSeq = 5;
   const n = 'NS-2601' + String(1000 + DB.nextOrderSeq).slice(1);
@@ -331,15 +326,89 @@ function localOrderNumber(){
   return n;
 }
 
-function completeSale(payMethod, customerId, discount, r, orderNum){
-  const tot = cartTotals();
-  /* The cashier is the signed-in user: the linked staff name, else the
-     profile display name, else 'Admin'. Never the first Cashier row —
-     that mis-attributed the owner's sales to a staff member. The staff_id
-     is what the cashier-own-orders RLS reads: a NULL staff_id would make
-     a cashier's own order invisible to them. */
+/* One sale = one complete_sale() RPC call (STEP 4 §3). The server checks
+   the branch, locks the stock, computes the totals and writes the order,
+   order_items, payments and inventory_movements in one transaction, and
+   mints the invoice number (PREFIX-YEAR-000001). The idempotency key is
+   one per checkout attempt: a retry after a lost reply returns the
+   original order instead of a second one. The walk-in customer ('c4') is
+   sent as null — the server fills the name from the order row. */
+function completeSaleRpc(payMethod, customerId, discount, r){
   const mem = loadMembership();
   const cashier = (mem && mem.staffName) || (authSession && authSession.displayName) || 'Admin';
+  const items = cart.map(function(l){
+    const p = prodById(l.productId);
+    return { product_id: p.id, quantity: l.qty, unit_price: effPrice(p) };
+  });
+  const checkoutKey = uid('ck-');
+  const payload = {
+    p_shop_id: activeShopId, p_branch_id: activeBranchId,
+    p_items: items, p_customer_id: (customerId && customerId !== 'c4' ? customerId : null),
+    p_order_discount: discount, p_payment_method: payMethod,
+    p_amount_received: r.received, p_idempotency_key: checkoutKey,
+    p_expected_total: r.total
+  };
+  return sbRpc('complete_sale', payload).then(function(summary){
+    applyServerOrder(summary, cashier, payMethod);
+  }).catch(function(err){
+    if(isNetworkError(err)){
+      /* Offline: hold the sale as Pending (see holdSaleOffline). */
+      holdSaleOffline(payMethod, customerId, discount, r, cashier, checkoutKey, payload);
+      return;
+    }
+    console.warn('[sale] complete_sale failed', err);
+    toast(mapRpcError(err));
+  });
+}
+
+/* The server's sale_summary() reply becomes the local order. The server
+   is the truth for numbers, totals and the invoice number; the till keeps
+   the local stock view in step from the items it just sold (the next
+   cloud pull replaces these rows with the server's own). */
+function applyServerOrder(summary, cashier, payMethod){
+  const mem = loadMembership();
+  const items = (summary.items || []).map(function(it){
+    return { productId: it.product_id, productName: it.product_name, sku: it.sku || '', quantity: it.quantity, unitPrice: Number(it.unit_price) || 0, discount: Number(it.discount) || 0, lineTotal: Number(it.line_total) || 0 };
+  });
+  const order = {
+    id: summary.order_id, orderNumber: summary.order_number, customerId: summary.customer_id || 'c4', cashier: cashier, staffId: (mem && mem.staffId) || null,
+    subtotal: Number(summary.subtotal) || 0, discount: Number(summary.discount) || 0, tax: Number(summary.tax) || 0, total: Number(summary.total) || 0,
+    paymentMethod: summary.payment_method || payMethod, amountReceived: Number(summary.amount_received) || 0, changeAmount: Number(summary.change_amount) || 0,
+    status: summary.status || 'Completed', createdAt: (summary.created_at ? Date.parse(summary.created_at) : Date.now()), items: items
+  };
+  DB.orders.unshift(order);
+  /* local stock view: decrement what was just sold + a display-only
+     movement row (the server wrote the real one; the next pull replaces
+     this mirror). */
+  cart.forEach(function(l){
+    const p = prodById(l.productId);
+    if(!p) return;
+    const prev = p.stock;
+    p.stock = Math.max(0, p.stock - l.qty);
+    DB.movements.unshift({ id: uid('m'), productId: p.id, type: 'sale', quantity: -l.qty, previousStock: prev, newStock: p.stock, reference: order.orderNumber, note: t('inventory.sale'), staffId: order.staffId, createdAt: Date.now() });
+  });
+  save();
+  cart = [];
+  renderCurrent();
+  lastOrderId = order.id;
+  closeModal();
+  showReceipt(order.id, true);
+  toast(t('checkout.saleCompleted'));
+  if(payMethod === 'Cash') maybeAutoKick(order);
+}
+
+/* ⚠️ OFFLINE FALLBACK (Stage 4 — temporary, until Stage 5b): the sale
+   RPC could not be reached, so the sale is recorded locally as Pending
+   with a local number and queued in the outbox (posHtmlOutbox.v1).
+   NOTHING sends it yet — Stage 5b adds the flush worker. Do NOT re-enter
+   the same sale by hand: on flush, the idempotency key makes the server
+   return this one order instead of a second sale. The local stock
+   decrement below can disagree with the server if another device sold
+   the same product meanwhile (audit C-1 — fixed properly in 5b). */
+function holdSaleOffline(payMethod, customerId, discount, r, cashier, checkoutKey, payload){
+  const mem = loadMembership();
+  const tot = cartTotals(discount);
+  const orderNum = localOrderNumber();
   const items = cart.map(function(l){
     const p = prodById(l.productId);
     const price = effPrice(p);
@@ -349,24 +418,24 @@ function completeSale(payMethod, customerId, discount, r, orderNum){
     id: uid('o'), orderNumber: orderNum, customerId: customerId || 'c4', cashier: cashier, staffId: (mem && mem.staffId) || null,
     subtotal: tot.subtotal, discount: discount, tax: r.tax, total: r.total,
     paymentMethod: payMethod, amountReceived: r.received, changeAmount: round2(Math.max(0, r.received - r.total)),
-    status: 'Completed', createdAt: Date.now(), items: items
+    status: 'Pending', createdAt: Date.now(), items: items
   };
   DB.orders.unshift(order);
-  // decrement stock + movements
   cart.forEach(function(l){
     const p = prodById(l.productId);
     if(!p) return;
     const prev = p.stock;
     p.stock = Math.max(0, p.stock - l.qty);
-    DB.movements.unshift({ id: uid('m'), productId: p.id, type: 'sale', quantity: -l.qty, previousStock: prev, newStock: p.stock, reference: orderNum, note: t('inventory.sale'), createdAt: Date.now() });
+    DB.movements.unshift({ id: uid('m'), productId: p.id, type: 'sale', quantity: -l.qty, previousStock: prev, newStock: p.stock, reference: orderNum, note: t('inventory.sale'), staffId: order.staffId, createdAt: Date.now() });
   });
+  queueHeldSale({ key: checkoutKey, payload: payload, localOrderId: order.id, createdAt: Date.now() });
   save();
   cart = [];
   renderCurrent();
   lastOrderId = order.id;
   closeModal();
   showReceipt(order.id, true);
-  toast(t('checkout.saleCompleted'));
+  toast(t('checkout.savedOffline'));
   if(payMethod === 'Cash') maybeAutoKick(order);
 }
 
@@ -399,8 +468,14 @@ function receiptHtml(order){
 function showReceipt(orderId, justCompleted){
   const order = DB.orders.find(function(o){ return o.id === orderId; });
   if(!order) return;
+  /* A Pending (held offline) sale shows the sale as completed AND an
+     amber notice below it — the goods changed hands, but the sale is NOT
+     on the server yet and will be sent when the connection returns. */
+  const pending = (order.status === 'Pending');
   openModal(
-    (justCompleted ? '<div class="success-mark">✓</div><h2 style="text-align:center;margin:0 0 14px">' + esc(t('checkout.saleCompleted')) + '</h2>' : '<header><h2>' + esc(t('receipt.title')) + ' · ' + esc(order.orderNumber) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>') +
+    (justCompleted ? '<div class="success-mark">✓</div><h2 style="text-align:center;margin:0 0 14px">' + esc(t('checkout.saleCompleted')) + '</h2>' +
+      (pending ? '<div class="pending-banner"><strong>' + esc(t('checkout.pendingSale')) + '</strong><p>' + esc(t('checkout.pendingNotice')) + '</p></div>' : '')
+      : '<header><h2>' + esc(t('receipt.title')) + ' · ' + esc(order.orderNumber) + '</h2><button class="btn icon-btn" type="button" data-close>✕</button></header>') +
     '<div id="receiptView">' + receiptHtml(order) + '</div>' +
     '<div class="receipt-actions"><button class="btn" type="button" id="rcPrint">🖨 ' + esc(t('receipt.print')) + '</button>' +
     '<button class="btn" type="button" id="rcDrawer">💵 ' + esc(t('drawer.open')) + '</button>' +

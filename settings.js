@@ -139,7 +139,11 @@ function renderHardware(){
    The old Backup button exported the raw DB object; restore still accepts
    that legacy shape so earlier backup files keep working. */
 
-const BACKUP_ARRAYS = ['products','customers','staff','orders','expenses','movements'];
+/* Client-owned tables only (products, customers, staff, expenses,
+   suppliers, purchase orders). Orders and stock movements are
+   SERVER-OWNED since Stage 4 — they live on the server and are never
+   written from a file, so they are not in a backup at all. */
+const BACKUP_ARRAYS = ['products','customers','staff','expenses','suppliers','purchaseOrders','purchaseOrderItems'];
 
 function backupFilename(prefix){
   const d = new Date();
@@ -149,7 +153,7 @@ function backupFilename(prefix){
 
 function backupEnvelope(){
   return { app:'pos-html', version:1, exportedAt:new Date().toISOString(),
-    data:{ settings:DB.settings, products:DB.products, customers:DB.customers, staff:DB.staff, orders:DB.orders, expenses:DB.expenses, movements:DB.movements, nextOrderSeq:DB.nextOrderSeq } };
+    data:{ settings:DB.settings, products:DB.products, customers:DB.customers, staff:DB.staff, expenses:DB.expenses, suppliers:(DB.suppliers || []), purchaseOrders:(DB.purchaseOrders || []), purchaseOrderItems:(DB.purchaseOrderItems || []), nextOrderSeq:DB.nextOrderSeq } };
 }
 
 function downloadBlob(filename, blob){
@@ -184,9 +188,14 @@ function validateBackup(parsed){
     data = parsed; exportedAt = null; /* legacy raw-DB export */
   } else return null;
   if(!data.settings || typeof data.settings !== 'object') return null;
-  for(let i = 0; i < BACKUP_ARRAYS.length; i++){
-    if(!Array.isArray(data[BACKUP_ARRAYS[i]])) return null;
+  /* Required arrays: the client-owned tables. Orders / movements in an
+     old backup are ignored — server-owned tables are never restored from
+     a file. The newer arrays default to empty so old backups still load. */
+  const required = ['products','customers','staff','expenses'];
+  for(let i = 0; i < required.length; i++){
+    if(!Array.isArray(data[required[i]])) return null;
   }
+  ['suppliers','purchaseOrders','purchaseOrderItems'].forEach(function(k){ if(!Array.isArray(data[k])) data[k] = []; });
   if(data.nextOrderSeq != null && typeof data.nextOrderSeq !== 'number') return null;
   return { data: data, exportedAt: exportedAt };
 }
@@ -204,6 +213,7 @@ function showRestoreSummary(v){
     '<p class="muted">' + dateLine + '</p>' +
     rows +
     '<p class="muted">' + esc(t('backup.settingsIncluded')) + '</p>' +
+    '<p class="muted">' + esc(t('backup.serverDataKept')) + '</p>' +
     '<p style="color:var(--danger);font-weight:650">' + esc(t('backup.replaceWarning')) + '</p>' +
     '<p class="muted">' + esc(t('backup.safetyNote')) + '</p>' +
     '<div class="form-actions"><button class="btn" type="button" data-close>' + esc(t('common.cancel')) + '</button>' +
@@ -218,15 +228,23 @@ function doRestore(data){
   downloadJson(backupFilename('pos-backup-before-restore'), backupEnvelope());
   const restored = JSON.parse(JSON.stringify(data));
   if(typeof restored.nextOrderSeq !== 'number') restored.nextOrderSeq = 5;
-  DB = restored;
+  /* Server-owned tables are NEVER restored from a file and NEVER wiped:
+     orders and stock history stay exactly as they are on the server. The
+     current local mirror is kept and the next cloud pull refreshes it.
+     (Before Stage 4 this restore wiped the cloud first — that would now
+     delete server orders pushCloud can no longer re-push: data loss.) */
+  restored.orders = DB.orders;
+  restored.movements = DB.movements;
+  restored.suppliers = Array.isArray(restored.suppliers) ? restored.suppliers : [];
+  restored.purchaseOrders = Array.isArray(restored.purchaseOrders) ? restored.purchaseOrders : [];
+  restored.purchaseOrderItems = Array.isArray(restored.purchaseOrderItems) ? restored.purchaseOrderItems : [];
+  DB = ensureCollections(restored);
   cart = [];
   clearPushed(); /* every row is new again after a restore */
-  persistLocal(); /* no schedulePush here: pushCloud below handles the wipe+push */
+  persistLocal(); /* no schedulePush here: pushCloud below pushes the restored rows */
   applyLang();
   showView(landingView());
   toast(t('backup.restored'));
-  /* Full replace in the cloud too: wipe stale rows first, then push all rows. */
-  pendingWipe = true;
   pushCloud().then(function(ok){
     if(ok){ showBackupMsg(''); }
     else { showBackupMsg(t('backup.restoredSyncFailed')); toast(t('backup.restoredSyncFailed')); }
@@ -310,7 +328,7 @@ function renderSettingsForm(){
   /* Shop profile: visible to all roles, but only owner/admin may change
      it — the fields go read-only and Save hides for manager/cashier. */
   const canShop = can('settings_shop');
-  ['setStoreName','setAddress','setPhone','setCurrency','setTaxRate','setReceiptSize'].forEach(function(id){
+  ['setStoreName','setAddress','setPhone','setCurrency','setTaxRate','setReceiptSize','setInvoicePrefix'].forEach(function(id){
     const el = document.getElementById(id);
     if(el) el.disabled = !canShop;
   });
@@ -327,6 +345,15 @@ function renderSettingsForm(){
   document.getElementById('setCurrency').value = s.currency;
   document.getElementById('setTaxRate').value = s.taxRate;
   document.getElementById('setReceiptSize').value = s.receiptSize;
+  /* Invoice prefix (STEP 4 §10): the server mints PREFIX-YEAR-000001 for
+     every sale. Empty = the shop code, then 'NS'. The preview shows the
+     format of the next number (the sequence itself lives on the server). */
+  const prefixEl = document.getElementById('setInvoicePrefix');
+  if(prefixEl){
+    prefixEl.value = s.invoicePrefix || '';
+    const preview = document.getElementById('invoicePrefixPreview');
+    if(preview) preview.textContent = t('settings.invoicePrefixPreview', {preview: ((s.invoicePrefix || 'NS').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6) || 'NS') + '-' + new Date().getFullYear() + '-000001'});
+  }
   document.getElementById('setVersion').textContent = APP_VERSION;
   document.querySelectorAll('#setLangToggle button').forEach(function(b){ b.classList.toggle('active', b.dataset.lang === s.lang); });
   document.querySelectorAll('#setThemeToggle button').forEach(function(b){ b.classList.toggle('active', b.dataset.theme === currentTheme()); });
@@ -533,6 +560,10 @@ function saveSettings(){
   DB.settings.currency = document.getElementById('setCurrency').value;
   DB.settings.taxRate = Math.max(0, parseFloat(document.getElementById('setTaxRate').value) || 0);
   DB.settings.receiptSize = document.getElementById('setReceiptSize').value;
+  /* Same sanitising as the server (upper-case, alphanumerics only, max 6);
+     empty means "use the shop code". Changing it affects the NEXT invoice
+     only — the sequence number never resets. */
+  DB.settings.invoicePrefix = (document.getElementById('setInvoicePrefix').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
   save(); applyLang(); toast(t('settings.saved'));
 }
 

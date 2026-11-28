@@ -171,12 +171,19 @@
   <section class="page hidden" id="view-inventory">
     <div class="page-head">
       <div><p class="eyebrow" data-t="inventory.eyebrow">Stock control</p><h1 data-t="inventory.title">Inventory</h1><p data-t="inventory.detail">Every sale and adjustment leaves an auditable movement.</p></div>
+      <div class="head-actions"><button class="btn hidden" type="button" id="transferStockBtn">⇄ <span data-t="inventory.transfer">Transfer</span></button></div>
     </div>
     <div class="metric-strip" style="grid-template-columns:repeat(3,1fr)">
       <div class="metric"><span data-t="inventory.products">Products</span><strong id="invCount">—</strong></div>
       <div class="metric"><span data-t="inventory.stockValue">Stock value</span><strong id="invValue">—</strong><small data-t="inventory.atCost">At cost</small></div>
       <div class="metric"><span data-t="inventory.needsAttention">Needs attention</span><strong id="invLow">—</strong></div>
     </div>
+    <div class="inv-tabs" role="tablist" style="display:flex;gap:6px;margin-bottom:14px">
+      <button type="button" data-invtab="stock" class="btn active" role="tab" data-t="inventory.levels">Stock levels</button>
+      <button type="button" data-invtab="suppliers" class="btn" role="tab" data-t="inventory.suppliers">Suppliers</button>
+      <button type="button" data-invtab="pos" class="btn" role="tab" data-t="inventory.purchaseOrders">Purchase Orders</button>
+    </div>
+    <div id="invStockPanel">
     <div class="dash-grid inv-grid">
       <div class="panel">
         <div class="panel-head"><div><h2 data-t="inventory.levels">Stock levels</h2><p data-t="inventory.tap">Tap an item to record movement</p></div></div>
@@ -194,15 +201,30 @@
               <select id="moveType">
                 <option value="stock_in" data-t="inventory.stockIn">Stock in</option>
                 <option value="stock_out" data-t="inventory.stockOut">Stock out</option>
-                <option value="adjustment" data-t="inventory.adjustment">Adjustment (+ / −)</option>
+                <option value="adjust_in" data-t="inventory.adjustIncrease">Adjustment +</option>
+                <option value="adjust_out" data-t="inventory.adjustDecrease">Adjustment −</option>
               </select>
             </div>
             <div class="field"><span data-t="inventory.quantity">Quantity</span><input type="number" id="moveQty" min="1" step="1" value="1"></div>
+            <div class="field"><span data-t="inventory.unitCost">Cost per unit (optional)</span><input type="number" id="moveUnitCost" min="0" step="any" placeholder="0"></div>
           </div>
           <div class="field"><span data-t="inventory.reason">Reason / note</span><input type="text" id="moveNote" data-tp="inventory.reasonPlaceholder" placeholder="Supplier delivery, damaged unit, count correction…"></div>
           <div class="form-actions"><button class="btn" type="button" id="moveCancelBtn" data-t="common.cancel">Cancel</button><button class="btn primary" type="button" id="moveSaveBtn" data-t="inventory.update">Update stock</button></div>
         </div>
         <div id="moveHistory"></div>
+      </div>
+    </div>
+    </div>
+    <div id="invSuppliersPanel" class="hidden">
+      <div class="panel">
+        <div class="panel-head"><div><h2 data-t="inventory.suppliers">Suppliers</h2></div><button class="btn primary" type="button" id="addSupplierBtn">＋ <span data-t="inventory.suppliers">Suppliers</span></button></div>
+        <div id="supplierList"></div>
+      </div>
+    </div>
+    <div id="invPosPanel" class="hidden">
+      <div class="panel">
+        <div class="panel-head"><div><h2 data-t="inventory.purchaseOrders">Purchase Orders</h2></div><button class="btn primary" type="button" id="addPoBtn">＋ <span data-t="inventory.purchaseOrders">Purchase Orders</span></button></div>
+        <div id="poList"></div>
       </div>
     </div>
   </section>
@@ -219,6 +241,7 @@
         <select id="orderStatusFilter" style="width:auto;min-width:150px">
           <option value="all" data-t="orders.all">All statuses</option>
           <option value="Completed" data-t="orders.completed">Completed</option>
+          <option value="Pending" data-t="orders.pending">Pending</option>
           <option value="Refunded" data-t="orders.refunded">Refunded</option>
           <option value="Cancelled" data-t="orders.cancelled">Cancelled</option>
         </select>
@@ -273,6 +296,11 @@
           <option value="58mm">58mm</option>
           <option value="80mm">80mm</option>
         </select>
+      </div>
+      <div class="field"><span data-t="settings.invoicePrefix">Invoice prefix</span>
+        <input type="text" id="setInvoicePrefix" maxlength="6" style="text-transform:uppercase" placeholder="NS">
+        <small class="muted" data-t="settings.invoicePrefixHelp">1–6 letters or digits. Used for the next invoice number, e.g. NS-2026-000014. Leave empty to use the shop code.</small>
+        <small class="muted" id="invoicePrefixPreview"></small>
       </div>
     </div>
     <div class="panel">

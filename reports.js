@@ -298,7 +298,7 @@ function renderOrders(){
   document.getElementById('ordersDetail').textContent = t('orders.detail', {count: DB.orders.length});
   document.getElementById('orderList').innerHTML = list.length ? list.map(function(o){
     const cust = custById(o.customerId);
-    const badge = o.status === 'Completed' ? 'good' : o.status === 'Refunded' ? 'warn' : 'bad';
+    const badge = o.status === 'Completed' ? 'good' : o.status === 'Refunded' ? 'warn' : o.status === 'Pending' ? 'warn' : 'bad';
     return '<button type="button" class="list-row" data-order="' + o.id + '" style="width:100%;background:transparent;border-left:0;border-right:0;border-top:0;text-align:left;cursor:pointer">' +
       '<div class="grow"><strong>' + esc(o.orderNumber) + '</strong><small>' + fmtDate(o.createdAt) + ' · ' + esc(cust ? cust.name : t('common.walkIn')) + ' · ' + esc(tPay(o.paymentMethod)) + '</small></div>' +
       '<span class="badge ' + badge + '">' + esc(tStatus(o.status)) + '</span>' +
